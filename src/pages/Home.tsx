@@ -134,6 +134,21 @@ export const Home: React.FC = () => {
   const [activeRegion, setActiveRegion] = useState('Tollywood');
   const [selectedAlbum, setSelectedAlbum] = useState<string | null>(null);
   const [selectedDirector, setSelectedDirector] = useState<string | null>(null);
+  const [selectedPlaylist, setSelectedPlaylist] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+
+  const showToastMessage = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => {
+      setToast(null);
+    }, 3000);
+  };
+
+  useEffect(() => {
+    setSelectedAlbum(null);
+    setSelectedDirector(null);
+    setSelectedPlaylist(null);
+  }, [sidebarNav]);
 
   const moviePlots: Record<string, string> = {
     "Karuppu": "In a world where shadows dictate destiny, a reluctant hero must embrace the darkness to protect the light. Karuppu is an intense journey of power, betrayal, and ultimate redemption. The groundbreaking soundtrack elevates every moment of this epic saga.",
@@ -406,7 +421,12 @@ export const Home: React.FC = () => {
 
   const handleAddToQueue = (e: React.MouseEvent, track: Track) => {
     e.stopPropagation();
-    setQueue([...queue, track]);
+    if (queue.some(t => t.id === track.id)) {
+      showToastMessage("This song is already in your queue", "info");
+    } else {
+      setQueue([...queue, track]);
+      showToastMessage(`Added "${track.title}" to Queue`, "success");
+    }
     setActiveTrackMenu(null);
   };
 
@@ -418,7 +438,14 @@ export const Home: React.FC = () => {
 
   const handleAddToPlaylist = (playlistName: string) => {
     if (trackToAddPlaylist) {
-      addTrackToPlaylist(playlistName, trackToAddPlaylist);
+      const targetPlaylist = playlists.find(p => p.name === playlistName);
+      if (targetPlaylist && targetPlaylist.trackIds.includes(trackToAddPlaylist)) {
+        showToastMessage("This song is already in the playlist", "error");
+      } else {
+        addTrackToPlaylist(playlistName, trackToAddPlaylist);
+        const trackObj = tracks.find(t => t.id === trackToAddPlaylist);
+        showToastMessage(`Added "${trackObj?.title || 'song'}" to playlist "${playlistName}"`, "success");
+      }
       setTrackToAddPlaylist(null);
     }
   };
@@ -1598,6 +1625,138 @@ export const Home: React.FC = () => {
                     </div>
                   </motion.div>
                 );
+              })() : selectedPlaylist ? (() => {
+                const targetPlaylist = playlists.find(p => p.name === selectedPlaylist);
+                if (!targetPlaylist) return null;
+                const playlistTracks = tracks.filter(t => targetPlaylist.trackIds.includes(t.id));
+                const coverImage = playlistTracks.length > 0 ? playlistTracks[0].coverUrl : 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=400';
+                
+                return (
+                  <motion.div
+                    key="playlist-detail"
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex flex-col gap-8 pb-10"
+                  >
+                    {/* Header */}
+                    <div className="flex flex-col md:flex-row gap-8 md:items-end border-b border-white/5 pb-8 relative pt-10">
+                      <button 
+                        onClick={() => setSelectedPlaylist(null)}
+                        className="absolute top-0 left-0 bg-white/5 hover:bg-white/10 p-2 rounded-full transition-colors text-slate-300 flex items-center gap-2 text-xs font-bold uppercase tracking-wider z-10"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                        Back
+                      </button>
+                      
+                      <div className="w-56 h-56 rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex-shrink-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20">
+                        <img src={coverImage} alt={selectedPlaylist} className="w-full h-full object-cover" />
+                      </div>
+                      
+                      <div className="flex flex-col gap-3 pb-2">
+                        <h2 className="text-3xl md:text-4xl font-black text-white font-display tracking-wide">{selectedPlaylist} <span className="text-xl text-slate-400 font-sans tracking-normal font-normal">(Playlist)</span></h2>
+                        <div className="flex flex-col gap-1">
+                          <span className="text-lg font-bold text-teal w-max">
+                            {user?.username || 'You'}
+                          </span>
+                          <span className="text-sm text-slate-400 font-mono uppercase tracking-widest">{playlistTracks.length} tracks</span>
+                        </div>
+                        <div className="mt-4 flex items-center gap-4">
+                          <button 
+                            onClick={() => playlistTracks.length > 0 && handleSelectTrack(playlistTracks[0], playlistTracks)}
+                            className="bg-white hover:bg-white/90 text-black font-bold py-2.5 px-8 rounded-full flex items-center gap-2 transition-all hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.2)] disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={playlistTracks.length === 0}
+                          >
+                            <Play className="w-5 h-5 fill-current" /> Play
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Tracks List */}
+                    <div className="flex flex-col gap-2">
+                      <div className="grid grid-cols-[16px_1fr_40px] md:grid-cols-[24px_1fr_1fr_40px] gap-4 px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-white/5 mb-2">
+                        <span>#</span>
+                        <span>Title</span>
+                        <span className="hidden md:block">Album</span>
+                        <span></span>
+                      </div>
+                      
+                      {playlistTracks.length === 0 ? (
+                        <div className="text-center py-10 text-slate-500 font-mono text-sm border border-dashed border-white/10 rounded-2xl">
+                          No tracks in this playlist yet.
+                        </div>
+                      ) : (
+                        playlistTracks.map((track, index) => {
+                          const isPlaying = currentTrack?.id === track.id;
+                          return (
+                            <div 
+                              key={track.id}
+                              onClick={() => handleSelectTrack(track, playlistTracks)}
+                              className={`group grid grid-cols-[16px_1fr_40px] md:grid-cols-[24px_1fr_1fr_40px] gap-4 items-center px-4 py-3 rounded-xl cursor-pointer transition-colors ${isPlaying ? 'bg-white/10' : 'hover:bg-white/5'}`}
+                            >
+                              <span className="text-sm font-mono text-slate-500 flex justify-center">
+                                {isPlaying ? <BarChart2 className="w-4 h-4 text-teal animate-pulse" /> : index + 1}
+                              </span>
+                              
+                              <div className="flex items-center gap-3 min-w-0">
+                                <img src={track.coverUrl} className="w-10 h-10 rounded shadow-md hidden sm:block" alt={track.title} />
+                                <div className="flex flex-col min-w-0">
+                                  <span className={`text-sm font-bold truncate ${isPlaying ? 'text-teal' : 'text-white'}`}>{track.title}</span>
+                                  <span className="text-xs text-slate-400 truncate">{track.artist}</span>
+                                </div>
+                              </div>
+                              
+                              <div className="hidden md:flex items-center min-w-0">
+                                <span className="text-xs text-slate-400 truncate group-hover:text-slate-300 transition-colors">{track.album}</span>
+                              </div>
+                              
+                              <div className="flex justify-center items-center relative">
+                                <button 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setActiveTrackMenu(activeTrackMenu === track.id ? null : track.id);
+                                  }}
+                                  className="opacity-0 group-hover:opacity-100 p-2 hover:bg-white/10 rounded-full transition-all text-slate-400 hover:text-white cursor-pointer"
+                                >
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                                </button>
+                                
+                                <AnimatePresence>
+                                  {activeTrackMenu === track.id && (
+                                    <motion.div
+                                      initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                                      exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                      transition={{ duration: 0.15 }}
+                                      className="absolute right-0 top-full mt-1 w-48 rounded-xl bg-slate-900/95 backdrop-blur-md border border-white/10 shadow-2xl py-1.5 z-50 flex flex-col text-left"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      <button
+                                        onClick={(e) => handleAddToQueue(e, track)}
+                                        className="w-full px-3 py-2 text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 flex items-center gap-2 transition-colors text-left"
+                                      >
+                                        <PlusCircle className="w-3.5 h-3.5 text-teal" />
+                                        Add to Queue
+                                      </button>
+                                      <button
+                                        onClick={(e) => handleOpenPlaylistModal(e, track.id)}
+                                        className="w-full px-3 py-2 text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 flex items-center gap-2 transition-colors text-left"
+                                      >
+                                        <FolderPlus className="w-3.5 h-3.5 text-teal" />
+                                        Add to Playlist
+                                      </button>
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  </motion.div>
+                );
               })() : sidebarNav === 'home' ? (
                 <div data-scroll-reveal className="flex flex-col gap-10 pb-10">
                   {/* Hero / Mixes */}
@@ -2545,7 +2704,7 @@ export const Home: React.FC = () => {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-4">
                     {playlists.map(playlist => (
-                      <div key={playlist.name} className="group relative rounded-3xl glass-panel p-4 transition-all duration-300 border border-silver/8 hover:border-teal/30 hover:bg-teal/5 cursor-pointer flex flex-col gap-4 active:scale-[0.98]">
+                      <div key={playlist.name} onClick={() => setSelectedPlaylist(playlist.name)} className="group relative rounded-3xl glass-panel p-4 transition-all duration-300 border border-silver/8 hover:border-teal/30 hover:bg-teal/5 cursor-pointer flex flex-col gap-4 active:scale-[0.98]">
                         <div className="w-full aspect-square rounded-2xl bg-black/40 overflow-hidden relative shadow-lg border border-white/5">
                           {playlist.coverUrl ? (
                             <img src={playlist.coverUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={playlist.name} />
@@ -3392,6 +3551,27 @@ export const Home: React.FC = () => {
               </button>
             </motion.div>
           </div>
+        )}
+      </AnimatePresence>
+
+      {/* ================= TOAST NOTIFICATION ================= */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            className={`fixed bottom-28 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-6 py-3 rounded-full shadow-2xl backdrop-blur-md border ${
+              toast.type === 'success' ? 'bg-teal/20 border-teal/50 text-teal-100' :
+              toast.type === 'error' ? 'bg-red-500/20 border-red-500/50 text-red-100' :
+              'bg-blue-500/20 border-blue-500/50 text-blue-100'
+            }`}
+          >
+            {toast.type === 'success' && <div className="w-2 h-2 rounded-full bg-teal animate-pulse" />}
+            {toast.type === 'error' && <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />}
+            {toast.type === 'info' && <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />}
+            <span className="font-semibold text-sm tracking-wide">{toast.message}</span>
+          </motion.div>
         )}
       </AnimatePresence>
 

@@ -111,6 +111,8 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
     };
   }, [currentTrack, isShuffle, isRepeat]);
 
+  const lastTrackIdRef = useRef<string | null>(null);
+
   // Handle track source and quality change
   useEffect(() => {
     const audio = audioRef.current;
@@ -122,16 +124,25 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
     else if (quality === 'flac') audioUrl = currentTrack.audioUrlFlac;
     else if (quality === 'atmos') audioUrl = currentTrack.audioUrlAtmos;
 
-    const isSameSource = audio.src === audioUrl;
+    // audio.src returns absolute URL, so we check if the ends match to avoid unnecessary reloads
+    const isSameSource = audio.src.endsWith(audioUrl);
     if (!isSameSource) {
       const savedTime = audio.currentTime;
+      const isBitrateSwitch = lastTrackIdRef.current === currentTrack.id;
+      
       audio.src = audioUrl;
       audio.load();
-      // Restore playback scrubber timeline position if we are just switching bitrates
-      if (savedTime > 0 && savedTime < duration) {
+      
+      // Restore playback scrubber timeline position ONLY if we are just switching bitrates on the same track
+      if (isBitrateSwitch && savedTime > 0 && savedTime < duration) {
         audio.currentTime = savedTime;
+      } else {
+        audio.currentTime = 0;
+        setCurrentTime(0);
       }
     }
+    
+    lastTrackIdRef.current = currentTrack.id;
 
     if (playbackState === 'playing') {
       audio.play().catch((err) => {

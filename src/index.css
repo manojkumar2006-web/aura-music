@@ -1,0 +1,215 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300..900;1,300..900&family=Space+Grotesk:wght@300..700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Antigravity Color System */
+  --color-onyx: #0b0b0d;
+  --color-onyx-2: #151517;
+  --color-carbon-black: #1b1b1d;
+  --color-shadow-grey: #212124;
+  --color-shadow-grey-2: #262629;
+  --color-graphite: #2b2b2e;
+  --color-silver: #ABAAA5;
+  --color-crushed-berry: #880d1e;
+
+  /* Semantic Aliases mapped to new monochrome palette */
+  --color-shadow: var(--color-onyx);
+  --color-slate-default: var(--color-carbon-black);
+  --color-slate-soft: var(--color-shadow-grey-2);
+  
+  /* Restoring Accent Colors with Crushed Berry variations */
+  --color-teal: var(--color-crushed-berry);
+  --color-ocean: #6b0917; /* Darker crushed berry */
+  --color-deepblue: #40040d; /* Deepest berry */
+
+  /* Neutrals for Text */
+  --color-ink-primary: #F4F2EE;
+  --color-ink-secondary: #ABAAA5;
+  --color-ink-tertiary: #6E6C67;
+}
+
+body {
+  background-color: var(--color-shadow);
+  color: var(--color-ink-primary);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  height: 100vh;
+  margin: 0;
+}
+
+/* Custom background animation for the weightless starfield */
+@keyframes slow-twinkle {
+  0%, 100% { opacity: 0.12; }
+  50% { opacity: 0.45; }
+}
+
+.star-field::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
+    radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
+    radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px);
+  background-size: 550px 550px, 350px 350px, 250px 250px;
+  background-position: 0 0, 40px 60px, 130px 270px;
+  opacity: 0.12;
+  animation: slow-twinkle 15s infinite ease-in-out;
+  pointer-events: none;
+}
+
+/* Smooth custom glassmorphism panels matched exactly to the Immersive UI design specifications */
+.glass-panel {
+  background: rgba(27, 27, 29, 0.65);   /* carbon-black at 65% */
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(171, 170, 165, 0.08);  /* silver at 8% */
+}
+
+/* Gated lock overlay */
+.lock-overlay {
+  background: rgba(21, 21, 23, 0.75);   /* onyx-2 at 75% */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 2 large fixed ambient blobs behind main content */
+.ambient-blob {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  filter: blur(130px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ambient-blob.free {
+  background: var(--color-slate-default);
+  opacity: 0.18;
+  top: -10%;
+  left: -10%;
+}
+
+.ambient-blob.premium {
+  background: var(--color-teal);
+  opacity: 0.10;
+  bottom: -15%;
+  right: -10%;
+}
+
+/* Free button hover glow */
+.btn-free {
+  background: rgba(58, 82, 86, 0.18);
+  border: 1px solid rgba(58, 82, 86, 0.4);
+  box-shadow: 0 8px 24px -4px rgba(58, 82, 86, 0.35),
+              0 4px 8px -2px rgba(0, 0, 0, 0.5);
+  transition: box-shadow 0.3s ease, transform 0.3s ease, background 0.3s ease;
+}
+
+.btn-free:hover {
+  background: rgba(58, 82, 86, 0.28);
+  box-shadow: 0 16px 40px -4px rgba(58, 82, 86, 0.55),
+              0 8px 16px -4px rgba(0, 0, 0, 0.6);
+  transform: translateY(-5px);
+}
+
+/* Premium button hover glow */
+.btn-premium {
+  background: linear-gradient(90deg, var(--color-carbon-black), var(--color-crushed-berry));
+  box-shadow: 0 8px 24px -4px rgba(136, 13, 30, 0.25),
+              0 4px 8px -2px rgba(0, 0, 0, 0.5);
+  transition: box-shadow 0.3s ease, transform 0.3s ease, background 0.3s ease;
+  border: 1px solid rgba(136, 13, 30, 0.4);
+}
+
+.btn-premium:hover {
+  box-shadow: 0 16px 44px -4px rgba(136, 13, 30, 0.5),
+              0 8px 16px -4px rgba(0, 0, 0, 0.6);
+  transform: translateY(-5px);
+  border: 1px solid rgba(136, 13, 30, 0.8);
+}
+
+.btn-premium:active {
+  background: linear-gradient(270deg, var(--color-carbon-black), var(--color-crushed-berry));
+  transform: translateY(-1px);
+}
+
+/* Beautiful dynamic sweeping shine used on premium elements */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer-sweep {
+  background: linear-gradient(
+    90deg,
+    var(--color-carbon-black) 0%,
+    var(--color-crushed-berry) 35%,
+    #e21b36 50%,
+    var(--color-crushed-berry) 65%,
+    var(--color-carbon-black) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 6s ease-in-out infinite;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(40, 35, 39, 0.3); /* shadow-grey at 30% */
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(171, 170, 165, 0.15); /* silver at 15% */
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(171, 170, 165, 0.25); /* silver at 25% */
+}
+
+/* ====== Scroll Reveal Animations ====== */
+[data-scroll-reveal] {
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+[data-scroll-reveal].scroll-hidden {
+  opacity: 0;
+  transform: translateY(25px) scale(0.97);
+  filter: blur(4px);
+}
+
+[data-scroll-reveal].scroll-revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0px);
+}
+
+/* Stagger delay for grid children */
+[data-scroll-reveal][data-delay="1"] { transition-delay: 0.06s; }
+[data-scroll-reveal][data-delay="2"] { transition-delay: 0.12s; }
+[data-scroll-reveal][data-delay="3"] { transition-delay: 0.18s; }
+[data-scroll-reveal][data-delay="4"] { transition-delay: 0.24s; }
+[data-scroll-reveal][data-delay="5"] { transition-delay: 0.30s; }
+[data-scroll-reveal][data-delay="6"] { transition-delay: 0.36s; }
+
+/* Custom scroll container hide scrollbar until hover */
+.custom-scroll {
+  scrollbar-gutter: stable;
+}
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: transparent;
+  transition: background 0.3s;
+}
+.custom-scroll:hover::-webkit-scrollbar-thumb {
+  background: rgba(171, 170, 165, 0.15);
+}

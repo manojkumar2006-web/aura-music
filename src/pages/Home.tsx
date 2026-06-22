@@ -84,6 +84,7 @@ export const Home: React.FC = () => {
     addTrackToPlaylist,
     analyticsEvents,
     logAnalyticsEvent,
+    queue,
     setQueue,
 
     // Auth states & actions
@@ -107,6 +108,8 @@ export const Home: React.FC = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authTab, setAuthTab] = useState<'login' | 'signup' | 'reset'>('login');
   const [sidebarNav, setSidebarNav] = useState<string>('home');
+  const [activeTrackMenu, setActiveTrackMenu] = useState<string | null>(null);
+  const [trackToAddPlaylist, setTrackToAddPlaylist] = useState<string | null>(null);
   
   // Auth Form Input States
   const [loginEmail, setLoginEmail] = useState('');
@@ -401,11 +404,37 @@ export const Home: React.FC = () => {
 
   const activeThemeStyle = themeStyles[activeTheme] || themeStyles.slate;
 
+  const handleAddToQueue = (e: React.MouseEvent, track: Track) => {
+    e.stopPropagation();
+    setQueue([...queue, track]);
+    setActiveTrackMenu(null);
+  };
+
+  const handleOpenPlaylistModal = (e: React.MouseEvent, trackId: string) => {
+    e.stopPropagation();
+    setTrackToAddPlaylist(trackId);
+    setActiveTrackMenu(null);
+  };
+
+  const handleAddToPlaylist = (playlistName: string) => {
+    if (trackToAddPlaylist) {
+      addTrackToPlaylist(playlistName, trackToAddPlaylist);
+      setTrackToAddPlaylist(null);
+    }
+  };
+
   return (
     <div className={`h-screen overflow-hidden ${activeThemeStyle.bg} text-ink-primary flex flex-col relative select-none transition-colors duration-500 star-field`}>
       {/* Ambient background blobs (atmosphere) */}
       <div className="ambient-blob free" />
       <div className="ambient-blob premium" />
+
+      {activeTrackMenu && (
+        <div 
+          className="fixed inset-0 z-40 bg-transparent cursor-default" 
+          onClick={() => setActiveTrackMenu(null)}
+        />
+      )}
       
       {/* Dynamic blurred cover background */}
       <AnimatePresence>
@@ -425,6 +454,76 @@ export const Home: React.FC = () => {
               mixBlendMode: 'screen'
             }}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Add to Playlist Modal */}
+      <AnimatePresence>
+        {trackToAddPlaylist && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-pointer"
+              onClick={() => setTrackToAddPlaylist(null)}
+            />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="relative w-full max-w-sm glass-panel rounded-3xl p-6 border border-white/10 shadow-2xl flex flex-col gap-4"
+            >
+              <button 
+                onClick={() => setTrackToAddPlaylist(null)}
+                className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              
+              <h3 className="text-xl font-bold font-display text-white">Add to Playlist</h3>
+              
+              {playlists.length > 0 ? (
+                <div className="flex flex-col gap-2 max-h-60 overflow-y-auto custom-scroll pr-2">
+                  {playlists.map(p => (
+                    <button
+                      key={p.name}
+                      onClick={() => handleAddToPlaylist(p.name)}
+                      className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 transition-colors text-left group"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-black/40 overflow-hidden shrink-0 flex items-center justify-center border border-white/5 group-hover:border-teal/30 transition-colors">
+                        {p.coverUrl ? (
+                          <img src={p.coverUrl} className="w-full h-full object-cover" alt="" />
+                        ) : (
+                          <FolderHeart className="w-5 h-5 text-teal/50" />
+                        )}
+                      </div>
+                      <div className="flex flex-col overflow-hidden">
+                        <span className="text-sm font-bold text-white truncate">{p.name}</span>
+                        <span className="text-xs text-slate-400">{p.trackIds.length} tracks</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-6 text-slate-400 flex flex-col items-center gap-3">
+                  <FolderPlus className="w-8 h-8 text-slate-600" />
+                  <p className="text-sm">You haven't created any playlists yet.</p>
+                  <button 
+                    onClick={() => {
+                      setTrackToAddPlaylist(null);
+                      setSidebarNav('playlists');
+                      // Wait a tick before showing the create prompt
+                      setTimeout(() => setIsCreatingPlaylist(true), 100);
+                    }}
+                    className="mt-2 text-teal text-sm hover:underline cursor-pointer font-bold"
+                  >
+                    Create a Playlist
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
       
@@ -1267,7 +1366,7 @@ export const Home: React.FC = () => {
                               <div 
                                 key={track.id}
                                 onClick={() => handleSelectTrack(track)}
-                                className={`flex items-center gap-4 p-2 rounded-xl cursor-pointer group transition-colors ${isPlaying ? 'bg-white/10' : 'hover:bg-white/5'}`}
+                                className={`flex items-center gap-4 p-2 rounded-xl cursor-pointer group transition-colors ${activeTrackMenu === track.id ? 'z-30 relative' : ''} ${isPlaying ? 'bg-white/10' : 'hover:bg-white/5'}`}
                               >
                                 <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 relative shadow-md">
                                   <img src={track.coverUrl} className="w-full h-full object-cover" alt={track.title} />
@@ -1287,9 +1386,45 @@ export const Home: React.FC = () => {
                                   <span className={`text-sm font-bold truncate ${isPlaying ? 'text-white' : 'text-slate-200'}`}>{track.title}</span>
                                   <span className="text-xs text-slate-400 truncate">{track.album}</span>
                                 </div>
-                                <button className="p-2 opacity-0 group-hover:opacity-100 hover:bg-white/10 rounded-full transition-all text-slate-300">
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
-                                </button>
+                                <div className="relative">
+                                  <button 
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setActiveTrackMenu(activeTrackMenu === track.id ? null : track.id);
+                                    }}
+                                    className={`p-2 rounded-full transition-all text-slate-300 hover:bg-white/10 ${activeTrackMenu === track.id ? 'opacity-100 bg-white/10' : 'opacity-0 group-hover:opacity-100'}`}
+                                  >
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                                  </button>
+                                  
+                                  <AnimatePresence>
+                                    {activeTrackMenu === track.id && (
+                                      <motion.div
+                                        initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                        transition={{ duration: 0.15 }}
+                                        className="absolute right-0 top-full mt-1 w-48 rounded-xl bg-slate-900/95 backdrop-blur-md border border-white/10 shadow-2xl py-1.5 z-50 flex flex-col text-left"
+                                        onClick={(e) => e.stopPropagation()}
+                                      >
+                                        <button
+                                          onClick={(e) => handleAddToQueue(e, track)}
+                                          className="w-full px-3 py-2 text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 flex items-center gap-2 transition-colors text-left"
+                                        >
+                                          <PlusCircle className="w-3.5 h-3.5 text-teal" />
+                                          Add to Queue
+                                        </button>
+                                        <button
+                                          onClick={(e) => handleOpenPlaylistModal(e, track.id)}
+                                          className="w-full px-3 py-2 text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 flex items-center gap-2 transition-colors text-left"
+                                        >
+                                          <FolderPlus className="w-3.5 h-3.5 text-teal" />
+                                          Add to Playlist
+                                        </button>
+                                      </motion.div>
+                                    )}
+                                  </AnimatePresence>
+                                </div>
                               </div>
                             );
                           })}
@@ -1397,7 +1532,7 @@ export const Home: React.FC = () => {
                           <div 
                             key={track.id}
                             onClick={() => handleSelectTrack(track, albumTracks)}
-                            className={`flex items-center gap-4 p-3 rounded-xl cursor-pointer group transition-colors ${isPlaying ? 'bg-white/10' : 'hover:bg-white/5'}`}
+                            className={`flex items-center gap-4 p-3 rounded-xl cursor-pointer group transition-colors ${activeTrackMenu === track.id ? 'z-30 relative' : ''} ${isPlaying ? 'bg-white/10' : 'hover:bg-white/5'}`}
                           >
                             <div className="w-8 flex justify-center">
                               {isPlaying ? (
@@ -1418,9 +1553,45 @@ export const Home: React.FC = () => {
                             <div className="text-xs text-slate-500 font-mono w-12 text-right">
                               {track.duration}
                             </div>
-                            <button className="p-2 opacity-0 group-hover:opacity-100 hover:bg-white/10 rounded-full transition-all text-slate-300 ml-2">
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
-                            </button>
+                            <div className="relative ml-2">
+                              <button 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setActiveTrackMenu(activeTrackMenu === track.id ? null : track.id);
+                                }}
+                                className={`p-2 rounded-full transition-all text-slate-300 hover:bg-white/10 ${activeTrackMenu === track.id ? 'opacity-100 bg-white/10' : 'opacity-0 group-hover:opacity-100'}`}
+                              >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                              </button>
+                              
+                              <AnimatePresence>
+                                {activeTrackMenu === track.id && (
+                                  <motion.div
+                                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                    transition={{ duration: 0.15 }}
+                                    className="absolute right-0 top-full mt-1 w-48 rounded-xl bg-slate-900/95 backdrop-blur-md border border-white/10 shadow-2xl py-1.5 z-50 flex flex-col text-left"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <button
+                                      onClick={(e) => handleAddToQueue(e, track)}
+                                      className="w-full px-3 py-2 text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 flex items-center gap-2 transition-colors text-left"
+                                    >
+                                      <PlusCircle className="w-3.5 h-3.5 text-teal" />
+                                      Add to Queue
+                                    </button>
+                                    <button
+                                      onClick={(e) => handleOpenPlaylistModal(e, track.id)}
+                                      className="w-full px-3 py-2 text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 flex items-center gap-2 transition-colors text-left"
+                                    >
+                                      <FolderPlus className="w-3.5 h-3.5 text-teal" />
+                                      Add to Playlist
+                                    </button>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </div>
                           </div>
                         );
                       })}
@@ -1779,7 +1950,9 @@ export const Home: React.FC = () => {
                             data-delay={String((idx % 6) + 1)}
                             key={track.id}
                             onClick={() => handleSelectTrack(track)}
-                            className={`group relative rounded-2xl glass-panel p-3 cursor-pointer overflow-hidden transition-all duration-300 flex gap-3.5 border ${
+                            className={`group relative rounded-2xl glass-panel p-3 cursor-pointer transition-all duration-300 flex gap-3.5 border ${
+                              activeTrackMenu === track.id ? 'overflow-visible z-30' : 'overflow-hidden'
+                            } ${
                               isSelected 
                                 ? 'border-teal/45 shadow-[0_8px_30px_rgba(136, 13, 30,0.15)] bg-gradient-to-r from-teal/10 to-transparent' 
                                 : 'border-silver/8 hover:border-teal/30 hover:bg-teal/5 hover:shadow-[0_8px_25px_rgba(136, 13, 30,0.1)]'
@@ -1814,7 +1987,7 @@ export const Home: React.FC = () => {
                             </div>
 
                             {/* Action overlays (like / download / playlist add) */}
-                            <div className="flex flex-col items-end justify-between py-1 relative z-20">
+                            <div className="flex flex-col items-end justify-between py-0.5 relative z-20">
                               <button
                                 onClick={(e) => toggleLike(track.id, e)}
                                 className="text-slate-450 hover:text-rose-455 p-0.5 cursor-pointer"
@@ -1822,9 +1995,49 @@ export const Home: React.FC = () => {
                                 <Heart className={`w-3.5 h-3.5 ${isTrackLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
                               </button>
 
+                              <div className="relative my-0.5">
+                                <button 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setActiveTrackMenu(activeTrackMenu === track.id ? null : track.id);
+                                  }}
+                                  className={`p-0.5 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer ${activeTrackMenu === track.id ? 'bg-white/10 text-white' : ''}`}
+                                >
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                                </button>
+                                
+                                <AnimatePresence>
+                                  {activeTrackMenu === track.id && (
+                                    <motion.div
+                                      initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                                      exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                      transition={{ duration: 0.15 }}
+                                      className="absolute right-0 top-full mt-1 w-40 rounded-xl bg-slate-900/95 backdrop-blur-md border border-white/10 shadow-2xl py-1.5 z-50 flex flex-col text-left"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      <button
+                                        onClick={(e) => handleAddToQueue(e, track)}
+                                        className="w-full px-3 py-1.5 text-[11px] font-semibold text-slate-200 hover:text-white hover:bg-white/10 flex items-center gap-2 transition-colors text-left"
+                                      >
+                                        <PlusCircle className="w-3.5 h-3.5 text-teal" />
+                                        Add to Queue
+                                      </button>
+                                      <button
+                                        onClick={(e) => handleOpenPlaylistModal(e, track.id)}
+                                        className="w-full px-3 py-1.5 text-[11px] font-semibold text-slate-200 hover:text-white hover:bg-white/10 flex items-center gap-2 transition-colors text-left"
+                                      >
+                                        <FolderPlus className="w-3.5 h-3.5 text-teal" />
+                                        Add to Playlist
+                                      </button>
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+                              </div>
+
                               <div className="flex gap-1.5 items-center">
                                 {isDownloaded && (
-                                  <span className="text-[7.5px] font-mono text-emerald-450 uppercase tracking-wider font-bold">Offline</span>
+                                  <span className="text-[7px] font-mono text-emerald-450 uppercase tracking-wider font-bold">Offline</span>
                                 )}
                                 <button
                                   onClick={(e) => handleDownload(track.id, e)}

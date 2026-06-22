@@ -150,6 +150,15 @@ export const Home: React.FC = () => {
     setSelectedPlaylist(null);
   }, [sidebarNav]);
 
+  useEffect(() => {
+    const handleGlobalClick = () => {
+      setActiveTrackMenu(null);
+      setActivePlaylistMenu(null);
+    };
+    document.addEventListener('click', handleGlobalClick);
+    return () => document.removeEventListener('click', handleGlobalClick);
+  }, []);
+
   const moviePlots: Record<string, string> = {
     "Karuppu": "In a world where shadows dictate destiny, a reluctant hero must embrace the darkness to protect the light. Karuppu is an intense journey of power, betrayal, and ultimate redemption. The groundbreaking soundtrack elevates every moment of this epic saga.",
   };
@@ -455,13 +464,6 @@ export const Home: React.FC = () => {
       {/* Ambient background blobs (atmosphere) */}
       <div className="ambient-blob free" />
       <div className="ambient-blob premium" />
-
-      {activeTrackMenu && (
-        <div 
-          className="fixed inset-0 z-40 bg-transparent cursor-default" 
-          onClick={() => setActiveTrackMenu(null)}
-        />
-      )}
       
       {/* Dynamic blurred cover background */}
       <AnimatePresence>

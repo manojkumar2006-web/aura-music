@@ -63,6 +63,7 @@ interface MusicStore {
   updateProfile: (displayName: string, bio: string, avatarUrl: string) => void;
   updatePrivacy: (settings: Partial<PrivacySettings>) => void;
   incrementStats: (stat: 'play' | 'minute') => void;
+  fetchTracks: () => Promise<void>;
 }
 
 const getStoredUsers = (): UserProfile[] => {
@@ -303,7 +304,21 @@ const PRESET_TRACKS: Track[] = [
 ];
 
 export const useMusicStore = create<MusicStore>((set, get) => ({
-  tracks: PRESET_TRACKS,
+  tracks: PRESET_TRACKS, // Initial fallback tracks
+  
+  fetchTracks: async () => {
+    try {
+      const response = await fetch('/api/tracks');
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.length > 0) {
+          set({ tracks: data });
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch tracks from MongoDB API:', error);
+    }
+  },
   addTrack: (track: Track) => {
     set((state) => ({ tracks: [...state.tracks, track] }));
     get().logAnalyticsEvent(`Song registered: "${track.title}" by ${track.artist}`);

@@ -249,6 +249,14 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
     setPlaybackState('playing');
   };
 
+  const handlePlayFromQueue = (index: number) => {
+    const nextTrack = queue[index];
+    const newQueue = queue.slice(index + 1);
+    setCurrentTrack(nextTrack);
+    setQueue(newQueue);
+    setPlaybackState('playing');
+  };
+
   const handleScrub = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
     setCurrentTime(value);
@@ -571,7 +579,11 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
                 </div>
                 <div className="flex-1 overflow-y-auto custom-scroll p-1.5 flex flex-col gap-1">
                   {queue.map((track, idx) => (
-                    <div key={`${track.id}-${idx}`} className="flex items-center gap-3 p-1.5 hover:bg-white/5 rounded-xl group transition-colors">
+                    <div 
+                      key={`${track.id}-${idx}`} 
+                      onClick={() => handlePlayFromQueue(idx)}
+                      className="flex items-center gap-3 p-1.5 hover:bg-white/5 rounded-xl group transition-colors cursor-pointer"
+                    >
                       <img src={track.coverUrl} className="w-8 h-8 rounded-md object-cover shadow-md" alt={track.title} />
                       <div className="flex flex-col overflow-hidden flex-1">
                         <span className="text-[11px] font-bold text-slate-200 group-hover:text-white truncate">{track.title}</span>

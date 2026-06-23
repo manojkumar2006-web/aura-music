@@ -1284,33 +1284,33 @@ export const Home: React.FC = () => {
                     </h3>
 
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="glass-panel rounded-2xl p-4 border border-white/5 bg-black/20 flex flex-col gap-1 hover:border-teal/15 transition-all">
+                      <div className="glass-panel rounded-2xl p-4 border border-white/5 bg-black/20 flex flex-col gap-1 hover:border-teal/15 transition-all min-w-0">
                         <span className="text-[9px] font-mono text-ink-tertiary uppercase">Tracks Played</span>
-                        <span className="text-2xl font-black text-white font-display tracking-tight">
+                        <span className="text-2xl font-black text-white font-display tracking-tight truncate">
                           {currentUser.stats.tracksPlayed}
                         </span>
-                        <span className="text-[8px] text-ink-tertiary">All-time streams</span>
+                        <span className="text-[8px] text-ink-tertiary truncate">All-time streams</span>
                       </div>
-                      <div className="glass-panel rounded-2xl p-4 border border-white/5 bg-black/20 flex flex-col gap-1 hover:border-teal/15 transition-all">
+                      <div className="glass-panel rounded-2xl p-4 border border-white/5 bg-black/20 flex flex-col gap-1 hover:border-teal/15 transition-all min-w-0">
                         <span className="text-[9px] font-mono text-ink-tertiary uppercase">Listening Time</span>
-                        <span className="text-2xl font-black text-teal font-display tracking-tight">
+                        <span className="text-2xl font-black text-white font-display tracking-tight truncate">
                           {currentUser.stats.minutesListened} <span className="text-xs font-normal text-ink-secondary">min</span>
                         </span>
-                        <span className="text-[8px] text-ink-tertiary">Active playback</span>
+                        <span className="text-[8px] text-ink-tertiary truncate">Active playback</span>
                       </div>
-                      <div className="glass-panel rounded-2xl p-4 border border-white/5 bg-black/20 flex flex-col gap-1 hover:border-teal/15 transition-all">
+                      <div className="glass-panel rounded-2xl p-4 border border-white/5 bg-black/20 flex flex-col gap-1 hover:border-teal/15 transition-all min-w-0">
                         <span className="text-[9px] font-mono text-ink-tertiary uppercase">Favorite Genre</span>
                         <span className="text-xs font-extrabold text-white truncate font-sans tracking-wide mt-1">
                           {currentUser.stats.topGenre || 'None'}
                         </span>
-                        <span className="text-[8px] text-ink-tertiary mt-auto">Acoustic signature</span>
+                        <span className="text-[8px] text-ink-tertiary mt-auto truncate">Acoustic signature</span>
                       </div>
-                      <div className="glass-panel rounded-2xl p-4 border border-white/5 bg-black/20 flex flex-col gap-1 hover:border-teal/15 transition-all">
+                      <div className="glass-panel rounded-2xl p-4 border border-white/5 bg-black/20 flex flex-col gap-1 hover:border-teal/15 transition-all min-w-0">
                         <span className="text-[9px] font-mono text-ink-tertiary uppercase">Fav Artist</span>
-                        <span className="text-xs font-extrabold text-emerald-400 truncate font-sans tracking-wide mt-1">
+                        <span className="text-xs font-extrabold text-white truncate font-sans tracking-wide mt-1">
                           {currentUser.stats.favArtist || 'None'}
                         </span>
-                        <span className="text-[8px] text-ink-tertiary mt-auto">Most streamed</span>
+                        <span className="text-[8px] text-ink-tertiary mt-auto truncate">Most streamed</span>
                       </div>
                     </div>
 

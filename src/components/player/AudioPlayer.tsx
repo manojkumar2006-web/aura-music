@@ -59,12 +59,17 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   
   const [showQueue, setShowQueue] = useState(false);
 
+  const lastPlayedTrackRef = useRef<string | null>(null);
+
   // Trigger play stat update when currentTrack changes during active play
   useEffect(() => {
     if (currentTrack && playbackState === 'playing') {
-      incrementStats('play');
+      if (lastPlayedTrackRef.current !== currentTrack.id) {
+        incrementStats('play');
+        lastPlayedTrackRef.current = currentTrack.id;
+      }
     }
-  }, [currentTrack, playbackState]);
+  }, [currentTrack, playbackState, incrementStats]);
 
   // Trigger minutes listened increment
   useEffect(() => {

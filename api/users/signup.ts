@@ -11,7 +11,7 @@ import nodemailer from 'nodemailer';
 // Use a simple random token generator instead of uuid to minimize dependencies in Vercel
 const generateToken = () => Date.now().toString(36) + Math.random().toString(36).substring(2);
 
-async function sendVerificationEmail(toEmail: string, token: string, displayName: string): Promise<boolean> {
+async function sendVerificationEmail(toEmail: string, token: string, displayName: string, appUrl: string): Promise<boolean> {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -20,7 +20,6 @@ async function sendVerificationEmail(toEmail: string, token: string, displayName
     },
   });
 
-  const appUrl = process.env.APP_URL || 'http://localhost:3000';
   const verifyLink = `${appUrl}/api/users/verify-email?token=${token}`;
 
   const mailOptions = {
@@ -127,7 +126,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     
     let emailSent = false;
     try {
-      emailSent = await sendVerificationEmail(email.toLowerCase(), verificationToken, username.trim());
+      const host = req.headers['x-forwarded-host'] || req.headers.host;
+      const protocol = req.headers['x-forwarded-proto'] || 'http';
+      const appUrl = `${protocol}://${host}`;
+      emailSent = await sendVerificationEmail(email.toLowerCase(), verificationToken, username.trim(), appUrl);
     } catch (e) {
       console.error('Failed to send email:', e);
     }

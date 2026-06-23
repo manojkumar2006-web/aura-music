@@ -6,7 +6,48 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { MongoClient } from 'mongodb';
 import bcrypt from 'bcryptjs';
-import { sendVerificationEmail } from '../../lib/email';
+import nodemailer from 'nodemailer';
+
+// Use a simple random token generator instead of uuid to minimize dependencies in Vercel
+const generateToken = () => Date.now().toString(36) + Math.random().toString(36).substring(2);
+
+async function sendVerificationEmail(toEmail: string, token: string, displayName: string): Promise<boolean> {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_APP_PASSWORD,
+    },
+  });
+
+  const appUrl = process.env.APP_URL || 'http://localhost:3000';
+  const verifyLink = `${appUrl}/api/users/verify-email?token=${token}`;
+
+  const mailOptions = {
+    from: `"AURA Music" <${process.env.GMAIL_USER}>`,
+    to: toEmail,
+    subject: '🎵 Verify your AURA Music account',
+    html: `
+      <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 520px; margin: 0 auto; background: linear-gradient(135deg, #0a0e27 0%, #121638 100%); border-radius: 24px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08);">
+        <div style="padding: 40px 32px 24px; text-align: center;">
+          <h1 style="color: #ffffff; font-size: 28px; font-weight: 800; margin: 0 0 4px; letter-spacing: 6px; text-transform: uppercase;">AURA</h1>
+        </div>
+        <div style="padding: 0 32px 32px;">
+          <h2 style="color: #ffffff; font-size: 20px; font-weight: 700; margin: 0 0 8px;">Welcome, ${displayName}! 👋</h2>
+          <p style="color: rgba(255,255,255,0.6); font-size: 14px; line-height: 1.6; margin: 0 0 28px;">
+            You're almost there. Click the button below to verify your email address.
+          </p>
+          <div style="text-align: center; margin-bottom: 28px;">
+            <a href="${verifyLink}" style="display: inline-block; background: linear-gradient(135deg, #2dd4bf 0%, #3b82f6 100%); color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 100px; font-weight: 600; font-size: 14px; letter-spacing: 1px; text-transform: uppercase;">Verify Email</a>
+          </div>
+        </div>
+      </div>
+    `,
+  };
+
+  await transporter.sendMail(mailOptions);
+  return true;
+}
 
 let cachedClient: MongoClient | null = null;
 

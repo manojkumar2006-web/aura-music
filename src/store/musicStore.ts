@@ -56,6 +56,7 @@ interface MusicStore {
   logOut: () => void;
   updateProfile: (displayName: string, bio: string, avatarUrl: string) => void;
   updatePrivacy: (settings: Partial<PrivacySettings>) => void;
+  completeOnboarding: (languages: string[], favoriteDirectors: string[]) => Promise<{ success: boolean; error?: string }>;
   incrementStats: (stat: 'play' | 'minute') => void;
   fetchTracks: () => Promise<void>;
 
@@ -562,6 +563,33 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
     get().logAnalyticsEvent(`Privacy settings adjusted`);
   },
 
+  completeOnboarding: async (languages, favoriteDirectors) => {
+    const currentUser = get().currentUser;
+    if (!currentUser) return { success: false, error: 'Not logged in' };
+    
+    set({ authLoading: true });
+    try {
+      const response = await fetch('/api/users/onboarding', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: currentUser.email, languages, favoriteDirectors })
+      });
+      
+      const data = await response.json();
+      if (!response.ok) {
+        set({ authLoading: false });
+        return { success: false, error: data.error || 'Failed to complete onboarding' };
+      }
+      
+      set({ currentUser: data, authLoading: false });
+      localStorage.setItem('aura_current_user', JSON.stringify(data));
+      return { success: true };
+    } catch (e: any) {
+      set({ authLoading: false });
+      return { success: false, error: e.message };
+    }
+  },
+
   incrementStats: (stat) => {
     const currentUser = get().currentUser;
     if (!currentUser) return;
@@ -588,4 +616,3 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
     localStorage.setItem('aura_current_user', JSON.stringify(updatedUser));
   }
 }));
-

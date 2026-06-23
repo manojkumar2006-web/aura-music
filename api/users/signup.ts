@@ -119,7 +119,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       tier: 'Free',
       stats: { tracksPlayed: 0, minutesListened: 0, topGenre: 'Various', favArtist: 'Various' },
       privacy: { isPublicProfile: true, showListeningActivity: true, playlistsPrivateByDefault: false },
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      onboardingComplete: false,
+      languages: [],
+      favoriteDirectors: []
     };
 
     await usersCol.insertOne(newUser);

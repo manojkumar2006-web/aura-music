@@ -52,4 +52,7 @@ export interface UserProfile {
   stats: ListeningStats;
   privacy: PrivacySettings;
   createdAt: string;
+  onboardingComplete?: boolean;
+  languages?: string[];
+  favoriteDirectors?: string[];
 }

@@ -56,6 +56,7 @@ import { useMusicStore } from '../store/musicStore';
 import { AudioPlayer } from '../components/player/AudioPlayer';
 import { Track, SubscriptionTier } from '../types';
 import { getUserLocation, getWeather, getRegionIndustry } from '../services/locationService';
+import { OnboardingWizard } from '../components/OnboardingWizard';
 
 const COMMUNITY_PLAYLISTS = [
   { name: 'Synthwave Nights', author: 'NeonRider', coverUrl: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=400', trackIds: ['track-1', 'track-2', 'track-3'] },
@@ -382,14 +383,15 @@ export const Home: React.FC = () => {
   };
 
   const filteredTracks = useMemo(() => tracks.filter((track) => {
-    const query = searchQuery.toLowerCase().trim();
+    const query = searchQueryLocal.toLowerCase().trim();
     if (!query) return true;
     return (
       track.title.toLowerCase().includes(query) ||
       track.artist.toLowerCase().includes(query) ||
-      track.album.toLowerCase().includes(query)
+      track.album?.toLowerCase().includes(query) ||
+      track.musicDirector?.toLowerCase().includes(query)
     );
-  });
+  }), [tracks, searchQueryLocal]);
 
   const handleCreatePlaylist = (e: React.FormEvent) => {
     e.preventDefault();
@@ -774,6 +776,9 @@ export const Home: React.FC = () => {
 
   return (
     <div className={`h-screen overflow-hidden ${activeThemeStyle.bg} text-ink-primary flex flex-col relative select-none transition-colors duration-500 star-field`}>
+      {currentUser && currentUser.onboardingComplete === false && (
+        <OnboardingWizard />
+      )}
       {/* Ambient background blobs (atmosphere) */}
       <div className="ambient-blob free" />
       <div className="ambient-blob premium" />
@@ -2151,12 +2156,12 @@ export const Home: React.FC = () => {
                   <div className="flex flex-col gap-4">
                     <div className="flex justify-between items-end pr-2">
                       <h2 className="font-display font-bold text-xl text-white tracking-wider flex items-center gap-2">
-                        <Heart className="w-5 h-5 text-teal fill-teal" /> Liked Songs
+                        <Heart className="w-5 h-5 text-teal fill-teal" /> Liked Songs & Favorites
                       </h2>
                       <span onClick={() => setSidebarNav('songs')} className="text-xs text-teal cursor-pointer hover:underline font-mono">View All</span>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {tracks.filter(t => likedTracks[t.id]).slice(0, 6).map(track => (
+                      {tracks.filter(t => likedTracks[t.id] || (currentUser?.favoriteDirectors?.includes(t.musicDirector || ''))).slice(0, 6).map(track => (
                         <div key={track.id} onClick={() => handleSelectTrack(track)} className="glass-panel p-2 rounded-xl flex items-center gap-3 cursor-pointer hover:bg-white/5 transition-all border border-transparent hover:border-white/10 group">
                           <img src={track.coverUrl} className="w-12 h-12 rounded-lg object-cover shadow-md" alt={track.title} />
                           <div className="flex flex-col flex-1 min-w-0">

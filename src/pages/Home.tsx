@@ -628,8 +628,7 @@ export const Home: React.FC = () => {
                     setSignupEmail('');
                     setSignupPassword('');
                     setSignupConfirmPassword('');
-                    setActiveView('profile');
-                    setIsEditingProfile(true);
+                    setAuthTab('login');
                   } else {
                     setAuthError(res.error || 'Failed to sign up.');
                     if (res.passwordErrors) setPasswordErrors(res.passwordErrors);

@@ -441,30 +441,8 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
         set({ authLoading: false });
         return { success: false, error: data.error, passwordErrors: data.passwordErrors };
       }
-      
-      const user: UserProfile = {
-        id: data.id || data._id || 'new-user-id',
-        username: data.displayName || data.username,
-        email: data.email,
-        avatarUrl: data.avatarUrl,
-        bio: data.bio,
-        tier: data.tier || 'Free',
-        stats: data.stats || {
-          tracksPlayed: 0,
-          minutesListened: 0,
-          topGenre: 'Various',
-          favArtist: 'Various'
-        },
-        privacy: data.privacy || {
-          isPublicProfile: true,
-          showListeningActivity: true,
-          playlistsPrivateByDefault: false
-        },
-        createdAt: data.createdAt || new Date().toISOString()
-      };
-      
-      localStorage.setItem('aura_current_user', JSON.stringify(user));
-      set({ currentUser: user, authLoading: false });
+      // Do NOT automatically log them in. They must verify email first.
+      set({ authLoading: false });
       
       get().logAnalyticsEvent(`Account created: ${username}. Verification email sent to ${email}.`);
       return { success: true };

@@ -94,11 +94,11 @@ function getVerificationPage(success: boolean, message: string): string {
 </head>
 <body>
   <div class="card">
-    <div class="icon \${success ? 'success' : 'error'}">\${success ? '✅' : '❌'}</div>
-    <h1>\${success ? 'Verified!' : 'Error'}</h1>
-    <p>\${message}</p>
+    <div class="icon ${success ? 'success' : 'error'}">${success ? '✅' : '❌'}</div>
+    <h1>${success ? 'Verified!' : 'Error'}</h1>
+    <p>${message}</p>
     <a href="/" class="btn">Open AURA</a>
-    <div class="brand">AURA Music © \${new Date().getFullYear()}</div>
+    <div class="brand">AURA Music © ${new Date().getFullYear()}</div>
   </div>
 </body>
 </html>`;

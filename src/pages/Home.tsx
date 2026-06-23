@@ -117,6 +117,7 @@ export const Home: React.FC = () => {
   const [loginPassword, setLoginPassword] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
+  const [signupConfirmPassword, setSignupConfirmPassword] = useState('');
   const [signupUsername, setSignupUsername] = useState('');
   const [signupAvatarUrl, setSignupAvatarUrl] = useState('');
   const [authError, setAuthError] = useState<string | null>(null);
@@ -461,192 +462,286 @@ export const Home: React.FC = () => {
   // ==================== AUTHENTICATION GATE ====================
   if (!currentUser) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-[#0a0e27] text-white relative overflow-hidden font-sans">
-        {/* Ambient background for auth */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-          <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-teal/20 rounded-full blur-[120px] mix-blend-screen" />
-          <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-ocean/20 rounded-full blur-[150px] mix-blend-screen" />
+      <div className="h-screen w-full flex bg-[#050714] text-white relative overflow-hidden font-sans">
+        {/* Animated Background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+          <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[70%] bg-teal/10 rounded-full blur-[150px] mix-blend-screen animate-pulse-slow" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-indigo-500/10 rounded-full blur-[150px] mix-blend-screen" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-ocean/5 rounded-full blur-[100px] mix-blend-screen" />
+          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-[0.03]" />
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative w-full max-w-md bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 shadow-2xl z-10"
-        >
-          <div className="flex justify-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-ocean to-teal rounded-full flex items-center justify-center shadow-lg shadow-teal/20">
-              <span className="text-3xl">🎵</span>
-            </div>
-          </div>
-
-          <h1 className="text-center text-3xl font-extrabold tracking-widest uppercase mb-1">AURA</h1>
-          <p className="text-center text-ink-secondary text-xs uppercase tracking-[0.2em] mb-8">Music Platform</p>
-
-          <div className="flex border-b border-white/10 mb-6">
-            <button
-              onClick={() => { setAuthTab('login'); setAuthError(null); setAuthSuccess(null); }}
-              className={`flex-1 pb-3 text-xs font-bold uppercase tracking-wider transition-colors ${authTab === 'login' ? 'text-teal border-b-2 border-teal' : 'text-ink-tertiary hover:text-white'}`}
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => { setAuthTab('signup'); setAuthError(null); setAuthSuccess(null); }}
-              className={`flex-1 pb-3 text-xs font-bold uppercase tracking-wider transition-colors ${authTab === 'signup' ? 'text-teal border-b-2 border-teal' : 'text-ink-tertiary hover:text-white'}`}
-            >
-              Sign Up
-            </button>
-          </div>
-
-          {authError && (
-            <div className="p-3 mb-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
-              <span>{authError}</span>
-            </div>
-          )}
-
-          {authSuccess && (
-            <div className="p-3 mb-4 rounded-xl bg-teal/10 border border-teal/20 text-teal text-xs font-semibold flex items-center gap-2">
-              <Shield className="w-4 h-4 flex-shrink-0" />
-              <span>{authSuccess}</span>
-            </div>
-          )}
-
-          {authTab === 'login' ? (
-            <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                setAuthError(null);
-                const res = await logIn(loginEmail, loginPassword);
-                if (!res.success) setAuthError(res.error || 'Failed to sign in.');
-              }}
-              className="flex flex-col gap-4"
-            >
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] uppercase font-mono text-ink-tertiary">Email</label>
-                <input
-                  type="email"
-                  value={loginEmail}
-                  onChange={(e) => setLoginEmail(e.target.value)}
-                  placeholder="name@domain.com"
-                  required
-                  className="bg-black/40 border border-white/10 rounded-xl py-2.5 px-4 text-sm text-white placeholder-white/20 focus:outline-none focus:border-teal/50 transition-colors"
-                />
+        {/* Left Side: Branding / Immersive Visuals (Hidden on small screens) */}
+        <div className="hidden lg:flex flex-col justify-center items-center w-1/2 relative z-10 border-r border-white/5 bg-gradient-to-br from-black/40 to-transparent p-12">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="flex flex-col items-center justify-center gap-8 relative"
+          >
+            {/* Pulsing Aura Logo */}
+            <div className="relative">
+              <div className="absolute inset-0 bg-teal/30 blur-[40px] rounded-full animate-pulse-slow" />
+              <div className="w-32 h-32 bg-gradient-to-br from-[#00f2fe] to-[#4facfe] rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(79,172,254,0.4)] relative z-10">
+                <span className="text-6xl text-white drop-shadow-xl">✨</span>
               </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] uppercase font-mono text-ink-tertiary">Password</label>
-                <input
-                  type="password"
-                  value={loginPassword}
-                  onChange={(e) => setLoginPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  className="bg-black/40 border border-white/10 rounded-xl py-2.5 px-4 text-sm text-white placeholder-white/20 focus:outline-none focus:border-teal/50 transition-colors"
-                />
+            </div>
+            <div className="text-center mt-6">
+              <h1 className="text-6xl font-black tracking-[0.2em] uppercase font-display bg-clip-text text-transparent bg-gradient-to-r from-white via-teal-100 to-teal">AURA</h1>
+              <p className="mt-4 text-sm font-mono tracking-widest text-teal/80 uppercase">The Future of Audio</p>
+            </div>
+            
+            <div className="max-w-md mt-12 p-6 glass-panel rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md shadow-2xl relative overflow-hidden group">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-teal to-transparent opacity-50 group-hover:opacity-100 transition-opacity" />
+              <p className="text-slate-300 text-sm leading-relaxed text-center font-sans">
+                "Experience music like never before. High-fidelity audio, immersive soundscapes, and an interconnected global community."
+              </p>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Right Side: Auth Form */}
+        <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 z-10 relative">
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="w-full max-w-md bg-black/40 backdrop-blur-3xl border border-white/10 rounded-3xl p-8 sm:p-10 shadow-[0_0_50px_rgba(0,0,0,0.5)] relative overflow-hidden"
+          >
+            {/* Top decorative glow */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-gradient-to-r from-transparent via-teal/50 to-transparent" />
+
+            <div className="lg:hidden flex flex-col items-center mb-8">
+              <div className="w-16 h-16 bg-gradient-to-br from-ocean to-teal rounded-full flex items-center justify-center shadow-lg shadow-teal/20 mb-4">
+                <span className="text-3xl">✨</span>
               </div>
+              <h1 className="text-2xl font-black tracking-widest uppercase text-white">AURA</h1>
+            </div>
+
+            <div className="flex border-b border-white/10 mb-8 relative">
               <button
-                type="submit"
-                disabled={authLoading}
-                className="w-full mt-4 py-3 bg-gradient-to-r from-ocean to-teal text-[#0a0e27] font-bold text-sm uppercase tracking-widest rounded-xl hover:shadow-[0_0_20px_rgba(45,212,191,0.3)] transition-all disabled:opacity-50"
+                onClick={() => { setAuthTab('login'); setAuthError(null); setAuthSuccess(null); }}
+                className={`flex-1 pb-4 text-xs font-bold uppercase tracking-widest transition-all ${authTab === 'login' ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}
               >
-                {authLoading ? 'Authenticating...' : 'Enter AURA'}
+                Sign In
               </button>
-            </form>
-          ) : (
-            <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                setAuthError(null);
-                setAuthSuccess(null);
-                setPasswordErrors([]);
-                const res = await signUp(signupUsername, signupEmail, signupPassword, signupAvatarUrl);
-                if (res.success) {
-                  setAuthSuccess('Account created! Please check your email to verify your account.');
-                  setSignupUsername('');
-                  setSignupEmail('');
-                  setSignupPassword('');
-                  setActiveView('profile');
-                  setIsEditingProfile(true);
-                } else {
-                  setAuthError(res.error || 'Failed to sign up.');
-                  if (res.passwordErrors) setPasswordErrors(res.passwordErrors);
-                }
-              }}
-              className="flex flex-col gap-4"
-            >
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] uppercase font-mono text-ink-tertiary">Username</label>
-                <input
-                  type="text"
-                  value={signupUsername}
-                  onChange={(e) => setSignupUsername(e.target.value)}
-                  placeholder="aura_fan_99"
-                  required
-                  className="bg-black/40 border border-white/10 rounded-xl py-2.5 px-4 text-sm text-white placeholder-white/20 focus:outline-none focus:border-teal/50 transition-colors"
-                />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] uppercase font-mono text-ink-tertiary">Email</label>
-                <input
-                  type="email"
-                  value={signupEmail}
-                  onChange={(e) => setSignupEmail(e.target.value)}
-                  placeholder="name@domain.com"
-                  required
-                  className="bg-black/40 border border-white/10 rounded-xl py-2.5 px-4 text-sm text-white placeholder-white/20 focus:outline-none focus:border-teal/50 transition-colors"
-                />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] uppercase font-mono text-ink-tertiary">Password</label>
-                <input
-                  type="password"
-                  value={signupPassword}
-                  onChange={(e) => setSignupPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  className="bg-black/40 border border-white/10 rounded-xl py-2.5 px-4 text-sm text-white placeholder-white/20 focus:outline-none focus:border-teal/50 transition-colors"
-                />
-                
-                {/* Password Strength Indicators */}
-                <div className="flex flex-col gap-1 mt-1 px-1">
-                  <div className="flex items-center gap-2 text-[9px] font-mono">
-                    <span className={signupPassword.length >= 10 ? 'text-teal' : 'text-ink-tertiary'}>
-                      {signupPassword.length >= 10 ? '✓' : '○'} 10+ characters
-                    </span>
+              <button
+                onClick={() => { setAuthTab('signup'); setAuthError(null); setAuthSuccess(null); setPasswordErrors([]); }}
+                className={`flex-1 pb-4 text-xs font-bold uppercase tracking-widest transition-all ${authTab === 'signup' ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}
+              >
+                Sign Up
+              </button>
+              {/* Animated active indicator */}
+              <div 
+                className="absolute bottom-[-1px] h-[2px] bg-teal w-1/2 transition-transform duration-300 shadow-[0_0_10px_rgba(45,212,191,0.8)]"
+                style={{ transform: authTab === 'login' ? 'translateX(0%)' : 'translateX(100%)' }}
+              />
+            </div>
+
+            <AnimatePresence mode="wait">
+              {authError && (
+                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="p-3 mb-6 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                  <span>{authError}</span>
+                </motion.div>
+              )}
+
+              {authSuccess && (
+                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="p-3 mb-6 rounded-xl bg-teal/10 border border-teal/20 text-teal-400 text-xs font-semibold flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 flex-shrink-0" />
+                  <span>{authSuccess}</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {authTab === 'login' ? (
+              <motion.form
+                key="login-form"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  setAuthError(null);
+                  const res = await logIn(loginEmail, loginPassword);
+                  if (!res.success) setAuthError(res.error || 'Failed to sign in.');
+                }}
+                className="flex flex-col gap-5"
+              >
+                <div className="flex flex-col gap-2 relative group">
+                  <label className="text-[10px] uppercase font-mono text-slate-400 pl-1">Email Address</label>
+                  <div className="relative flex items-center">
+                    <Mail className="absolute left-4 w-4 h-4 text-slate-500 group-focus-within:text-teal transition-colors" />
+                    <input
+                      type="email"
+                      value={loginEmail}
+                      onChange={(e) => setLoginEmail(e.target.value)}
+                      placeholder="name@domain.com"
+                      required
+                      className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-teal/50 focus:bg-white/10 transition-all"
+                    />
                   </div>
-                  <div className="flex items-center gap-2 text-[9px] font-mono">
-                    <span className={/[A-Z]/.test(signupPassword) ? 'text-teal' : 'text-ink-tertiary'}>
-                      {/[A-Z]/.test(signupPassword) ? '✓' : '○'} Uppercase letter
-                    </span>
+                </div>
+                <div className="flex flex-col gap-2 relative group">
+                  <label className="text-[10px] uppercase font-mono text-slate-400 pl-1">Password</label>
+                  <div className="relative flex items-center">
+                    <Lock className="absolute left-4 w-4 h-4 text-slate-500 group-focus-within:text-teal transition-colors" />
+                    <input
+                      type="password"
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      placeholder="••••••••"
+                      required
+                      className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-teal/50 focus:bg-white/10 transition-all"
+                    />
                   </div>
-                  <div className="flex items-center gap-2 text-[9px] font-mono">
-                    <span className={/[0-9]/.test(signupPassword) ? 'text-teal' : 'text-ink-tertiary'}>
-                      {/[0-9]/.test(signupPassword) ? '✓' : '○'} Number
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-[9px] font-mono">
-                    <span className={/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(signupPassword) ? 'text-teal' : 'text-ink-tertiary'}>
-                      {/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(signupPassword) ? '✓' : '○'} Special character
-                    </span>
+                </div>
+                <button
+                  type="submit"
+                  disabled={authLoading}
+                  className="w-full mt-6 py-3.5 bg-gradient-to-r from-teal to-ocean text-[#050714] font-black text-xs uppercase tracking-widest rounded-xl hover:shadow-[0_0_25px_rgba(45,212,191,0.4)] transition-all disabled:opacity-50 flex justify-center items-center gap-2 group"
+                >
+                  {authLoading ? 'Authenticating...' : 'Enter AURA'}
+                  {!authLoading && <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />}
+                </button>
+              </motion.form>
+            ) : (
+              <motion.form
+                key="signup-form"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  setAuthError(null);
+                  setAuthSuccess(null);
+                  setPasswordErrors([]);
+
+                  if (signupPassword !== signupConfirmPassword) {
+                    setAuthError('Passwords do not match.');
+                    return;
+                  }
+
+                  const res = await signUp(signupUsername, signupEmail, signupPassword, signupAvatarUrl);
+                  if (res.success) {
+                    setAuthSuccess('Account created! Please check your email to verify your account.');
+                    setSignupUsername('');
+                    setSignupEmail('');
+                    setSignupPassword('');
+                    setSignupConfirmPassword('');
+                    setActiveView('profile');
+                    setIsEditingProfile(true);
+                  } else {
+                    setAuthError(res.error || 'Failed to sign up.');
+                    if (res.passwordErrors) setPasswordErrors(res.passwordErrors);
+                  }
+                }}
+                className="flex flex-col gap-4"
+              >
+                <div className="flex flex-col gap-1.5 relative group">
+                  <label className="text-[10px] uppercase font-mono text-slate-400 pl-1">Username</label>
+                  <div className="relative flex items-center">
+                    <User className="absolute left-4 w-4 h-4 text-slate-500 group-focus-within:text-teal transition-colors" />
+                    <input
+                      type="text"
+                      value={signupUsername}
+                      onChange={(e) => setSignupUsername(e.target.value)}
+                      placeholder="aura_fan_99"
+                      required
+                      className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-teal/50 focus:bg-white/10 transition-all"
+                    />
                   </div>
                 </div>
 
-                {passwordErrors.length > 0 && (
-                  <div className="mt-2 flex flex-col gap-1 text-[10px] text-red-400">
-                    {passwordErrors.map((err, i) => <span key={i}>• {err}</span>)}
+                <div className="flex flex-col gap-1.5 relative group">
+                  <label className="text-[10px] uppercase font-mono text-slate-400 pl-1">Email</label>
+                  <div className="relative flex items-center">
+                    <Mail className="absolute left-4 w-4 h-4 text-slate-500 group-focus-within:text-teal transition-colors" />
+                    <input
+                      type="email"
+                      value={signupEmail}
+                      onChange={(e) => setSignupEmail(e.target.value)}
+                      placeholder="name@domain.com"
+                      required
+                      className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-teal/50 focus:bg-white/10 transition-all"
+                    />
                   </div>
-                )}
-              </div>
-              
-              <button
-                type="submit"
-                disabled={authLoading}
-                className="w-full mt-4 py-3 bg-gradient-to-r from-ocean to-teal text-[#0a0e27] font-bold text-sm uppercase tracking-widest rounded-xl hover:shadow-[0_0_20px_rgba(45,212,191,0.3)] transition-all disabled:opacity-50"
-              >
-                {authLoading ? 'Creating Account...' : 'Sign Up'}
-              </button>
-            </form>
-          )}
-        </motion.div>
+                </div>
+
+                <div className="flex flex-col gap-1.5 relative group">
+                  <label className="text-[10px] uppercase font-mono text-slate-400 pl-1">Password</label>
+                  <div className="relative flex items-center">
+                    <Key className="absolute left-4 w-4 h-4 text-slate-500 group-focus-within:text-teal transition-colors" />
+                    <input
+                      type="password"
+                      value={signupPassword}
+                      onChange={(e) => setSignupPassword(e.target.value)}
+                      placeholder="••••••••"
+                      required
+                      className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-teal/50 focus:bg-white/10 transition-all"
+                    />
+                  </div>
+                  
+                  {/* Password Strength Indicators */}
+                  <div className="flex flex-col gap-1 mt-1 px-1 bg-black/20 p-2 rounded-lg border border-white/5">
+                    <div className="flex items-center gap-2 text-[9px] font-mono">
+                      <span className={signupPassword.length >= 10 ? 'text-teal' : 'text-slate-500'}>
+                        {signupPassword.length >= 10 ? '✓' : '○'} 10+ characters
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-[9px] font-mono">
+                      <span className={/[A-Z]/.test(signupPassword) ? 'text-teal' : 'text-slate-500'}>
+                        {/[A-Z]/.test(signupPassword) ? '✓' : '○'} Uppercase letter
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-[9px] font-mono">
+                      <span className={/[0-9]/.test(signupPassword) ? 'text-teal' : 'text-slate-500'}>
+                        {/[0-9]/.test(signupPassword) ? '✓' : '○'} Number
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-[9px] font-mono">
+                      <span className={/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(signupPassword) ? 'text-teal' : 'text-slate-500'}>
+                        {/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(signupPassword) ? '✓' : '○'} Special character
+                      </span>
+                    </div>
+                  </div>
+
+                  {passwordErrors.length > 0 && (
+                    <div className="mt-1 flex flex-col gap-1 text-[10px] text-red-400 bg-red-500/10 p-2 rounded-lg border border-red-500/20">
+                      {passwordErrors.map((err, i) => <span key={i}>• {err}</span>)}
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-1.5 relative group mt-2">
+                  <label className="text-[10px] uppercase font-mono text-slate-400 pl-1">Confirm Password</label>
+                  <div className="relative flex items-center">
+                    <Shield className="absolute left-4 w-4 h-4 text-slate-500 group-focus-within:text-teal transition-colors" />
+                    <input
+                      type="password"
+                      value={signupConfirmPassword}
+                      onChange={(e) => setSignupConfirmPassword(e.target.value)}
+                      placeholder="••••••••"
+                      required
+                      className={`w-full bg-white/5 border ${signupConfirmPassword && signupPassword !== signupConfirmPassword ? 'border-red-500/50' : 'border-white/10'} rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-teal/50 focus:bg-white/10 transition-all`}
+                    />
+                  </div>
+                  {signupConfirmPassword && signupPassword !== signupConfirmPassword && (
+                    <span className="text-[10px] text-red-400 pl-1">Passwords do not match</span>
+                  )}
+                </div>
+                
+                <button
+                  type="submit"
+                  disabled={authLoading || (signupConfirmPassword !== '' && signupPassword !== signupConfirmPassword)}
+                  className="w-full mt-4 py-3.5 bg-gradient-to-r from-teal to-ocean text-[#050714] font-black text-xs uppercase tracking-widest rounded-xl hover:shadow-[0_0_25px_rgba(45,212,191,0.4)] transition-all disabled:opacity-50 flex justify-center items-center gap-2 group"
+                >
+                  {authLoading ? 'Creating Account...' : 'Join AURA'}
+                  {!authLoading && <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />}
+                </button>
+              </motion.form>
+            )}
+          </motion.div>
+        </div>
       </div>
     );
   }

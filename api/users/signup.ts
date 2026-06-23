@@ -95,8 +95,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const { password: _, verificationToken: __, usernameLower: ___, ...safeUser } = newUser;
     res.status(201).json({ ...safeUser, emailSent });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Signup error:', error);
-    res.status(500).json({ error: 'Failed to create account' });
+    res.status(500).json({ error: error.message || 'Failed to create account' });
   }
 }

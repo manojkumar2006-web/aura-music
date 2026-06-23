@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Music,
@@ -50,7 +50,8 @@ import {
   Star,
   MoreVertical,
   Trash2,
-  Edit3
+  Edit3,
+  BarChart2
 } from 'lucide-react';
 import { useMusicStore } from '../store/musicStore';
 import { AudioPlayer } from '../components/player/AudioPlayer';
@@ -1599,7 +1600,7 @@ export const Home: React.FC = () => {
                 <h3 className="text-base font-bold text-white uppercase tracking-wider">Access Restricted</h3>
                 <p className="text-xs text-ink-secondary">Please sign up or log in to view your listening metrics.</p>
                 <button
-                  onClick={() => setShowAuthModal(true)}
+                  onClick={() => alert("Please log in using the menu on the bottom left")}
                   className="mt-2 py-2 px-5 bg-gradient-to-r from-ocean to-teal text-ink-primary font-bold text-xs uppercase rounded-xl hover:scale-102 transition-transform cursor-pointer"
                 >
                   Authenticate
@@ -1962,7 +1963,7 @@ export const Home: React.FC = () => {
                         <h2 className="text-3xl md:text-4xl font-black text-white font-display tracking-wide">{selectedPlaylist} <span className="text-xl text-slate-400 font-sans tracking-normal font-normal">(Playlist)</span></h2>
                         <div className="flex flex-col gap-1">
                           <span className="text-lg font-bold text-teal w-max">
-                            {user?.username || 'You'}
+                            {currentUser?.username || 'You'}
                           </span>
                           <span className="text-sm text-slate-400 font-mono uppercase tracking-widest">{playlistTracks.length} tracks</span>
                         </div>

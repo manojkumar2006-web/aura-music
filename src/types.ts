@@ -15,9 +15,9 @@ export interface Track {
   duration: string;
   coverUrl: string;
   audioUrl128k: string; // Free quality stream
-  audioUrl320k: string; // Premium quality stream
-  audioUrlFlac: string; // Premium+ Lossless studio quality
-  audioUrlAtmos: string; // Premium+ Spatial Audio Dolby Atmos
+  audioUrl320k?: string; // Premium quality stream
+  audioUrlFlac?: string; // Premium+ Lossless studio quality
+  audioUrlAtmos?: string; // Premium+ Spatial Audio Dolby Atmos
   isPremium: boolean;
   isPremiumPlus?: boolean; // Premium+ exclusive lock
   lyrics?: string;

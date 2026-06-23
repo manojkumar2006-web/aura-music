@@ -42,7 +42,9 @@ export interface ListeningStats {
 
 export interface UserProfile {
   id: string;
+  username: string;
   email: string;
+  emailVerified: boolean;
   displayName: string;
   avatarUrl: string;
   bio: string;

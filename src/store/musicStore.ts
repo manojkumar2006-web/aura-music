@@ -50,53 +50,15 @@ interface MusicStore {
 
   // User Authentication & Profile States
   currentUser: UserProfile | null;
-  registeredUsers: UserProfile[];
-  pendingAuthUser: { type: 'signup' | 'reset'; data: any } | null;
-  activeOtpCode: string | null;
-  signUp: (email: string, password: string, displayName: string, avatarUrl: string) => void;
-  logIn: (email: string, password: string) => boolean;
-  socialLogin: (provider: 'google' | 'github') => void;
+  authLoading: boolean;
+  signUp: (username: string, email: string, password: string, avatarUrl: string) => Promise<{ success: boolean; error?: string; passwordErrors?: string[] }>;
+  logIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logOut: () => void;
-  requestPasswordReset: (email: string) => boolean;
-  verifyOtpCode: (code: string) => boolean;
-  resetPassword: (email: string, newPassword: string) => void;
   updateProfile: (displayName: string, bio: string, avatarUrl: string) => void;
   updatePrivacy: (settings: Partial<PrivacySettings>) => void;
   incrementStats: (stat: 'play' | 'minute') => void;
   fetchTracks: () => Promise<void>;
 }
-
-const getStoredUsers = (): UserProfile[] => {
-  const data = localStorage.getItem('aura_registered_users');
-  if (!data) {
-    // Seed with a default demo user
-    const defaultUser: UserProfile = {
-      id: 'demo-user',
-      email: 'user@aura.com',
-      displayName: 'Aura Listener',
-      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
-      bio: 'Soaring through weightless soundscapes and ambient waves. 🌌',
-      stats: {
-        tracksPlayed: 42,
-        minutesListened: 180,
-        topGenre: 'Electronic Synth',
-        favArtist: 'Helix Band'
-      },
-      privacy: {
-        isPublicProfile: true,
-        showListeningActivity: true,
-        playlistsPrivateByDefault: false
-      },
-      createdAt: new Date().toLocaleDateString()
-    };
-    const defaultUsers = [defaultUser];
-    localStorage.setItem('aura_registered_users', JSON.stringify(defaultUsers));
-    // Also save credentials database for this seeded user (password is "aura123")
-    localStorage.setItem('aura_credentials', JSON.stringify({ 'user@aura.com': 'aura123' }));
-    return defaultUsers;
-  }
-  return JSON.parse(data);
-};
 
 const getStoredSession = (): UserProfile | null => {
   const data = localStorage.getItem('aura_current_user');
@@ -464,181 +426,94 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
 
   // User Authentication & Profile States
   currentUser: getStoredSession(),
-  registeredUsers: getStoredUsers(),
-  pendingAuthUser: null,
-  activeOtpCode: null,
+  authLoading: false,
 
-  signUp: (email, password, displayName, avatarUrl) => {
-    // Check if email already registered
-    const users = get().registeredUsers;
-    if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
-      alert('Email already registered!');
-      return;
-    }
-    
-    // Generate 6-digit OTP code
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    set({
-      activeOtpCode: otp,
-      pendingAuthUser: {
-        type: 'signup',
-        data: { email, password, displayName, avatarUrl }
+  signUp: async (username, email, password, avatarUrl) => {
+    set({ authLoading: true });
+    try {
+      const res = await fetch('/api/users/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password, avatarUrl }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        set({ authLoading: false });
+        return { success: false, error: data.error, passwordErrors: data.passwordErrors };
       }
-    });
-
-    get().logAnalyticsEvent(`Generated OTP challenge for SignUp: ${email}`);
-    // Simulate sending OTP via system alert
-    alert(`🔑 AURA Verification Code:\nYour 6-digit email confirmation code is: ${otp}`);
-  },
-
-  logIn: (email, password) => {
-    const creds = JSON.parse(localStorage.getItem('aura_credentials') || '{}');
-    const matchedPassword = creds[email.toLowerCase()];
-    if (matchedPassword && matchedPassword === password) {
-      const users = get().registeredUsers;
-      const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
-      if (user) {
-        set({ currentUser: user });
-        localStorage.setItem('aura_current_user', JSON.stringify(user));
-        get().logAnalyticsEvent(`User logged in: ${user.displayName}`);
-        return true;
-      }
-    }
-    alert('Invalid email or password!');
-    return false;
-  },
-
-  socialLogin: (provider) => {
-    // Generate simulated social login
-    const providerName = provider === 'google' ? 'Google' : 'GitHub';
-    const email = `${provider}_user@aura.com`;
-    const displayName = `${providerName} Listener`;
-    const avatarUrl = provider === 'google' 
-      ? 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80'
-      : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80';
-    
-    const users = get().registeredUsers;
-    let user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
-    
-    if (!user) {
-      user = {
-        id: `user-${Date.now()}`,
-        email,
-        displayName,
-        avatarUrl,
-        bio: `Authenticated via ${providerName}. 🌌`,
-        stats: {
+      
+      const user: UserProfile = {
+        id: data.id || data._id || 'new-user-id',
+        username: data.displayName || data.username,
+        email: data.email,
+        avatarUrl: data.avatarUrl,
+        bio: data.bio,
+        tier: data.tier || 'Free',
+        stats: data.stats || {
           tracksPlayed: 0,
           minutesListened: 0,
-          topGenre: 'Unknown',
-          favArtist: 'Unknown'
+          topGenre: 'Various',
+          favArtist: 'Various'
         },
-        privacy: {
+        privacy: data.privacy || {
           isPublicProfile: true,
           showListeningActivity: true,
           playlistsPrivateByDefault: false
         },
-        createdAt: new Date().toLocaleDateString()
+        createdAt: data.createdAt || new Date().toISOString()
       };
-      const updatedUsers = [...users, user];
-      set({ registeredUsers: updatedUsers });
-      localStorage.setItem('aura_registered_users', JSON.stringify(updatedUsers));
+      
+      localStorage.setItem('aura_current_user', JSON.stringify(user));
+      set({ currentUser: user, authLoading: false });
+      
+      get().logAnalyticsEvent(`Account created: ${username}. Verification email sent to ${email}.`);
+      return { success: true };
+    } catch (err) {
+      set({ authLoading: false });
+      return { success: false, error: 'Network error. Please try again.' };
     }
+  },
 
-    set({ currentUser: user });
-    localStorage.setItem('aura_current_user', JSON.stringify(user));
-    get().logAnalyticsEvent(`Logged in via social OAuth: ${providerName}`);
+  logIn: async (email, password) => {
+    set({ authLoading: true });
+    try {
+      const res = await fetch('/api/users/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        set({ authLoading: false });
+        return { success: false, error: data.error };
+      }
+      // data is the user profile (without password)
+      const user: UserProfile = {
+        id: data.id,
+        username: data.username || data.displayName,
+        email: data.email,
+        emailVerified: data.emailVerified ?? true,
+        displayName: data.displayName,
+        avatarUrl: data.avatarUrl || '',
+        bio: data.bio || '',
+        stats: data.stats || { tracksPlayed: 0, minutesListened: 0, topGenre: 'Various', favArtist: 'Various' },
+        privacy: data.privacy || { isPublicProfile: true, showListeningActivity: true, playlistsPrivateByDefault: false },
+        createdAt: data.createdAt || new Date().toISOString(),
+      };
+      set({ currentUser: user, authLoading: false });
+      localStorage.setItem('aura_current_user', JSON.stringify(user));
+      get().logAnalyticsEvent(`User logged in: ${user.displayName}`);
+      return { success: true };
+    } catch (err) {
+      set({ authLoading: false });
+      return { success: false, error: 'Network error. Please try again.' };
+    }
   },
 
   logOut: () => {
     set({ currentUser: null });
     localStorage.removeItem('aura_current_user');
     get().logAnalyticsEvent('User logged out');
-  },
-
-  requestPasswordReset: (email) => {
-    const creds = JSON.parse(localStorage.getItem('aura_credentials') || '{}');
-    if (!creds[email.toLowerCase()]) {
-      alert('Email address not registered!');
-      return false;
-    }
-
-    // Generate 6-digit OTP code for password reset
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    set({
-      activeOtpCode: otp,
-      pendingAuthUser: {
-        type: 'reset',
-        data: { email }
-      }
-    });
-
-    get().logAnalyticsEvent(`Generated OTP challenge for Password Reset: ${email}`);
-    // Simulate sending OTP via system alert
-    alert(`🔑 AURA Verification Code:\nYour 6-digit password reset code is: ${otp}`);
-    return true;
-  },
-
-  verifyOtpCode: (code) => {
-    const activeCode = get().activeOtpCode;
-    const pending = get().pendingAuthUser;
-    
-    if (!activeCode || !pending || code !== activeCode) {
-      alert('Incorrect OTP code! Please try again.');
-      return false;
-    }
-
-    if (pending.type === 'signup') {
-      const { email, password, displayName, avatarUrl } = pending.data;
-      const newUser: UserProfile = {
-        id: `user-${Date.now()}`,
-        email,
-        displayName,
-        avatarUrl: avatarUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
-        bio: 'Just joined AURA! 🌌',
-        stats: {
-          tracksPlayed: 0,
-          minutesListened: 0,
-          topGenre: 'Various',
-          favArtist: 'Various'
-        },
-        privacy: {
-          isPublicProfile: true,
-          showListeningActivity: true,
-          playlistsPrivateByDefault: false
-        },
-        createdAt: new Date().toLocaleDateString()
-      };
-
-      const updatedUsers = [...get().registeredUsers, newUser];
-      set({ registeredUsers: updatedUsers, currentUser: newUser, pendingAuthUser: null, activeOtpCode: null });
-      
-      localStorage.setItem('aura_registered_users', JSON.stringify(updatedUsers));
-      localStorage.setItem('aura_current_user', JSON.stringify(newUser));
-
-      // Save credentials password
-      const creds = JSON.parse(localStorage.getItem('aura_credentials') || '{}');
-      creds[email.toLowerCase()] = password;
-      localStorage.setItem('aura_credentials', JSON.stringify(creds));
-
-      get().logAnalyticsEvent(`Account created via SignUp: ${newUser.displayName}`);
-    } else if (pending.type === 'reset') {
-      // Clean pending state, let them reset
-      set({ activeOtpCode: null });
-      get().logAnalyticsEvent('OTP verification successful for password reset');
-    }
-    return true;
-  },
-
-  resetPassword: (email, newPassword) => {
-    const creds = JSON.parse(localStorage.getItem('aura_credentials') || '{}');
-    if (creds[email.toLowerCase()]) {
-      creds[email.toLowerCase()] = newPassword;
-      localStorage.setItem('aura_credentials', JSON.stringify(creds));
-      set({ pendingAuthUser: null });
-      get().logAnalyticsEvent(`Password updated successfully for: ${email}`);
-      alert('Password updated successfully! Please log in with your new password.');
-    }
   },
 
   updateProfile: (displayName, bio, avatarUrl) => {
@@ -652,13 +527,16 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
       avatarUrl: avatarUrl.trim() || currentUser.avatarUrl
     };
 
-    const updatedUsers = get().registeredUsers.map(u => 
-      u.email.toLowerCase() === currentUser.email.toLowerCase() ? updatedUser : u
-    );
-
-    set({ currentUser: updatedUser, registeredUsers: updatedUsers });
+    set({ currentUser: updatedUser });
     localStorage.setItem('aura_current_user', JSON.stringify(updatedUser));
-    localStorage.setItem('aura_registered_users', JSON.stringify(updatedUsers));
+
+    // Sync to DB
+    fetch('/api/users/profile', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: currentUser.id, displayName: updatedUser.displayName, bio: updatedUser.bio, avatarUrl: updatedUser.avatarUrl }),
+    }).catch(console.error);
+
     get().logAnalyticsEvent(`Profile details updated for: ${updatedUser.displayName}`);
   },
 
@@ -674,13 +552,16 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
       }
     };
 
-    const updatedUsers = get().registeredUsers.map(u => 
-      u.email.toLowerCase() === currentUser.email.toLowerCase() ? updatedUser : u
-    );
-
-    set({ currentUser: updatedUser, registeredUsers: updatedUsers });
+    set({ currentUser: updatedUser });
     localStorage.setItem('aura_current_user', JSON.stringify(updatedUser));
-    localStorage.setItem('aura_registered_users', JSON.stringify(updatedUsers));
+
+    // Sync to DB
+    fetch('/api/users/profile', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: currentUser.id, privacy: updatedUser.privacy }),
+    }).catch(console.error);
+
     get().logAnalyticsEvent(`Privacy settings adjusted`);
   },
 
@@ -695,7 +576,6 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
       minutesListened: stat === 'minute' ? currentStats.minutesListened + 1 : currentStats.minutesListened
     };
 
-    // Calculate simulated Top Genre / Top Artist dynamically based on catalog
     const currentTrack = get().currentTrack;
     if (currentTrack) {
       updatedStats.favArtist = currentTrack.artist;
@@ -707,13 +587,8 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
       stats: updatedStats
     };
 
-    const updatedUsers = get().registeredUsers.map(u => 
-      u.email.toLowerCase() === currentUser.email.toLowerCase() ? updatedUser : u
-    );
-
-    set({ currentUser: updatedUser, registeredUsers: updatedUsers });
+    set({ currentUser: updatedUser });
     localStorage.setItem('aura_current_user', JSON.stringify(updatedUser));
-    localStorage.setItem('aura_registered_users', JSON.stringify(updatedUsers));
   }
 }));
 

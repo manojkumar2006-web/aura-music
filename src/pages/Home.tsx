@@ -56,6 +56,13 @@ import { useMusicStore } from '../store/musicStore';
 import { AudioPlayer } from '../components/player/AudioPlayer';
 import { Track, SubscriptionTier } from '../types';
 
+const COMMUNITY_PLAYLISTS = [
+  { name: 'Synthwave Nights', author: 'NeonRider', coverUrl: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=400', trackIds: ['track-1', 'track-2', 'track-3'] },
+  { name: 'Focus Flow', author: 'StudyBot', coverUrl: 'https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?auto=format&fit=crop&q=80&w=400', trackIds: ['track-4', 'track-5'] },
+  { name: 'Gym Bangerz', author: 'Chad', coverUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=400', trackIds: ['track-6', 'track-7'] },
+  { name: 'Acoustic Morning', author: 'CoffeeLover', coverUrl: 'https://images.unsplash.com/photo-1445452916036-90224d4530af?auto=format&fit=crop&q=80&w=400', trackIds: ['track-8', 'track-9'] }
+];
+
 export const Home: React.FC = () => {
   const {
     tracks,
@@ -89,15 +96,10 @@ export const Home: React.FC = () => {
 
     // Auth states & actions
     currentUser,
-    pendingAuthUser,
-    activeOtpCode,
+    authLoading,
     signUp,
     logIn,
-    socialLogin,
     logOut,
-    requestPasswordReset,
-    verifyOtpCode,
-    resetPassword,
     updateProfile,
     updatePrivacy
   } = useMusicStore();
@@ -105,24 +107,21 @@ export const Home: React.FC = () => {
   // Local UI States
   const [showLyricsModal, setShowLyricsModal] = useState(false);
   const [activeView, setActiveView] = useState<'library' | 'profile'>('library');
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authTab, setAuthTab] = useState<'login' | 'signup' | 'reset'>('login');
   const [sidebarNav, setSidebarNav] = useState<string>('home');
   const [activeTrackMenu, setActiveTrackMenu] = useState<string | null>(null);
   const [trackToAddPlaylist, setTrackToAddPlaylist] = useState<string | null>(null);
   
   // Auth Form Input States
+  const [authTab, setAuthTab] = useState<'login' | 'signup'>('login');
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
-  const [signupDisplayName, setSignupDisplayName] = useState('');
+  const [signupUsername, setSignupUsername] = useState('');
   const [signupAvatarUrl, setSignupAvatarUrl] = useState('');
-  const [resetEmail, setResetEmail] = useState('');
-  const [resetNewPassword, setResetNewPassword] = useState('');
-  const [confirmNewPassword, setConfirmNewPassword] = useState('');
-  const [otpCode, setOtpCode] = useState('');
   const [authError, setAuthError] = useState<string | null>(null);
+  const [authSuccess, setAuthSuccess] = useState<string | null>(null);
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
 
   // Edit Profile States
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -459,6 +458,200 @@ export const Home: React.FC = () => {
     }
   };
 
+  // ==================== AUTHENTICATION GATE ====================
+  if (!currentUser) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-[#0a0e27] text-white relative overflow-hidden font-sans">
+        {/* Ambient background for auth */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-teal/20 rounded-full blur-[120px] mix-blend-screen" />
+          <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-ocean/20 rounded-full blur-[150px] mix-blend-screen" />
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative w-full max-w-md bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 shadow-2xl z-10"
+        >
+          <div className="flex justify-center mb-8">
+            <div className="w-16 h-16 bg-gradient-to-br from-ocean to-teal rounded-full flex items-center justify-center shadow-lg shadow-teal/20">
+              <span className="text-3xl">🎵</span>
+            </div>
+          </div>
+
+          <h1 className="text-center text-3xl font-extrabold tracking-widest uppercase mb-1">AURA</h1>
+          <p className="text-center text-ink-secondary text-xs uppercase tracking-[0.2em] mb-8">Music Platform</p>
+
+          <div className="flex border-b border-white/10 mb-6">
+            <button
+              onClick={() => { setAuthTab('login'); setAuthError(null); setAuthSuccess(null); }}
+              className={`flex-1 pb-3 text-xs font-bold uppercase tracking-wider transition-colors ${authTab === 'login' ? 'text-teal border-b-2 border-teal' : 'text-ink-tertiary hover:text-white'}`}
+            >
+              Sign In
+            </button>
+            <button
+              onClick={() => { setAuthTab('signup'); setAuthError(null); setAuthSuccess(null); }}
+              className={`flex-1 pb-3 text-xs font-bold uppercase tracking-wider transition-colors ${authTab === 'signup' ? 'text-teal border-b-2 border-teal' : 'text-ink-tertiary hover:text-white'}`}
+            >
+              Sign Up
+            </button>
+          </div>
+
+          {authError && (
+            <div className="p-3 mb-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              <span>{authError}</span>
+            </div>
+          )}
+
+          {authSuccess && (
+            <div className="p-3 mb-4 rounded-xl bg-teal/10 border border-teal/20 text-teal text-xs font-semibold flex items-center gap-2">
+              <Shield className="w-4 h-4 flex-shrink-0" />
+              <span>{authSuccess}</span>
+            </div>
+          )}
+
+          {authTab === 'login' ? (
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setAuthError(null);
+                const res = await logIn(loginEmail, loginPassword);
+                if (!res.success) setAuthError(res.error || 'Failed to sign in.');
+              }}
+              className="flex flex-col gap-4"
+            >
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] uppercase font-mono text-ink-tertiary">Email</label>
+                <input
+                  type="email"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  placeholder="name@domain.com"
+                  required
+                  className="bg-black/40 border border-white/10 rounded-xl py-2.5 px-4 text-sm text-white placeholder-white/20 focus:outline-none focus:border-teal/50 transition-colors"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] uppercase font-mono text-ink-tertiary">Password</label>
+                <input
+                  type="password"
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  className="bg-black/40 border border-white/10 rounded-xl py-2.5 px-4 text-sm text-white placeholder-white/20 focus:outline-none focus:border-teal/50 transition-colors"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={authLoading}
+                className="w-full mt-4 py-3 bg-gradient-to-r from-ocean to-teal text-[#0a0e27] font-bold text-sm uppercase tracking-widest rounded-xl hover:shadow-[0_0_20px_rgba(45,212,191,0.3)] transition-all disabled:opacity-50"
+              >
+                {authLoading ? 'Authenticating...' : 'Enter AURA'}
+              </button>
+            </form>
+          ) : (
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setAuthError(null);
+                setAuthSuccess(null);
+                setPasswordErrors([]);
+                const res = await signUp(signupUsername, signupEmail, signupPassword, signupAvatarUrl);
+                if (res.success) {
+                  setAuthSuccess('Account created! Please check your email to verify your account.');
+                  setSignupUsername('');
+                  setSignupEmail('');
+                  setSignupPassword('');
+                  setActiveView('profile');
+                  setIsEditingProfile(true);
+                } else {
+                  setAuthError(res.error || 'Failed to sign up.');
+                  if (res.passwordErrors) setPasswordErrors(res.passwordErrors);
+                }
+              }}
+              className="flex flex-col gap-4"
+            >
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] uppercase font-mono text-ink-tertiary">Username</label>
+                <input
+                  type="text"
+                  value={signupUsername}
+                  onChange={(e) => setSignupUsername(e.target.value)}
+                  placeholder="aura_fan_99"
+                  required
+                  className="bg-black/40 border border-white/10 rounded-xl py-2.5 px-4 text-sm text-white placeholder-white/20 focus:outline-none focus:border-teal/50 transition-colors"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] uppercase font-mono text-ink-tertiary">Email</label>
+                <input
+                  type="email"
+                  value={signupEmail}
+                  onChange={(e) => setSignupEmail(e.target.value)}
+                  placeholder="name@domain.com"
+                  required
+                  className="bg-black/40 border border-white/10 rounded-xl py-2.5 px-4 text-sm text-white placeholder-white/20 focus:outline-none focus:border-teal/50 transition-colors"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] uppercase font-mono text-ink-tertiary">Password</label>
+                <input
+                  type="password"
+                  value={signupPassword}
+                  onChange={(e) => setSignupPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  className="bg-black/40 border border-white/10 rounded-xl py-2.5 px-4 text-sm text-white placeholder-white/20 focus:outline-none focus:border-teal/50 transition-colors"
+                />
+                
+                {/* Password Strength Indicators */}
+                <div className="flex flex-col gap-1 mt-1 px-1">
+                  <div className="flex items-center gap-2 text-[9px] font-mono">
+                    <span className={signupPassword.length >= 10 ? 'text-teal' : 'text-ink-tertiary'}>
+                      {signupPassword.length >= 10 ? '✓' : '○'} 10+ characters
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-[9px] font-mono">
+                    <span className={/[A-Z]/.test(signupPassword) ? 'text-teal' : 'text-ink-tertiary'}>
+                      {/[A-Z]/.test(signupPassword) ? '✓' : '○'} Uppercase letter
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-[9px] font-mono">
+                    <span className={/[0-9]/.test(signupPassword) ? 'text-teal' : 'text-ink-tertiary'}>
+                      {/[0-9]/.test(signupPassword) ? '✓' : '○'} Number
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-[9px] font-mono">
+                    <span className={/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(signupPassword) ? 'text-teal' : 'text-ink-tertiary'}>
+                      {/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(signupPassword) ? '✓' : '○'} Special character
+                    </span>
+                  </div>
+                </div>
+
+                {passwordErrors.length > 0 && (
+                  <div className="mt-2 flex flex-col gap-1 text-[10px] text-red-400">
+                    {passwordErrors.map((err, i) => <span key={i}>• {err}</span>)}
+                  </div>
+                )}
+              </div>
+              
+              <button
+                type="submit"
+                disabled={authLoading}
+                className="w-full mt-4 py-3 bg-gradient-to-r from-ocean to-teal text-[#0a0e27] font-bold text-sm uppercase tracking-widest rounded-xl hover:shadow-[0_0_20px_rgba(45,212,191,0.3)] transition-all disabled:opacity-50"
+              >
+                {authLoading ? 'Creating Account...' : 'Sign Up'}
+              </button>
+            </form>
+          )}
+        </motion.div>
+      </div>
+    );
+  }
+
+
   return (
     <div className={`h-screen overflow-hidden ${activeThemeStyle.bg} text-ink-primary flex flex-col relative select-none transition-colors duration-500 star-field`}>
       {/* Ambient background blobs (atmosphere) */}
@@ -771,38 +964,23 @@ export const Home: React.FC = () => {
               )}
             </div>
 
-            {currentUser ? (
-              <button
-                onClick={() => setActiveView(activeView === 'profile' ? 'library' : 'profile')}
-                className={`glass-panel rounded-2xl px-4 py-2 border border-silver/8 bg-graphite/45 flex items-center gap-2.5 hover:border-teal/30 hover:bg-teal/5 hover:shadow-[0_0_15px_rgba(136, 13, 30,0.1)] transition-all cursor-pointer h-12 flex-shrink-0 ${
-                  activeView === 'profile' ? 'border-teal/45 bg-teal/10 shadow-[0_0_15px_rgba(136, 13, 30,0.15)]' : ''
-                }`}
-              >
-                <div className="w-7 h-7 rounded-full overflow-hidden bg-gradient-to-tr from-ocean to-teal p-0.5 flex-shrink-0">
-                    <img
-                      src={currentUser.avatarUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80'}
-                      className="w-full h-full object-cover rounded-full bg-graphite"
-                      alt="Avatar"
-                    />
-                  </div>
-                  <span className="hidden sm:inline text-xs font-bold text-ink-primary font-display truncate max-w-[100px]">
-                    {currentUser.displayName}
-                  </span>
-              </button>
-            ) : (
-              <button
-                onClick={() => {
-                  setAuthTab('login');
-                  setAuthError(null);
-                  useMusicStore.setState({ pendingAuthUser: null, activeOtpCode: null });
-                  setShowAuthModal(true);
-                }}
-                className="glass-panel rounded-2xl px-5 border border-silver/8 bg-graphite/45 hover:border-teal/35 hover:bg-teal/5 hover:shadow-[0_0_15px_rgba(136, 13, 30,0.1)] transition-all flex items-center gap-2 text-xs font-bold text-white uppercase tracking-wider cursor-pointer h-12 flex-shrink-0 hover:scale-102 active:scale-98"
-              >
-                <User className="w-4 h-4 text-teal" />
-                <span>Sign In</span>
-              </button>
-            )}
+            <button
+              onClick={() => setActiveView(activeView === 'profile' ? 'library' : 'profile')}
+              className={`glass-panel rounded-2xl px-4 py-2 border border-silver/8 bg-graphite/45 flex items-center gap-2.5 hover:border-teal/30 hover:bg-teal/5 hover:shadow-[0_0_15px_rgba(136, 13, 30,0.1)] transition-all cursor-pointer h-12 flex-shrink-0 ${
+                activeView === 'profile' ? 'border-teal/45 bg-teal/10 shadow-[0_0_15px_rgba(136, 13, 30,0.15)]' : ''
+              }`}
+            >
+              <div className="w-7 h-7 rounded-full overflow-hidden bg-gradient-to-tr from-ocean to-teal p-0.5 flex-shrink-0">
+                  <img
+                    src={currentUser.avatarUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80'}
+                    className="w-full h-full object-cover rounded-full bg-graphite"
+                    alt="Avatar"
+                  />
+                </div>
+                <span className="hidden sm:inline text-xs font-bold text-ink-primary font-display truncate max-w-[100px]">
+                  {currentUser.displayName}
+                </span>
+            </button>
           </div>
           
           {activeView === 'profile' ? (
@@ -1628,7 +1806,7 @@ export const Home: React.FC = () => {
                   </motion.div>
                 );
               })() : selectedPlaylist ? (() => {
-                const targetPlaylist = playlists.find(p => p.name === selectedPlaylist);
+                const targetPlaylist = playlists.find(p => p.name === selectedPlaylist) || COMMUNITY_PLAYLISTS.find(p => p.name === selectedPlaylist);
                 if (!targetPlaylist) return null;
                 const playlistTracks = tracks.filter(t => targetPlaylist.trackIds.includes(t.id));
                 const coverImage = playlistTracks.length > 0 ? playlistTracks[0].coverUrl : 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=400';
@@ -1842,19 +2020,18 @@ export const Home: React.FC = () => {
                       <Users className="w-5 h-5 text-emerald-400" /> Community Playlists
                     </h2>
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                      {[
-                        { title: 'Synthwave Nights', author: 'NeonRider', tracks: 42 },
-                        { title: 'Focus Flow', author: 'StudyBot', tracks: 128 },
-                        { title: 'Gym Bangerz', author: 'Chad', tracks: 55 },
-                        { title: 'Acoustic Morning', author: 'CoffeeLover', tracks: 31 }
-                      ].map((pl, i) => (
-                        <div key={i} className="glass-panel p-4 rounded-2xl flex flex-col gap-4 cursor-pointer hover:bg-white/5 hover:border-white/10 transition-all border border-transparent group shadow-md">
+                      {COMMUNITY_PLAYLISTS.map((pl, i) => (
+                        <div key={i} onClick={() => setSelectedPlaylist(pl.name)} className="glass-panel p-4 rounded-2xl flex flex-col gap-4 cursor-pointer hover:bg-white/5 hover:border-white/10 transition-all border border-transparent group shadow-md active:scale-[0.98]">
                           <div className="w-full aspect-square rounded-xl bg-gradient-to-br from-slate-800 to-[#121212] relative flex items-center justify-center overflow-hidden">
-                            <ListMusic className="w-8 h-8 text-slate-600 group-hover:scale-110 group-hover:text-emerald-500/50 transition-all duration-300" />
+                            {pl.coverUrl ? (
+                              <img src={pl.coverUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={pl.name} />
+                            ) : (
+                              <ListMusic className="w-8 h-8 text-slate-600 group-hover:scale-110 group-hover:text-emerald-500/50 transition-all duration-300" />
+                            )}
                           </div>
                           <div className="flex flex-col">
-                            <span className="text-sm font-bold text-white truncate">{pl.title}</span>
-                            <span className="text-[10px] text-slate-400 truncate mt-0.5">By {pl.author} • {pl.tracks} tracks</span>
+                            <span className="text-sm font-bold text-white truncate group-hover:text-teal transition-colors">{pl.name}</span>
+                            <span className="text-[10px] text-slate-400 truncate mt-0.5">By {pl.author} • {pl.trackIds.length} tracks</span>
                           </div>
                         </div>
                       ))}
@@ -3059,406 +3236,6 @@ export const Home: React.FC = () => {
               </div>
             </motion.div>
           </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ================= AUTHENTICATION MODAL ================= */}
-      <AnimatePresence>
-        {showAuthModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-shadow/85 backdrop-blur-[24px]">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 30 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 30 }}
-              className="relative w-full max-w-md rounded-3xl border border-silver/10 bg-gradient-to-b from-graphite via-shadow to-shadow p-6 shadow-2xl flex flex-col gap-6 text-ink-primary"
-            >
-              <button
-                onClick={() => {
-                  setShowAuthModal(false);
-                  setAuthError(null);
-                  useMusicStore.setState({ pendingAuthUser: null, activeOtpCode: null });
-                }}
-                className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-white/5 text-ink-secondary hover:text-white cursor-pointer transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-
-              {/* Conditional views: OTP Verification vs Pass Reset vs Normal Tabs */}
-              {pendingAuthUser ? (
-                // OTP Verification Flow or New Password Flow
-                pendingAuthUser.type === 'reset' && !activeOtpCode ? (
-                  // New Password Entry Flow after OTP success for Reset
-                  <div className="flex flex-col gap-4">
-                    <div className="text-center">
-                      <div className="mx-auto w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mb-3">
-                        <Key className="w-6 h-6" />
-                      </div>
-                      <h3 className="font-display font-extrabold text-lg text-white uppercase tracking-wider">
-                        Create New Password
-                      </h3>
-                      <p className="text-[10px] text-ink-secondary mt-1">
-                        Enter your new secure password below for <span className="text-white font-semibold">{pendingAuthUser.data.email}</span>.
-                      </p>
-                    </div>
-
-                    <form
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        if (resetNewPassword !== confirmNewPassword) {
-                          setAuthError('Passwords do not match!');
-                          return;
-                        }
-                        if (resetNewPassword.length < 6) {
-                          setAuthError('Password must be at least 6 characters!');
-                          return;
-                        }
-                        resetPassword(pendingAuthUser.data.email, resetNewPassword);
-                        // Reset forms
-                        setResetNewPassword('');
-                        setConfirmNewPassword('');
-                        setAuthError(null);
-                        setAuthTab('login');
-                      }}
-                      className="flex flex-col gap-3"
-                    >
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[9px] uppercase font-mono text-ink-tertiary">New Password</span>
-                        <input
-                          type="password"
-                          value={resetNewPassword}
-                          onChange={(e) => setResetNewPassword(e.target.value)}
-                          placeholder="••••••••"
-                          required
-                          className="bg-black/40 border border-white/10 rounded-xl py-2 px-3 text-xs text-slate-100 focus:outline-none focus:border-teal/45"
-                        />
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[9px] uppercase font-mono text-ink-tertiary">Confirm Password</span>
-                        <input
-                          type="password"
-                          value={confirmNewPassword}
-                          onChange={(e) => setConfirmNewPassword(e.target.value)}
-                          placeholder="••••••••"
-                          required
-                          className="bg-black/40 border border-white/10 rounded-xl py-2 px-3 text-xs text-slate-100 focus:outline-none focus:border-teal/45"
-                        />
-                      </div>
-
-                      {authError && (
-                        <div className="p-2.5 rounded-xl bg-deepblue/20 border border-deepblue/40 text-teal text-[10px] text-center font-mono leading-normal">
-                          ⚠️ {authError}
-                        </div>
-                      )}
-
-                      <button
-                        type="submit"
-                        className="w-full mt-2 py-2 bg-gradient-to-r from-ocean to-teal text-ink-primary font-bold text-xs uppercase tracking-wider rounded-xl hover:scale-102 transition-transform shadow-lg cursor-pointer"
-                      >
-                        Reset Password
-                      </button>
-                    </form>
-                  </div>
-                ) : (
-                  // OTP Challenge Flow (Signup OTP or Reset OTP)
-                  <div className="flex flex-col gap-4">
-                    <div className="text-center">
-                      <div className="mx-auto w-12 h-12 bg-teal/10 border border-teal/20 text-teal rounded-full flex items-center justify-center mb-3 animate-pulse">
-                        <Shield className="w-6 h-6" />
-                      </div>
-                      <h3 className="font-display font-extrabold text-lg text-white uppercase tracking-wider">
-                        Security Verification
-                      </h3>
-                      <p className="text-[10px] text-ink-secondary mt-1 max-w-xs mx-auto leading-relaxed">
-                        A 6-digit confirmation code was sent to <strong className="text-ink-primary">{pendingAuthUser.data.email}</strong>.
-                      </p>
-                    </div>
-
-                    <form
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        if (otpCode.length !== 6 || !/^\d+$/.test(otpCode)) {
-                          setAuthError('OTP must be a 6-digit number!');
-                          return;
-                        }
-                        setAuthError(null);
-                        const success = verifyOtpCode(otpCode);
-                        if (success) {
-                          setOtpCode('');
-                          if (pendingAuthUser.type === 'signup') {
-                            setShowAuthModal(false);
-                          }
-                        } else {
-                          setAuthError('Incorrect code. Please check details or retry.');
-                        }
-                      }}
-                      className="flex flex-col gap-3"
-                    >
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[9px] uppercase font-mono text-ink-tertiary text-center">Enter 6-Digit Code</span>
-                        <input
-                          type="text"
-                          maxLength={6}
-                          value={otpCode}
-                          onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                          placeholder="000000"
-                          className="bg-black/40 border border-white/10 rounded-xl py-2 px-3 text-center text-xl font-mono font-bold tracking-[0.5em] text-white focus:outline-none focus:border-teal/45 w-full"
-                          required
-                          autoFocus
-                        />
-                      </div>
-
-                      {authError && (
-                        <div className="p-2.5 rounded-xl bg-deepblue/20 border border-deepblue/40 text-teal text-[10px] text-center font-mono leading-normal">
-                          ⚠️ {authError}
-                        </div>
-                      )}
-
-                      <button
-                        type="submit"
-                        className="w-full mt-2 py-2 bg-gradient-to-r from-ocean to-teal text-ink-primary font-bold text-xs uppercase tracking-wider rounded-xl hover:scale-102 transition-transform shadow-lg cursor-pointer"
-                      >
-                        Verify Identity
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setAuthError(null);
-                          setOtpCode('');
-                          useMusicStore.setState({ pendingAuthUser: null, activeOtpCode: null });
-                        }}
-                        className="text-center text-ink-tertiary hover:text-ink-secondary text-[10px] uppercase font-mono tracking-widest mt-1 cursor-pointer transition-colors"
-                      >
-                        Back to Credentials
-                      </button>
-                    </form>
-                  </div>
-                )
-              ) : (
-                // Regular tabs login / signup / forgot pass
-                <div className="flex flex-col gap-4">
-                  {/* Tabs */}
-                  <div className="flex border-b border-white/5">
-                    {(['login', 'signup', 'reset'] as const).map((tab) => (
-                      <button
-                        key={tab}
-                        onClick={() => {
-                          setAuthTab(tab);
-                          setAuthError(null);
-                        }}
-                        className={`flex-1 pb-2 text-[10.5px] font-bold uppercase tracking-wider transition-colors cursor-pointer ${
-                          authTab === tab
-                            ? 'text-teal border-b-2 border-teal'
-                            : 'text-ink-tertiary hover:text-ink-secondary'
-                        }`}
-                      >
-                        {tab === 'login' ? 'Sign In' : tab === 'signup' ? 'Sign Up' : 'Reset Pin'}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Errors */}
-                  {authError && (
-                    <div className="p-2.5 rounded-xl bg-deepblue/20 border border-deepblue/40 text-teal text-[10px] font-mono leading-normal">
-                      ⚠️ {authError}
-                    </div>
-                  )}
-
-                  {authTab === 'login' && (
-                    <form
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        setAuthError(null);
-                        const success = logIn(loginEmail, loginPassword);
-                        if (success) {
-                          setLoginEmail('');
-                          setLoginPassword('');
-                          setShowAuthModal(false);
-                        } else {
-                          setAuthError('Incorrect email or password.');
-                        }
-                      }}
-                      className="flex flex-col gap-3"
-                    >
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[9px] uppercase font-mono text-ink-tertiary">Email Address</span>
-                        <input
-                          type="email"
-                          value={loginEmail}
-                          onChange={(e) => setLoginEmail(e.target.value)}
-                          placeholder="name@domain.com"
-                          required
-                          className="bg-black/40 border border-white/10 rounded-xl py-2 px-3 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal/45"
-                        />
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <div className="flex justify-between items-center">
-                          <span className="text-[9px] uppercase font-mono text-ink-tertiary">Password</span>
-                          <button
-                            type="button"
-                            onClick={() => setAuthTab('reset')}
-                            className="text-[9px] text-teal hover:underline"
-                          >
-                            Forgot Password?
-                          </button>
-                        </div>
-                        <input
-                          type="password"
-                          value={loginPassword}
-                          onChange={(e) => setLoginPassword(e.target.value)}
-                          placeholder="••••••••"
-                          required
-                          className="bg-black/40 border border-white/10 rounded-xl py-2 px-3 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal/45"
-                        />
-                      </div>
-
-                      <button
-                        type="submit"
-                        className="w-full mt-2 py-2 bg-gradient-to-r from-ocean to-teal text-ink-primary font-bold text-xs uppercase tracking-wider rounded-xl hover:scale-102 transition-transform shadow-lg cursor-pointer"
-                      >
-                        Sign In
-                      </button>
-                    </form>
-                  )}
-
-                  {authTab === 'signup' && (
-                    <form
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        if (signupPassword.length < 6) {
-                          setAuthError('Password must be at least 6 characters.');
-                          return;
-                        }
-                        setAuthError(null);
-                        signUp(signupEmail, signupPassword, signupDisplayName, signupAvatarUrl);
-                      }}
-                      className="flex flex-col gap-3"
-                    >
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[9px] uppercase font-mono text-ink-tertiary">Display Name</span>
-                        <input
-                          type="text"
-                          value={signupDisplayName}
-                          onChange={(e) => setSignupDisplayName(e.target.value)}
-                          placeholder="Aura Enthusiast"
-                          required
-                          className="bg-black/40 border border-white/10 rounded-xl py-2 px-3 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal/45"
-                        />
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[9px] uppercase font-mono text-ink-tertiary">Email Address</span>
-                        <input
-                          type="email"
-                          value={signupEmail}
-                          onChange={(e) => setSignupEmail(e.target.value)}
-                          placeholder="name@domain.com"
-                          required
-                          className="bg-black/40 border border-white/10 rounded-xl py-2 px-3 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal/45"
-                        />
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[9px] uppercase font-mono text-ink-tertiary">Password (min 6 chars)</span>
-                        <input
-                          type="password"
-                          value={signupPassword}
-                          onChange={(e) => setSignupPassword(e.target.value)}
-                          placeholder="••••••••"
-                          required
-                          className="bg-black/40 border border-white/10 rounded-xl py-2 px-3 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal/45"
-                        />
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[9px] uppercase font-mono text-ink-tertiary">Avatar Image (Optional)</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleImageUpload(e, setSignupAvatarUrl)}
-                          className="bg-black/40 border border-white/10 rounded-xl py-1.5 px-3 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal/45 file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[9px] file:font-semibold file:bg-teal/20 file:text-teal hover:file:bg-teal/30 cursor-pointer"
-                        />
-                      </div>
-
-                      <button
-                        type="submit"
-                        className="w-full mt-2 py-2 bg-gradient-to-r from-ocean to-teal text-ink-primary font-bold text-xs uppercase tracking-wider rounded-xl hover:scale-102 transition-transform shadow-lg cursor-pointer"
-                      >
-                        Create Account
-                      </button>
-                    </form>
-                  )}
-
-                  {authTab === 'reset' && (
-                    <form
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        setAuthError(null);
-                        const success = requestPasswordReset(resetEmail);
-                        if (success) {
-                          setAuthError(null);
-                        } else {
-                          setAuthError('Email not found in database.');
-                        }
-                      }}
-                      className="flex flex-col gap-3"
-                    >
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[9px] uppercase font-mono text-ink-tertiary">Email Address</span>
-                        <input
-                          type="email"
-                          value={resetEmail}
-                          onChange={(e) => setResetEmail(e.target.value)}
-                          placeholder="name@domain.com"
-                          required
-                          className="bg-black/40 border border-white/10 rounded-xl py-2 px-3 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal/45"
-                        />
-                      </div>
-
-                      <button
-                        type="submit"
-                        className="w-full mt-2 py-2 bg-gradient-to-r from-ocean to-teal text-ink-primary font-bold text-xs uppercase tracking-wider rounded-xl hover:scale-102 transition-transform shadow-lg cursor-pointer"
-                      >
-                        Send Reset Code
-                      </button>
-                    </form>
-                  )}
-
-                  {/* Social Logins Divider */}
-                  <div className="flex items-center gap-3 my-1">
-                    <div className="flex-grow border-t border-white/5"></div>
-                    <span className="text-[8.5px] uppercase font-mono text-ink-tertiary">Or Connect Via</span>
-                    <div className="flex-grow border-t border-white/5"></div>
-                  </div>
-
-                  {/* Social Buttons */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      onClick={() => {
-                        socialLogin('google');
-                        setShowAuthModal(false);
-                      }}
-                      className="py-2 bg-white/5 hover:bg-white/10 border border-white/8 hover:border-white/12 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-102"
-                    >
-                      <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                        <path d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-5.136 4.114-3.555 0-6.437-2.883-6.437-6.437 0-3.555 2.882-6.438 6.437-6.438 1.54 0 2.947.55 4.054 1.45l3.068-3.068C19.183 2.164 15.973 1 12.24 1 6.033 1 1 6.033 1 12.24s5.033 11.24 11.24 11.24c5.898 0 10.79-4.26 10.79-10.79 0-.583-.052-1.138-.15-1.685H12.24z"/>
-                      </svg>
-                      Google
-                    </button>
-                    <button
-                      onClick={() => {
-                        socialLogin('github');
-                        setShowAuthModal(false);
-                      }}
-                      className="py-2 bg-white/5 hover:bg-white/10 border border-white/8 hover:border-white/12 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-102"
-                    >
-                      <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                        <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
-                      </svg>
-                      GitHub
-                    </button>
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          </div>
         )}
       </AnimatePresence>
 

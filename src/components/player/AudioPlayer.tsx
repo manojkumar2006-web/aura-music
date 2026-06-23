@@ -582,12 +582,17 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
                     <div 
                       key={`${track.id}-${idx}`} 
                       onClick={() => handlePlayFromQueue(idx)}
-                      className="flex items-center gap-3 p-1.5 hover:bg-white/5 rounded-xl group transition-colors cursor-pointer"
+                      className="flex items-center gap-3 p-2 hover:bg-white/10 rounded-xl group transition-all cursor-pointer border border-transparent hover:border-white/10 relative"
                     >
-                      <img src={track.coverUrl} className="w-8 h-8 rounded-md object-cover shadow-md" alt={track.title} />
+                      <div className="relative shrink-0">
+                        <img src={track.coverUrl} className="w-8 h-8 rounded-md object-cover shadow-md group-hover:opacity-50 transition-opacity" alt={track.title} />
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Play className="w-4 h-4 text-white fill-white" />
+                        </div>
+                      </div>
                       <div className="flex flex-col overflow-hidden flex-1">
-                        <span className="text-[11px] font-bold text-slate-200 group-hover:text-white truncate">{track.title}</span>
-                        <span className="text-[9px] text-slate-400 truncate">{track.artist}</span>
+                        <span className="text-[11px] font-bold text-slate-200 group-hover:text-teal transition-colors truncate">{track.title}</span>
+                        <span className="text-[9px] text-slate-400 group-hover:text-slate-300 transition-colors truncate">{track.artist}</span>
                       </div>
                     </div>
                   ))}

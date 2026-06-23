@@ -6,8 +6,32 @@
 import { Router } from 'express';
 import { connectToDatabase } from '../lib/mongodb';
 import bcrypt from 'bcryptjs';
+import { v4 as uuidv4 } from 'uuid';
+import { sendVerificationEmail } from '../lib/email';
 
 const apiRouter = Router();
+
+// ==================== VALIDATION HELPERS ====================
+
+function validateUsername(username: string): string | null {
+  if (!username || username.trim().length < 3) return 'Username must be at least 3 characters.';
+  if (username.trim().length > 20) return 'Username must be at most 20 characters.';
+  if (!/^[a-zA-Z0-9_]+$/.test(username.trim())) return 'Username can only contain letters, numbers, and underscores.';
+  return null;
+}
+
+function validatePassword(password: string): string[] {
+  const errors: string[] = [];
+  if (password.length < 10) errors.push('Must be at least 10 characters.');
+  if (!/[A-Z]/.test(password)) errors.push('Must contain at least one uppercase letter.');
+  if (!/[0-9]/.test(password)) errors.push('Must contain at least one number.');
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(password)) errors.push('Must contain at least one special character.');
+  return errors;
+}
+
+function validateEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 
 // ==================== TRACKS ====================
 
@@ -38,37 +62,59 @@ apiRouter.get('/tracks/:id', async (req, res) => {
 
 // ==================== USERS ====================
 
-// POST /api/users/signup — Register new user
+// POST /api/users/signup — Register new user with email verification
 apiRouter.post('/users/signup', async (req, res) => {
   try {
-    const { email, password, displayName, avatarUrl } = req.body;
+    const { email, password, username, avatarUrl } = req.body;
     
-    if (!email || !password || !displayName) {
-      return res.status(400).json({ error: 'Email, password, and display name are required' });
+    // Validate username
+    const usernameError = validateUsername(username);
+    if (usernameError) {
+      return res.status(400).json({ error: usernameError });
     }
 
-    if (password.length < 6) {
-      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    // Validate email format
+    if (!email || !validateEmail(email)) {
+      return res.status(400).json({ error: 'Please enter a valid email address.' });
+    }
+
+    // Validate password strength
+    const passwordErrors = validatePassword(password || '');
+    if (passwordErrors.length > 0) {
+      return res.status(400).json({ error: 'Password too weak.', passwordErrors });
     }
 
     const { db } = await connectToDatabase();
     const usersCol = db.collection('users');
     
-    // Check if user already exists
-    const existing = await usersCol.findOne({ email });
-    if (existing) {
-      return res.status(409).json({ error: 'An account with this email already exists' });
+    // Check if email already exists
+    const existingEmail = await usersCol.findOne({ email: email.toLowerCase() });
+    if (existingEmail) {
+      return res.status(409).json({ error: 'An account with this email already exists.' });
+    }
+
+    // Check if username already exists
+    const existingUsername = await usersCol.findOne({ username: username.trim().toLowerCase() });
+    if (existingUsername) {
+      return res.status(409).json({ error: 'This username is already taken.' });
     }
     
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
     
+    // Generate verification token
+    const verificationToken = uuidv4();
+
     const newUser = {
       id: `user-${Date.now()}`,
-      email,
+      username: username.trim(),
+      usernameLower: username.trim().toLowerCase(),
+      email: email.toLowerCase(),
       password: hashedPassword,
-      displayName,
-      avatarUrl: avatarUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
+      emailVerified: false,
+      verificationToken,
+      displayName: username.trim(),
+      avatarUrl: avatarUrl || '',
       bio: 'Just joined AURA! 🌌',
       tier: 'Free',
       stats: {
@@ -86,13 +132,53 @@ apiRouter.post('/users/signup', async (req, res) => {
     };
     
     await usersCol.insertOne(newUser);
+
+    // Send verification email
+    const emailSent = await sendVerificationEmail(email.toLowerCase(), verificationToken, username.trim());
     
-    // Return user without password
-    const { password: _, ...safeUser } = newUser;
-    res.status(201).json(safeUser);
+    if (!emailSent) {
+      // Still created user, but warn about email
+      console.warn('User created but verification email failed to send.');
+    }
+
+    // Return user without sensitive fields
+    const { password: _, verificationToken: __, usernameLower: ___, ...safeUser } = newUser;
+    res.status(201).json({ ...safeUser, emailSent });
   } catch (error) {
     console.error('Signup error:', error);
-    res.status(500).json({ error: 'Failed to create account' });
+    res.status(500).json({ error: 'Failed to create account. Please try again.' });
+  }
+});
+
+// GET /api/users/verify-email?token=xxx — Verify email via link
+apiRouter.get('/users/verify-email', async (req, res) => {
+  try {
+    const token = req.query.token as string;
+    if (!token) {
+      return res.status(400).send(getVerificationPage(false, 'No verification token provided.'));
+    }
+
+    const { db } = await connectToDatabase();
+    const user = await db.collection('users').findOne({ verificationToken: token });
+
+    if (!user) {
+      return res.status(404).send(getVerificationPage(false, 'Invalid or expired verification link.'));
+    }
+
+    if (user.emailVerified) {
+      return res.send(getVerificationPage(true, 'Your email is already verified! You can close this tab and sign in.'));
+    }
+
+    // Mark email as verified
+    await db.collection('users').updateOne(
+      { verificationToken: token },
+      { $set: { emailVerified: true }, $unset: { verificationToken: '' } }
+    );
+
+    return res.send(getVerificationPage(true, 'Email verified successfully! You can now sign in to AURA.'));
+  } catch (error) {
+    console.error('Email verification error:', error);
+    return res.status(500).send(getVerificationPage(false, 'Something went wrong. Please try again.'));
   }
 });
 
@@ -102,27 +188,32 @@ apiRouter.post('/users/login', async (req, res) => {
     const { email, password } = req.body;
     
     if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' });
+      return res.status(400).json({ error: 'Email and password are required.' });
     }
     
     const { db } = await connectToDatabase();
-    const user = await db.collection('users').findOne({ email });
+    const user = await db.collection('users').findOne({ email: email.toLowerCase() });
     
     if (!user) {
-      return res.status(401).json({ error: 'Invalid email or password' });
+      return res.status(401).json({ error: 'Invalid email or password.' });
     }
     
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
-      return res.status(401).json({ error: 'Invalid email or password' });
+      return res.status(401).json({ error: 'Invalid email or password.' });
+    }
+
+    // Check email verification
+    if (!user.emailVerified) {
+      return res.status(403).json({ error: 'Please verify your email address before signing in. Check your inbox for the verification link.' });
     }
     
-    // Return user without password
-    const { password: _, ...safeUser } = user;
+    // Return user without sensitive fields
+    const { password: _, verificationToken: __, usernameLower: ___, ...safeUser } = user;
     res.json(safeUser);
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ error: 'Failed to log in' });
+    res.status(500).json({ error: 'Failed to log in. Please try again.' });
   }
 });
 
@@ -136,7 +227,7 @@ apiRouter.get('/users/profile', async (req, res) => {
     const user = await db.collection('users').findOne({ id: userId });
     if (!user) return res.status(404).json({ error: 'User not found' });
     
-    const { password: _, ...safeUser } = user;
+    const { password: _, verificationToken: __, usernameLower: ___, ...safeUser } = user;
     res.json(safeUser);
   } catch (error) {
     console.error('Profile error:', error);
@@ -167,7 +258,7 @@ apiRouter.put('/users/profile', async (req, res) => {
     
     if (!result) return res.status(404).json({ error: 'User not found' });
     
-    const { password: _, ...safeUser } = result;
+    const { password: _, verificationToken: __, usernameLower: ___, ...safeUser } = result;
     res.json(safeUser);
   } catch (error) {
     console.error('Update profile error:', error);
@@ -254,5 +345,100 @@ apiRouter.delete('/playlists/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to delete playlist' });
   }
 });
+
+// ==================== HELPERS ====================
+
+function getVerificationPage(success: boolean, message: string): string {
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AURA - Email Verification</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0a0e27 0%, #121638 50%, #0a0e27 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px;
+      padding: 48px 40px;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    .icon.success { background: rgba(45,212,191,0.15); border: 1px solid rgba(45,212,191,0.3); }
+    .icon.error { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); }
+    h1 {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    p {
+      color: rgba(255,255,255,0.6);
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+    .brand {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 20px;
+    }
+    a.btn {
+      display: inline-block;
+      padding: 12px 36px;
+      background: linear-gradient(135deg, #1e3a5f, #2dd4bf);
+      color: white;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      transition: transform 0.2s;
+    }
+    a.btn:hover { transform: scale(1.03); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon ${success ? 'success' : 'error'}">${success ? '✅' : '❌'}</div>
+    <h1>${success ? 'Verified!' : 'Error'}</h1>
+    <p>${message}</p>
+    <a href="/" class="btn">Open AURA</a>
+    <div class="brand">AURA Music © ${new Date().getFullYear()}</div>
+  </div>
+</body>
+</html>`;
+}
 
 export default apiRouter;

@@ -58,6 +58,12 @@ interface MusicStore {
   updatePrivacy: (settings: Partial<PrivacySettings>) => void;
   incrementStats: (stat: 'play' | 'minute') => void;
   fetchTracks: () => Promise<void>;
+
+  // Weather & Region States
+  currentWeather: string | null;
+  setCurrentWeather: (weather: string | null) => void;
+  userRegion: string | null;
+  setUserRegion: (region: string | null) => void;
 }
 
 const getStoredSession = (): UserProfile | null => {
@@ -80,7 +86,8 @@ const PRESET_TRACKS: Track[] = [
   "musicDirector": "Sai Abhyankkar",
   "region": "Tamil",
   "isPremium": false,
-  "isPremiumPlus": false
+  "isPremiumPlus": false,
+  "weather": "Cloudy"
 },
   {
   "id": "karuppu-2",
@@ -95,7 +102,8 @@ const PRESET_TRACKS: Track[] = [
   "musicDirector": "Sai Abhyankkar",
   "region": "Tamil",
   "isPremium": false,
-  "isPremiumPlus": false
+  "isPremiumPlus": false,
+  "weather": "Snowy"
 },
   {
   "id": "karuppu-3",
@@ -110,7 +118,8 @@ const PRESET_TRACKS: Track[] = [
   "musicDirector": "Sai Abhyankkar",
   "region": "Tamil",
   "isPremium": false,
-  "isPremiumPlus": false
+  "isPremiumPlus": false,
+  "weather": "Stormy"
 },
   {
   "id": "karuppu-4",
@@ -125,7 +134,8 @@ const PRESET_TRACKS: Track[] = [
   "musicDirector": "Sai Abhyankkar",
   "region": "Tamil",
   "isPremium": false,
-  "isPremiumPlus": false
+  "isPremiumPlus": false,
+  "weather": "Sunny"
 },
   {
   "id": "karuppu-5",
@@ -140,7 +150,8 @@ const PRESET_TRACKS: Track[] = [
   "musicDirector": "Sai Abhyankkar",
   "region": "Tamil",
   "isPremium": false,
-  "isPremiumPlus": false
+  "isPremiumPlus": false,
+  "weather": "Cloudy"
 },
   {
   "id": "karuppu-6",
@@ -155,7 +166,8 @@ const PRESET_TRACKS: Track[] = [
   "musicDirector": "Sai Abhyankkar",
   "region": "Tamil",
   "isPremium": false,
-  "isPremiumPlus": false
+  "isPremiumPlus": false,
+  "weather": "Rainy"
 },
   {
   "id": "karuppu-7",
@@ -170,7 +182,8 @@ const PRESET_TRACKS: Track[] = [
   "musicDirector": "Sai Abhyankkar",
   "region": "Tamil",
   "isPremium": false,
-  "isPremiumPlus": false
+  "isPremiumPlus": false,
+  "weather": "Sunny"
 },
   {
   "id": "karuppu-8",
@@ -185,7 +198,8 @@ const PRESET_TRACKS: Track[] = [
   "musicDirector": "Sai Abhyankkar",
   "region": "Tamil",
   "isPremium": false,
-  "isPremiumPlus": false
+  "isPremiumPlus": false,
+  "weather": "Sunny"
 },
   {
   "id": "karuppu-9",
@@ -200,7 +214,8 @@ const PRESET_TRACKS: Track[] = [
   "musicDirector": "Sai Abhyankkar",
   "region": "Tamil",
   "isPremium": false,
-  "isPremiumPlus": false
+  "isPremiumPlus": false,
+  "weather": "Snowy"
 },
   {
     id: 'track-1',
@@ -267,6 +282,10 @@ const PRESET_TRACKS: Track[] = [
 
 export const useMusicStore = create<MusicStore>((set, get) => ({
   tracks: PRESET_TRACKS, // Initial fallback tracks
+  currentWeather: null,
+  userRegion: null,
+  setCurrentWeather: (weather) => set({ currentWeather: weather }),
+  setUserRegion: (region) => set({ userRegion: region }),
   
   fetchTracks: async () => {
     try {

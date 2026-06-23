@@ -55,6 +55,7 @@ import {
 import { useMusicStore } from '../store/musicStore';
 import { AudioPlayer } from '../components/player/AudioPlayer';
 import { Track, SubscriptionTier } from '../types';
+import { getUserLocation, getWeather, getRegionIndustry } from '../services/locationService';
 
 const COMMUNITY_PLAYLISTS = [
   { name: 'Synthwave Nights', author: 'NeonRider', coverUrl: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=400', trackIds: ['track-1', 'track-2', 'track-3'] },
@@ -101,7 +102,11 @@ export const Home: React.FC = () => {
     logIn,
     logOut,
     updateProfile,
-    updatePrivacy
+    updatePrivacy,
+    currentWeather,
+    setCurrentWeather,
+    userRegion,
+    setUserRegion
   } = useMusicStore();
 
   // Local UI States
@@ -247,7 +252,10 @@ export const Home: React.FC = () => {
   }, [searchQuery, activeView]);
 
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [searchQueryLocal, setSearchQueryLocal] = useState('');
+  const [upgradeModalFeature, setUpgradeModalFeature] = useState('');
   const [upgradeTargetTier, setUpgradeTargetTier] = useState<SubscriptionTier>('Premium');
+  const [isLocating, setIsLocating] = useState(false);
   const [upgradeMessage, setUpgradeMessage] = useState('');
   const [newPlaylistName, setNewPlaylistName] = useState('');
   const [newPlaylistCover, setNewPlaylistCover] = useState('');
@@ -355,7 +363,25 @@ export const Home: React.FC = () => {
   };
 
   // Search Filter
-  const filteredTracks = tracks.filter((track) => {
+  const handleLocationVibe = async () => {
+    try {
+      setIsLocating(true);
+      const coords = await getUserLocation();
+      const [weather, region] = await Promise.all([
+        getWeather(coords.latitude, coords.longitude),
+        getRegionIndustry(coords.latitude, coords.longitude)
+      ]);
+      setCurrentWeather(weather);
+      setUserRegion(region);
+    } catch (error) {
+      console.error("Failed to get location vibe:", error);
+      alert("Please allow location access in your browser to personalize your vibe.");
+    } finally {
+      setIsLocating(false);
+    }
+  };
+
+  const filteredTracks = useMemo(() => tracks.filter((track) => {
     const query = searchQuery.toLowerCase().trim();
     if (!query) return true;
     return (
@@ -2033,6 +2059,74 @@ export const Home: React.FC = () => {
                 );
               })() : sidebarNav === 'home' ? (
                 <div data-scroll-reveal className="flex flex-col gap-10 pb-10">
+                  {/* Weather & Region Vibe Banner */}
+                  <div className="flex flex-col gap-4 relative overflow-hidden rounded-3xl glass-panel p-8 border border-white/10 bg-gradient-to-br from-indigo-950/40 via-black/40 to-ocean/20">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-teal/20 rounded-full filter blur-[80px] pointer-events-none" />
+                    <div className="flex justify-between items-center z-10">
+                      <div className="flex flex-col gap-2 max-w-xl">
+                        <h2 className="font-display font-black text-2xl text-white tracking-wider flex items-center gap-3">
+                          <Globe className="w-6 h-6 text-teal" /> Personalize your Vibe
+                        </h2>
+                        <p className="text-sm text-slate-300 leading-relaxed">
+                          Allow AURA to detect your location and climate, and we will automatically categorize your music feed with the perfect tracks for your weather and regional film industry!
+                        </p>
+                      </div>
+                      <button 
+                        onClick={handleLocationVibe}
+                        disabled={isLocating}
+                        className="py-3 px-6 bg-gradient-to-r from-ocean to-teal text-ink-primary font-bold text-xs uppercase tracking-widest rounded-xl hover:scale-105 transition-all shadow-[0_0_20px_rgba(45,212,191,0.2)] disabled:opacity-50 disabled:hover:scale-100 flex items-center gap-2"
+                      >
+                        {isLocating ? (
+                          <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Detecting...</>
+                        ) : (
+                          <><Sparkles className="w-4 h-4" /> Get My Vibe</>
+                        )}
+                      </button>
+                    </div>
+
+                    {/* Vibe Results */}
+                    <AnimatePresence>
+                      {currentWeather && userRegion && (
+                        <motion.div 
+                          initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                          animate={{ opacity: 1, height: 'auto', marginTop: 24 }}
+                          className="pt-6 border-t border-white/10 z-10"
+                        >
+                          <div className="flex items-center gap-3 mb-4">
+                            <span className="px-3 py-1 bg-white/10 rounded-full text-xs font-bold text-white uppercase tracking-wider backdrop-blur-md border border-white/5 flex items-center gap-1.5">
+                              {currentWeather === 'Rainy' || currentWeather === 'Stormy' ? '🌧️' : currentWeather === 'Snowy' ? '❄️' : currentWeather === 'Sunny' ? '☀️' : '☁️'} {currentWeather} Day
+                            </span>
+                            <span className="px-3 py-1 bg-teal/20 text-teal rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-md border border-teal/20">
+                              {userRegion}
+                            </span>
+                          </div>
+                          
+                          <div className="flex gap-4 overflow-x-auto custom-scroll pb-4 snap-x">
+                            {tracks.filter(t => t.weather === currentWeather && (t.region === userRegion || t.region === 'Bollywood')).length > 0 ? (
+                              tracks.filter(t => t.weather === currentWeather && (t.region === userRegion || t.region === 'Bollywood')).map((track) => (
+                                <div key={track.id} onClick={() => handleSelectTrack(track)} className="min-w-[140px] w-[140px] flex flex-col gap-2 cursor-pointer group snap-start">
+                                  <div className="w-full aspect-square rounded-xl overflow-hidden relative shadow-lg">
+                                    <img src={track.coverUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={track.title} />
+                                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
+                                    <div className="absolute bottom-2 right-2 bg-teal text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg translate-y-2 group-hover:translate-y-0">
+                                      <Play className="w-3 h-3 fill-white" />
+                                    </div>
+                                  </div>
+                                  <div className="flex flex-col">
+                                    <span className="text-sm font-bold text-white truncate group-hover:text-teal transition-colors">{track.title}</span>
+                                    <span className="text-[10px] text-slate-400 truncate">{track.artist}</span>
+                                  </div>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="text-sm text-slate-400 italic py-4">No matching tracks found for this vibe. Try exploring our global hits!</div>
+                            )}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
                   {/* Hero / Mixes */}
                   <div className="flex flex-col gap-4">
                     <h2 className="font-display font-bold text-xl text-white tracking-wider flex items-center gap-2">

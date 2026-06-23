@@ -25,6 +25,7 @@ export interface Track {
   musicDirector?: string;
   hero?: string;
   region?: string; // e.g., "Tollywood", "Bollywood", "Kollywood", "Hollywood"
+  weather?: 'Clear' | 'Sunny' | 'Cloudy' | 'Rainy' | 'Stormy' | 'Snowy';
 }
 
 export interface PrivacySettings {

@@ -5,15 +5,15 @@
 
 import nodemailer from 'nodemailer';
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD,
-  },
-});
-
 export async function sendVerificationEmail(toEmail: string, token: string, displayName: string): Promise<boolean> {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_APP_PASSWORD,
+    },
+  });
+
   const appUrl = process.env.APP_URL || 'http://localhost:3000';
   const verifyLink = `${appUrl}/api/users/verify-email?token=${token}`;
 

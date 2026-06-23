@@ -6,6 +6,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { MongoClient } from 'mongodb';
 import bcrypt from 'bcryptjs';
+import { sendVerificationEmail } from '../../lib/email';
 
 let cachedClient: MongoClient | null = null;
 
@@ -83,14 +84,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     await usersCol.insertOne(newUser);
     
-    // In Vercel serverless we don't have access to the local nodemailer easily unless we import it,
-    // let's try importing sendVerificationEmail
     let emailSent = false;
     try {
-      const { sendVerificationEmail } = await import('../../lib/email');
       emailSent = await sendVerificationEmail(email.toLowerCase(), verificationToken, username.trim());
     } catch (e) {
-      console.error('Failed to import or send email:', e);
+      console.error('Failed to send email:', e);
     }
 
     const { password: _, verificationToken: __, usernameLower: ___, ...safeUser } = newUser;

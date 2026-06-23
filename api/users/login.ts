@@ -30,7 +30,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const db = await getDb();
-    const user = await db.collection('users').findOne({ email });
+    const user = await db.collection('users').findOne({ email: email.toLowerCase() });
 
     if (!user) {
       return res.status(401).json({ error: 'Invalid email or password' });
@@ -41,7 +41,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    const { password: _, ...safeUser } = user;
+    // Check email verification
+    if (!user.emailVerified) {
+      return res.status(403).json({ error: 'Please verify your email address before signing in. Check your inbox for the verification link.' });
+    }
+
+    const { password: _, verificationToken: __, usernameLower: ___, ...safeUser } = user;
     res.status(200).json(safeUser);
   } catch (error) {
     console.error('Login error:', error);

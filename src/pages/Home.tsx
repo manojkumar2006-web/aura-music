@@ -3294,6 +3294,13 @@ export const Home: React.FC = () => {
                   
                   // Shuffle and limit to 10 recommendations to keep it fresh
                   const shuffledRecommendations = [...recommendedTracks].sort(() => 0.5 - Math.random()).slice(0, 10);
+                  
+                  // Explicitly Liked Artists/Composers
+                  const explicitlyLikedArtists = currentUser?.likedArtists || [];
+                  const explicitArtistObjects = explicitlyLikedArtists.map(name => ({
+                    name,
+                    cover: getCover(name, 'director')
+                  }));
 
                   return (
                     <motion.div
@@ -3338,6 +3345,25 @@ export const Home: React.FC = () => {
                               ))}
                             </div>
                           </div>
+
+                          {/* Liked Music Composers */}
+                          {explicitArtistObjects.length > 0 && (
+                            <div className="flex flex-col gap-4 mt-6">
+                              <h3 className="text-sm font-bold text-white tracking-widest uppercase font-display border-b border-white/10 pb-2 flex items-center gap-2">
+                                <Heart className="w-4 h-4 text-[#fa2d48] fill-[#fa2d48]" /> Liked Music Composers
+                              </h3>
+                              <div className="flex gap-4 overflow-x-auto custom-scroll pb-6 pt-2 px-2 -mx-2 snap-x">
+                                {explicitArtistObjects.map(artist => (
+                                  <div key={`liked-artist-${artist.name}`} onClick={() => setSelectedDirector(artist.name)} className="min-w-[120px] max-w-[120px] flex flex-col items-center gap-3 snap-start group cursor-pointer text-center active:scale-95 transition-transform">
+                                    <div className="w-full aspect-square rounded-full overflow-hidden relative shadow-lg border-2 border-transparent group-hover:border-[#fa2d48] transition-all">
+                                      <img src={artist.cover} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={artist.name} />
+                                    </div>
+                                    <p className="text-xs font-bold text-white line-clamp-2 group-hover:text-[#fa2d48] transition-colors">{artist.name}</p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
 
                           {/* Recommended For You */}
                           {shuffledRecommendations.length > 0 && (

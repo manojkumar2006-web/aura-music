@@ -558,7 +558,7 @@ export const Home: React.FC = () => {
                 )}
 
                 {authSuccess && (
-                  <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="p-3 mb-6 rounded-xl border text-[color:var(--color-teal)] text-xs font-semibold flex items-center gap-2 backdrop-blur-md" style={{ backgroundColor: 'rgba(230,80,27,0.1)', borderColor: 'rgba(230,80,27,0.2)' }}>
+                  <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="p-3 mb-6 rounded-xl border text-[color:var(--color-teal)] text-xs font-semibold flex items-center gap-2 backdrop-blur-md" style={{ backgroundColor: 'rgba(147,177,166,0.1)', borderColor: 'rgba(147,177,166,0.2)' }}>
                     <ShieldCheck className="w-4 h-4 flex-shrink-0" />
                     <span>{authSuccess}</span>
                   </motion.div>

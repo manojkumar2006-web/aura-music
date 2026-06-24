@@ -109,7 +109,8 @@ export const Home: React.FC = () => {
     setCurrentWeather,
     userRegion,
     setUserRegion,
-    fetchTracks
+    fetchTracks,
+    toggleLike
   } = useMusicStore();
 
   useEffect(() => {
@@ -270,9 +271,6 @@ export const Home: React.FC = () => {
   const [editingPlaylistOldName, setEditingPlaylistOldName] = useState<string | null>(null);
   const [activePlaylistMenu, setActivePlaylistMenu] = useState<string | null>(null);
   
-  // Track likes mapping
-  const [likedTracks, setLikedTracks] = useState<Record<string, boolean>>({});
-
   // Add Song Form States
   const [songTitle, setSongTitle] = useState('');
   const [songArtist, setSongArtist] = useState('');
@@ -290,11 +288,10 @@ export const Home: React.FC = () => {
   const [songIsPremium, setSongIsPremium] = useState(false);
   const [songIsPremiumPlus, setSongIsPremiumPlus] = useState(false);
 
-  const toggleLike = (trackId: string, e: React.MouseEvent) => {
+  const handleToggleLike = async (trackId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    const nextState = !likedTracks[trackId];
-    setLikedTracks((prev) => ({ ...prev, [trackId]: nextState }));
-    logAnalyticsEvent(`${nextState ? 'Liked' : 'Unliked'} track ID: ${trackId}`);
+    if (!currentUser) return;
+    await toggleLike(trackId);
   };
 
   const handleSelectTrack = (track: Track, contextTracks?: Track[]) => {
@@ -2168,7 +2165,7 @@ export const Home: React.FC = () => {
                       <span onClick={() => setSidebarNav('songs')} className="text-xs text-teal cursor-pointer hover:underline font-mono">View All</span>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {tracks.filter(t => likedTracks[t.id] || (currentUser?.favoriteDirectors?.includes(t.musicDirector || ''))).slice(0, 6).map(track => (
+                      {tracks.filter(t => currentUser?.likedTracks?.includes(t.id)).slice(0, 6).map(track => (
                         <div key={track.id} onClick={() => handleSelectTrack(track)} className="glass-panel p-2 rounded-xl flex items-center gap-3 cursor-pointer hover:bg-white/5 transition-all border border-transparent hover:border-white/10 group">
                           <img src={track.coverUrl} className="w-12 h-12 rounded-lg object-cover shadow-md" alt={track.title} />
                           <div className="flex flex-col flex-1 min-w-0">
@@ -2180,7 +2177,7 @@ export const Home: React.FC = () => {
                           </button>
                         </div>
                       ))}
-                      {tracks.filter(t => likedTracks[t.id]).length === 0 && (
+                      {tracks.filter(t => currentUser?.likedTracks?.includes(t.id)).length === 0 && (
                         <div className="col-span-full text-xs text-slate-500 font-mono py-4 text-center border border-dashed border-white/5 rounded-xl">
                           No liked songs yet. Start liking tracks!
                         </div>
@@ -2477,7 +2474,7 @@ export const Home: React.FC = () => {
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {filteredTracks.map((track, idx) => {
-                        const isTrackLiked = !!likedTracks[track.id];
+                        const isTrackLiked = !!currentUser?.likedTracks?.includes(track.id);
                         const isSelected = currentTrack?.id === track.id;
                         
                         const isDownloaded = downloadedTracks.includes(track.id);
@@ -2527,7 +2524,7 @@ export const Home: React.FC = () => {
                             {/* Action overlays (like / download / playlist add) */}
                             <div className="flex flex-col items-end justify-between py-0.5 relative z-20">
                               <button
-                                onClick={(e) => toggleLike(track.id, e)}
+                                onClick={(e) => handleToggleLike(track.id, e)}
                                 className="text-slate-450 hover:text-rose-455 p-0.5 cursor-pointer"
                               >
                                 <Heart className={`w-3.5 h-3.5 ${isTrackLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
@@ -2601,7 +2598,7 @@ export const Home: React.FC = () => {
                     // Derive unique liked artists with their cover & like count
                     const likedArtistMap = new Map<string, { name: string; coverUrl: string; count: number }>();
                     tracks.forEach((track) => {
-                      if (likedTracks[track.id]) {
+                      if (currentUser?.likedTracks?.includes(track.id)) {
                         const existing = likedArtistMap.get(track.artist);
                         if (existing) {
                           existing.count += 1;
@@ -3276,7 +3273,7 @@ export const Home: React.FC = () => {
               ) : sidebarNav === 'made-for-you' ? (
                 /* ===== Made For You Page ===== */
                 (() => {
-                  const likedSongTracks = tracks.filter(t => likedTracks[t.id]);
+                  const likedSongTracks = tracks.filter(t => currentUser?.likedTracks?.includes(t.id));
                   
                   // Extract unique artists
                   const likedArtistsMap = new Map<string, string>();

@@ -263,6 +263,34 @@ apiRouter.post('/users/login', async (req, res) => {
   }
 });
 
+// POST /api/users/likes - Toggle a liked track
+apiRouter.post('/users/likes', async (req, res) => {
+  try {
+    const { userId, trackId } = req.body;
+    if (!userId || !trackId) return res.status(400).json({ error: 'userId and trackId are required' });
+
+    const { db } = await connectToDatabase();
+    const usersCol = db.collection('users');
+
+    const user = await usersCol.findOne({ id: userId });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const likedTracks = user.likedTracks || [];
+    const isLiked = likedTracks.includes(trackId);
+
+    if (isLiked) {
+      await usersCol.updateOne({ id: userId }, { $pull: { likedTracks: trackId } as any });
+    } else {
+      await usersCol.updateOne({ id: userId }, { $addToSet: { likedTracks: trackId } as any });
+    }
+
+    res.json({ success: true, isLiked: !isLiked });
+  } catch (error) {
+    console.error('Like toggle error:', error);
+    res.status(500).json({ error: 'Failed to toggle like' });
+  }
+});
+
 // GET /api/users/profile?userId=xxx — Get user profile
 apiRouter.get('/users/profile', async (req, res) => {
   try {

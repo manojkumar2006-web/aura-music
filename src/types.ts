@@ -55,4 +55,5 @@ export interface UserProfile {
   onboardingComplete?: boolean;
   languages?: string[];
   favoriteDirectors?: string[];
+  likedTracks?: string[];
 }

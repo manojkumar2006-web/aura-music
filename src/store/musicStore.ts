@@ -59,6 +59,7 @@ interface MusicStore {
   completeOnboarding: (languages: string[], favoriteDirectors: string[]) => Promise<{ success: boolean; error?: string }>;
   incrementStats: (stat: 'play' | 'minute') => void;
   fetchTracks: () => Promise<void>;
+  toggleLike: (trackId: string) => Promise<{ success: boolean; error?: string }>;
 
   // Weather & Region States
   currentWeather: string | null;
@@ -299,6 +300,41 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
       }
     } catch (error) {
       console.error('Failed to fetch tracks from MongoDB API:', error);
+    }
+  },
+  toggleLike: async (trackId: string) => {
+    const currentUser = get().currentUser;
+    if (!currentUser) return { success: false, error: 'Not logged in' };
+
+    const currentLikes = currentUser.likedTracks || [];
+    const isLiked = currentLikes.includes(trackId);
+    
+    // Optimistic update
+    const updatedLikes = isLiked 
+      ? currentLikes.filter(id => id !== trackId)
+      : [...currentLikes, trackId];
+      
+    const updatedUser = { ...currentUser, likedTracks: updatedLikes };
+    set({ currentUser: updatedUser });
+    localStorage.setItem('aura_current_user', JSON.stringify(updatedUser));
+    
+    // Sync with backend
+    try {
+      const response = await fetch('/api/users/likes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: currentUser.id, trackId }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to sync like');
+      }
+      get().logAnalyticsEvent(`${!isLiked ? 'Liked' : 'Unliked'} track: ${trackId}`);
+      return { success: true };
+    } catch (error) {
+      // Rollback on error
+      set({ currentUser });
+      localStorage.setItem('aura_current_user', JSON.stringify(currentUser));
+      return { success: false, error: 'Network error' };
     }
   },
   addTrack: (track: Track) => {

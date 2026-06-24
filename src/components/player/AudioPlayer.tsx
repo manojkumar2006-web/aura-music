@@ -54,7 +54,9 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
     logAnalyticsEvent,
     incrementStats,
     queue,
-    setQueue
+    setQueue,
+    toggleLike,
+    currentUser
   } = useMusicStore();
   
   const [showQueue, setShowQueue] = useState(false);
@@ -87,7 +89,6 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   const [duration, setDuration] = useState(0);
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
 
   // Quality settings
   const [quality, setQuality] = useState<AudioQuality>('128k');
@@ -370,10 +371,14 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
             <div className="flex items-center gap-1">
               {/* Like trigger */}
               <button 
-                onClick={() => setIsLiked(!isLiked)} 
+                onClick={() => {
+                  if (currentUser && currentTrack) {
+                    toggleLike(currentTrack.id);
+                  }
+                }} 
                 className="p-1 hover:text-white transition-colors"
               >
-                <Heart className={`w-4.5 h-4.5 ${isLiked ? 'fill-rose-500 text-rose-500' : 'text-slate-400'}`} />
+                <Heart className={`w-4.5 h-4.5 ${currentUser?.likedTracks?.includes(currentTrack.id) ? 'fill-rose-500 text-rose-500' : 'text-slate-400'}`} />
               </button>
               
               {/* Lyrics trigger */}

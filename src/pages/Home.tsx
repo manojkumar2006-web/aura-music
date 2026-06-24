@@ -777,7 +777,7 @@ export const Home: React.FC = () => {
 
   return (
     <div className={`h-screen overflow-hidden ${activeThemeStyle.bg} text-ink-primary flex flex-col relative select-none transition-colors duration-500 star-field`}>
-      {currentUser && currentUser.onboardingComplete === false && (
+      {currentUser && currentUser.onboardingComplete !== true && (
         <OnboardingWizard />
       )}
       {/* Ambient background blobs (atmosphere) */}

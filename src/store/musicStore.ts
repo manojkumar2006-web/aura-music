@@ -497,6 +497,9 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
         stats: data.stats || { tracksPlayed: 0, minutesListened: 0, topGenre: 'Various', favArtist: 'Various' },
         privacy: data.privacy || { isPublicProfile: true, showListeningActivity: true, playlistsPrivateByDefault: false },
         createdAt: data.createdAt || new Date().toISOString(),
+        onboardingComplete: data.onboardingComplete ?? false,
+        languages: data.languages || [],
+        favoriteDirectors: data.favoriteDirectors || [],
       };
       set({ currentUser: user, authLoading: false });
       localStorage.setItem('aura_current_user', JSON.stringify(user));

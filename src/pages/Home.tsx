@@ -2721,13 +2721,23 @@ export const Home: React.FC = () => {
                           <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.12),transparent_60%)]" />
 
                           {/* Emoji icon */}
-                          <div className="absolute top-3 right-3 text-2xl opacity-40 group-hover:opacity-70 group-hover:scale-110 transition-all duration-300 drop-shadow-lg">
+                          <div className="absolute top-3 left-3 text-2xl opacity-40 group-hover:opacity-70 transition-all duration-300 drop-shadow-lg z-10">
                             {cat.emoji}
                           </div>
 
+                          {/* Angled Image */}
+                          <div className="absolute -right-4 -bottom-2 w-20 h-20 sm:w-24 sm:h-24 rotate-[25deg] shadow-[0_8px_30px_rgba(0,0,0,0.5)] rounded-lg overflow-hidden group-hover:rotate-[15deg] group-hover:scale-110 transition-all duration-500 z-10">
+                            <img 
+                              src={`https://picsum.photos/seed/${cat.name.replace(/[^a-zA-Z]/g,'')}/150/150`} 
+                              className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" 
+                              alt="" 
+                              loading="lazy"
+                            />
+                          </div>
+
                           {/* Category Name */}
-                          <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/50 to-transparent">
-                            <span className="text-[13px] font-bold text-white font-display tracking-wide drop-shadow-md">
+                          <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-20">
+                            <span className="text-[14px] font-bold text-white font-display tracking-wide drop-shadow-md">
                               {cat.name}
                             </span>
                           </div>

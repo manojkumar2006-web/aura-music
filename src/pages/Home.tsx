@@ -589,7 +589,7 @@ export const Home: React.FC = () => {
                       className="peer w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-transparent focus:outline-none focus:border-[color:var(--color-teal)] focus:bg-white/10 focus:shadow-[0_0_15px_var(--color-teal)] transition-all"
                       placeholder="Email Address"
                     />
-                    <label className="absolute left-11 -top-2 text-[10px] uppercase font-mono px-1 transition-all peer-placeholder-shown:text-slate-500 peer-placeholder-shown:text-sm peer-placeholder-shown:top-3.5 peer-placeholder-shown:bg-transparent peer-focus:-top-2 peer-focus:text-[10px] rounded bg-[color:var(--color-onyx-2)] text-[color:var(--color-teal)]">
+                    <label className="absolute left-11 -top-2 text-[10px] uppercase font-mono px-1 transition-all peer-placeholder-shown:text-slate-500 peer-placeholder-shown:text-sm peer-placeholder-shown:top-3.5 peer-placeholder-shown:bg-transparent peer-focus:-top-2 peer-focus:text-[10px] rounded bg-[#020507] text-[color:var(--color-teal)]">
                       Email Address
                     </label>
                   </div>
@@ -604,7 +604,7 @@ export const Home: React.FC = () => {
                       className="peer w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-transparent focus:outline-none focus:border-[color:var(--color-teal)] focus:bg-white/10 focus:shadow-[0_0_15px_var(--color-teal)] transition-all"
                       placeholder="Password"
                     />
-                    <label className="absolute left-11 -top-2 text-[10px] uppercase font-mono px-1 transition-all peer-placeholder-shown:text-slate-500 peer-placeholder-shown:text-sm peer-placeholder-shown:top-3.5 peer-placeholder-shown:bg-transparent peer-focus:-top-2 peer-focus:text-[10px] rounded bg-[color:var(--color-onyx-2)] text-[color:var(--color-teal)]">
+                    <label className="absolute left-11 -top-2 text-[10px] uppercase font-mono px-1 transition-all peer-placeholder-shown:text-slate-500 peer-placeholder-shown:text-sm peer-placeholder-shown:top-3.5 peer-placeholder-shown:bg-transparent peer-focus:-top-2 peer-focus:text-[10px] rounded bg-[#020507] text-[color:var(--color-teal)]">
                       Password
                     </label>
                   </div>
@@ -661,7 +661,7 @@ export const Home: React.FC = () => {
                       className="peer w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-transparent focus:outline-none focus:border-[color:var(--color-teal)] focus:bg-white/10 focus:shadow-[0_0_15px_var(--color-teal)] transition-all"
                       placeholder="Username"
                     />
-                    <label className="absolute left-11 -top-2 text-[10px] uppercase font-mono px-1 transition-all peer-placeholder-shown:text-slate-500 peer-placeholder-shown:text-sm peer-placeholder-shown:top-3.5 peer-placeholder-shown:bg-transparent peer-focus:-top-2 peer-focus:text-[10px] rounded bg-[color:var(--color-onyx-2)] text-[color:var(--color-teal)]">
+                    <label className="absolute left-11 -top-2 text-[10px] uppercase font-mono px-1 transition-all peer-placeholder-shown:text-slate-500 peer-placeholder-shown:text-sm peer-placeholder-shown:top-3.5 peer-placeholder-shown:bg-transparent peer-focus:-top-2 peer-focus:text-[10px] rounded bg-[#020507] text-[color:var(--color-teal)]">
                       Username
                     </label>
                   </div>
@@ -676,24 +676,26 @@ export const Home: React.FC = () => {
                       className="peer w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-transparent focus:outline-none focus:border-[color:var(--color-teal)] focus:bg-white/10 focus:shadow-[0_0_15px_var(--color-teal)] transition-all"
                       placeholder="Email Address"
                     />
-                    <label className="absolute left-11 -top-2 text-[10px] uppercase font-mono px-1 transition-all peer-placeholder-shown:text-slate-500 peer-placeholder-shown:text-sm peer-placeholder-shown:top-3.5 peer-placeholder-shown:bg-transparent peer-focus:-top-2 peer-focus:text-[10px] rounded bg-[color:var(--color-onyx-2)] text-[color:var(--color-teal)]">
+                    <label className="absolute left-11 -top-2 text-[10px] uppercase font-mono px-1 transition-all peer-placeholder-shown:text-slate-500 peer-placeholder-shown:text-sm peer-placeholder-shown:top-3.5 peer-placeholder-shown:bg-transparent peer-focus:-top-2 peer-focus:text-[10px] rounded bg-[#020507] text-[color:var(--color-teal)]">
                       Email Address
                     </label>
                   </div>
 
-                  <div className="relative group mt-1">
-                    <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[color:var(--color-teal)] transition-colors z-10" />
-                    <input
-                      type="password"
-                      value={signupPassword}
-                      onChange={(e) => setSignupPassword(e.target.value)}
-                      required
-                      className="peer w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-transparent focus:outline-none focus:border-[color:var(--color-teal)] focus:bg-white/10 focus:shadow-[0_0_15px_var(--color-teal)] transition-all"
-                      placeholder="Password"
-                    />
-                    <label className="absolute left-11 -top-2 text-[10px] uppercase font-mono px-1 transition-all peer-placeholder-shown:text-slate-500 peer-placeholder-shown:text-sm peer-placeholder-shown:top-3.5 peer-placeholder-shown:bg-transparent peer-focus:-top-2 peer-focus:text-[10px] rounded bg-[color:var(--color-onyx-2)] text-[color:var(--color-teal)]">
-                      Password
-                    </label>
+                  <div className="mt-1">
+                    <div className="relative group">
+                      <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[color:var(--color-teal)] transition-colors z-10" />
+                      <input
+                        type="password"
+                        value={signupPassword}
+                        onChange={(e) => setSignupPassword(e.target.value)}
+                        required
+                        className="peer w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-transparent focus:outline-none focus:border-[color:var(--color-teal)] focus:bg-white/10 focus:shadow-[0_0_15px_var(--color-teal)] transition-all"
+                        placeholder="Password"
+                      />
+                      <label className="absolute left-11 -top-2 text-[10px] uppercase font-mono px-1 transition-all peer-placeholder-shown:text-slate-500 peer-placeholder-shown:text-sm peer-placeholder-shown:top-3.5 peer-placeholder-shown:bg-transparent peer-focus:-top-2 peer-focus:text-[10px] rounded bg-[#020507] text-[color:var(--color-teal)]">
+                        Password
+                      </label>
+                    </div>
                     
                     {/* Password Strength Indicators */}
                     <div className="flex flex-col gap-1 mt-3 px-1 bg-black/20 p-3 rounded-xl border border-white/5">
@@ -726,22 +728,24 @@ export const Home: React.FC = () => {
                     )}
                   </div>
 
-                  <div className="relative group mt-1">
-                    <Shield className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[color:var(--color-teal)] transition-colors z-10" />
-                    <input
-                      type="password"
-                      value={signupConfirmPassword}
-                      onChange={(e) => setSignupConfirmPassword(e.target.value)}
-                      required
-                      className={`peer w-full bg-white/5 border ${signupConfirmPassword && signupPassword !== signupConfirmPassword ? 'border-red-500/50 focus:border-red-400 focus:shadow-[0_0_15px_rgba(248,113,113,0.15)]' : 'border-white/10 focus:border-[color:var(--color-teal)] focus:shadow-[0_0_15px_var(--color-teal)]'} rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-transparent focus:outline-none focus:bg-white/10 transition-all`}
-                      placeholder="Confirm Password"
-                    />
-                    <label className={`absolute left-11 -top-2 text-[10px] uppercase font-mono px-1 transition-all peer-placeholder-shown:text-slate-500 peer-placeholder-shown:text-sm peer-placeholder-shown:top-3.5 peer-placeholder-shown:bg-transparent peer-focus:-top-2 peer-focus:text-[10px] rounded bg-[color:var(--color-onyx-2)] ${signupConfirmPassword && signupPassword !== signupConfirmPassword ? 'text-red-400 peer-focus:text-red-400' : 'text-[color:var(--color-teal)] peer-focus:text-[color:var(--color-teal)]'}`}>
-                      Confirm Password
-                    </label>
-                    {signupConfirmPassword && signupPassword !== signupConfirmPassword && (
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-red-400 px-1 rounded bg-[color:var(--color-onyx-2)]">Mismatch</span>
-                    )}
+                  <div className="mt-1">
+                    <div className="relative group">
+                      <Shield className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[color:var(--color-teal)] transition-colors z-10" />
+                      <input
+                        type="password"
+                        value={signupConfirmPassword}
+                        onChange={(e) => setSignupConfirmPassword(e.target.value)}
+                        required
+                        className={`peer w-full bg-white/5 border ${signupConfirmPassword && signupPassword !== signupConfirmPassword ? 'border-red-500/50 focus:border-red-400 focus:shadow-[0_0_15px_rgba(248,113,113,0.15)]' : 'border-white/10 focus:border-[color:var(--color-teal)] focus:shadow-[0_0_15px_var(--color-teal)]'} rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-transparent focus:outline-none focus:bg-white/10 transition-all`}
+                        placeholder="Confirm Password"
+                      />
+                      <label className={`absolute left-11 -top-2 text-[10px] uppercase font-mono px-1 transition-all peer-placeholder-shown:text-slate-500 peer-placeholder-shown:text-sm peer-placeholder-shown:top-3.5 peer-placeholder-shown:bg-transparent peer-focus:-top-2 peer-focus:text-[10px] rounded bg-[#020507] ${signupConfirmPassword && signupPassword !== signupConfirmPassword ? 'text-red-400 peer-focus:text-red-400' : 'text-[color:var(--color-teal)] peer-focus:text-[color:var(--color-teal)]'}`}>
+                        Confirm Password
+                      </label>
+                      {signupConfirmPassword && signupPassword !== signupConfirmPassword && (
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-red-400 px-1 rounded bg-[#020507]">Mismatch</span>
+                      )}
+                    </div>
                   </div>
                   
                   <button

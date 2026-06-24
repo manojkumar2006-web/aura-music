@@ -60,10 +60,10 @@ import { getUserLocation, getWeather, getRegionIndustry } from '../services/loca
 import { OnboardingWizard } from '../components/OnboardingWizard';
 
 const COMMUNITY_PLAYLISTS = [
-  { name: 'Synthwave Nights', author: 'NeonRider', coverUrl: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=400', trackIds: ['track-1', 'track-2', 'track-3'] },
-  { name: 'Focus Flow', author: 'StudyBot', coverUrl: 'https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?auto=format&fit=crop&q=80&w=400', trackIds: ['track-4', 'track-5'] },
-  { name: 'Gym Bangerz', author: 'Chad', coverUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=400', trackIds: ['track-6', 'track-7'] },
-  { name: 'Acoustic Morning', author: 'CoffeeLover', coverUrl: 'https://images.unsplash.com/photo-1445452916036-90224d4530af?auto=format&fit=crop&q=80&w=400', trackIds: ['track-8', 'track-9'] }
+  { name: 'Synthwave Nights', author: 'NeonRider', coverUrl: 'https://picsum.photos/seed/music1/400/400', trackIds: ['track-1', 'track-2', 'track-3'] },
+  { name: 'Focus Flow', author: 'StudyBot', coverUrl: 'https://picsum.photos/seed/music2/400/400', trackIds: ['track-4', 'track-5'] },
+  { name: 'Gym Bangerz', author: 'Chad', coverUrl: 'https://picsum.photos/seed/music3/400/400', trackIds: ['track-6', 'track-7'] },
+  { name: 'Acoustic Morning', author: 'CoffeeLover', coverUrl: 'https://picsum.photos/seed/music4/400/400', trackIds: ['track-8', 'track-9'] }
 ];
 
 export const Home: React.FC = () => {
@@ -322,7 +322,7 @@ export const Home: React.FC = () => {
     if (!songTitle.trim() || !songArtist.trim() || !songAudio128k.trim()) return;
 
     // Cover Art Fallback
-    const coverUrl = songCoverUrl.trim() || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=400&q=80';
+    const coverUrl = songCoverUrl.trim() || 'https://picsum.photos/seed/music5/400/400';
 
     const newTrack: Track = {
       id: `track-${Date.now()}`,
@@ -434,7 +434,7 @@ export const Home: React.FC = () => {
       accentText: 'text-teal',
       accentBg: 'bg-teal/15',
       accentBorder: 'border-teal/25',
-      glow: 'shadow-[0_0_15px_rgba(136, 13, 30,0.25)]',
+      glow: 'shadow-[0_0_15px_rgba(24, 61, 61,0.25)]',
       sidebarGlow: 'from-teal/10 via-deepblue/5 to-transparent'
     },
     gold: {
@@ -893,11 +893,11 @@ export const Home: React.FC = () => {
             <div className="flex items-center justify-between">
               <span className="text-[10px] uppercase font-mono tracking-wider text-ink-tertiary">Account Status</span>
               {userTier === 'Premium+' ? (
-                <span className="text-[9px] uppercase font-mono tracking-widest text-ink-primary font-bold bg-gradient-to-r from-deepblue to-ocean px-2 py-0.5 rounded border border-teal/35 shadow-[0_0_8px_rgba(136, 13, 30,0.3)] flex items-center gap-1">
+                <span className="text-[9px] uppercase font-mono tracking-widest text-ink-primary font-bold bg-gradient-to-r from-deepblue to-ocean px-2 py-0.5 rounded border border-teal/35 shadow-[0_0_8px_rgba(24, 61, 61,0.3)] flex items-center gap-1">
                   <Crown className="w-2.5 h-2.5 fill-current" /> Premium+
                 </span>
               ) : userTier === 'Premium' ? (
-                <span className="text-[9px] uppercase font-mono tracking-widest text-teal font-bold bg-teal/10 px-2 py-0.5 rounded border border-teal/20 shadow-[0_0_8px_rgba(136, 13, 30,0.15)] flex items-center gap-1">
+                <span className="text-[9px] uppercase font-mono tracking-widest text-teal font-bold bg-teal/10 px-2 py-0.5 rounded border border-teal/20 shadow-[0_0_8px_rgba(24, 61, 61,0.15)] flex items-center gap-1">
                   <Crown className="w-2.5 h-2.5 fill-current" /> Premium
                 </span>
               ) : (
@@ -980,7 +980,7 @@ export const Home: React.FC = () => {
                   >
                     {/* Active indicator bar */}
                     {isActive && (
-                      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-gradient-to-b from-teal to-ocean rounded-r-full shadow-[0_0_8px_rgba(136, 13, 30,0.5)]" />
+                      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-gradient-to-b from-teal to-ocean rounded-r-full shadow-[0_0_8px_rgba(24, 61, 61,0.5)]" />
                     )}
                     <Icon className={`w-4 h-4 transition-colors duration-200 ${
                       isActive 
@@ -995,7 +995,7 @@ export const Home: React.FC = () => {
                       {item.label}
                     </span>
                     {item.id === 'new' && (
-                      <span className="ml-auto text-[8px] font-bold uppercase tracking-widest bg-gradient-to-r from-ocean to-teal text-ink-primary px-1.5 py-0.5 rounded-full shadow-[0_0_6px_rgba(136, 13, 30,0.3)]">
+                      <span className="ml-auto text-[8px] font-bold uppercase tracking-widest bg-gradient-to-r from-ocean to-teal text-ink-primary px-1.5 py-0.5 rounded-full shadow-[0_0_6px_rgba(24, 61, 61,0.3)]">
                         New
                       </span>
                     )}
@@ -1035,7 +1035,7 @@ export const Home: React.FC = () => {
                   >
                     {/* Active indicator bar */}
                     {isActive && (
-                      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 bg-gradient-to-b from-teal to-ocean rounded-r-full shadow-[0_0_8px_rgba(136, 13, 30,0.5)]" />
+                      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 bg-gradient-to-b from-teal to-ocean rounded-r-full shadow-[0_0_8px_rgba(24, 61, 61,0.5)]" />
                     )}
                     <Icon className={`w-3.5 h-3.5 transition-colors duration-200 ${
                       isActive 
@@ -1066,7 +1066,7 @@ export const Home: React.FC = () => {
           
           {/* Top Bar with Search Input & Account Action */}
           <div data-scroll-reveal className="flex gap-4 items-center w-full">
-            <div className="flex-grow glass-panel rounded-2xl p-3 border border-silver/8 bg-graphite/45 flex items-center gap-3 transition-all duration-300 focus-within:border-teal/35 focus-within:shadow-[0_0_15px_rgba(136, 13, 30,0.1)]">
+            <div className="flex-grow glass-panel rounded-2xl p-3 border border-silver/8 bg-graphite/45 flex items-center gap-3 transition-all duration-300 focus-within:border-teal/35 focus-within:shadow-[0_0_15px_rgba(24, 61, 61,0.1)]">
               <Search className="w-5 h-5 text-ink-secondary flex-shrink-0" />
               <input
                 type="text"
@@ -1088,13 +1088,13 @@ export const Home: React.FC = () => {
 
             <button
               onClick={() => setActiveView(activeView === 'profile' ? 'library' : 'profile')}
-              className={`glass-panel rounded-2xl px-4 py-2 border border-silver/8 bg-graphite/45 flex items-center gap-2.5 hover:border-teal/30 hover:bg-teal/5 hover:shadow-[0_0_15px_rgba(136, 13, 30,0.1)] transition-all cursor-pointer h-12 flex-shrink-0 ${
-                activeView === 'profile' ? 'border-teal/45 bg-teal/10 shadow-[0_0_15px_rgba(136, 13, 30,0.15)]' : ''
+              className={`glass-panel rounded-2xl px-4 py-2 border border-silver/8 bg-graphite/45 flex items-center gap-2.5 hover:border-teal/30 hover:bg-teal/5 hover:shadow-[0_0_15px_rgba(24, 61, 61,0.1)] transition-all cursor-pointer h-12 flex-shrink-0 ${
+                activeView === 'profile' ? 'border-teal/45 bg-teal/10 shadow-[0_0_15px_rgba(24, 61, 61,0.15)]' : ''
               }`}
             >
               <div className="w-7 h-7 rounded-full overflow-hidden bg-gradient-to-tr from-ocean to-teal p-0.5 flex-shrink-0">
                   <img
-                    src={currentUser.avatarUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80'}
+                    src={currentUser.avatarUrl || 'https://picsum.photos/seed/music6/400/400'}
                     className="w-full h-full object-cover rounded-full bg-graphite"
                     alt="Avatar"
                   />
@@ -1136,9 +1136,9 @@ export const Home: React.FC = () => {
                   <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center justify-between">
                     <div className="flex items-center gap-4">
                       {/* Avatar */}
-                      <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-tr from-ocean to-teal p-1 relative z-10 flex-shrink-0 shadow-[0_0_20px_rgba(136, 13, 30,0.25)]">
+                      <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-tr from-ocean to-teal p-1 relative z-10 flex-shrink-0 shadow-[0_0_20px_rgba(24, 61, 61,0.25)]">
                         <img
-                          src={currentUser.avatarUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80'}
+                          src={currentUser.avatarUrl || 'https://picsum.photos/seed/music7/400/400'}
                           className="w-full h-full object-cover rounded-full bg-graphite"
                           alt="Avatar"
                         />
@@ -1150,9 +1150,9 @@ export const Home: React.FC = () => {
                           </h1>
                           <span className={`text-[8.5px] uppercase font-mono tracking-widest font-bold px-2 py-0.5 rounded border ${
                             userTier === 'Premium+'
-                              ? 'bg-gradient-to-r from-deepblue to-ocean border-teal/35 text-white shadow-[0_0_8px_rgba(136, 13, 30,0.3)]'
+                              ? 'bg-gradient-to-r from-deepblue to-ocean border-teal/35 text-white shadow-[0_0_8px_rgba(24, 61, 61,0.3)]'
                               : userTier === 'Premium'
-                              ? 'bg-teal/10 border-teal/20 text-teal shadow-[0_0_8px_rgba(136, 13, 30,0.15)]'
+                              ? 'bg-teal/10 border-teal/20 text-teal shadow-[0_0_8px_rgba(24, 61, 61,0.15)]'
                               : 'bg-white/5 border-white/10 text-ink-secondary'
                           }`}>
                             {userTier}
@@ -1236,11 +1236,11 @@ export const Home: React.FC = () => {
                         <span className="text-[9px] uppercase font-mono text-ink-tertiary">Or Select Premium Avatar Preset</span>
                         <div className="flex gap-3 overflow-x-auto py-1">
                           {[
-                            { name: 'Producer', url: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=150&q=80' },
-                            { name: 'Vocalist', url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80' },
-                            { name: 'Composer', url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80' },
-                            { name: 'Audiophile', url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80' },
-                            { name: 'Astronaut', url: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=150&q=80' }
+                            { name: 'Producer', url: 'https://picsum.photos/seed/music8/400/400' },
+                            { name: 'Vocalist', url: 'https://picsum.photos/seed/music9/400/400' },
+                            { name: 'Composer', url: 'https://picsum.photos/seed/music10/400/400' },
+                            { name: 'Audiophile', url: 'https://picsum.photos/seed/music11/400/400' },
+                            { name: 'Astronaut', url: 'https://picsum.photos/seed/music12/400/400' }
                           ].map((avatar) => (
                             <button
                               key={avatar.name}
@@ -1477,7 +1477,7 @@ export const Home: React.FC = () => {
                                             newBands[idx] = parseInt(e.target.value);
                                             setEqBands(newBands);
                                           }}
-                                          className="absolute w-20 h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-teal [&::-webkit-slider-thumb]:shadow-[0_0_10px_rgba(136, 13, 30,0.6)] outline-none origin-center -rotate-90 hover:[&::-webkit-slider-thumb]:scale-110 transition-all"
+                                          className="absolute w-20 h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-teal [&::-webkit-slider-thumb]:shadow-[0_0_10px_rgba(24, 61, 61,0.6)] outline-none origin-center -rotate-90 hover:[&::-webkit-slider-thumb]:scale-110 transition-all"
                                         />
                                       </div>
                                       <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest">{frequencies[idx]}</span>
@@ -1615,7 +1615,7 @@ export const Home: React.FC = () => {
                 const getCover = (name: string, type: 'hero' | 'director' | 'artist') => {
                   if (name.includes('Sai Abhyankkar')) return '/covers/Sai-Abhyankkar.avif';
                   if (type === 'hero' || name.includes('Unknown')) return '/covers/hero-images.jpg';
-                  return `https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80&sig=${name.replace(/\s/g, '')}`;
+                  return `https://picsum.photos/seed/music13/400/400'')}`;
                 };
 
                 return (
@@ -1931,7 +1931,7 @@ export const Home: React.FC = () => {
                 const targetPlaylist = playlists.find(p => p.name === selectedPlaylist) || COMMUNITY_PLAYLISTS.find(p => p.name === selectedPlaylist);
                 if (!targetPlaylist) return null;
                 const playlistTracks = tracks.filter(t => targetPlaylist.trackIds.includes(t.id));
-                const coverImage = playlistTracks.length > 0 ? playlistTracks[0].coverUrl : 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=400';
+                const coverImage = playlistTracks.length > 0 ? playlistTracks[0].coverUrl : 'https://picsum.photos/seed/music14/400/400';
                 
                 return (
                   <motion.div
@@ -2076,7 +2076,7 @@ export const Home: React.FC = () => {
                       <button 
                         onClick={handleLocationVibe}
                         disabled={isLocating}
-                        className="py-3 px-6 bg-gradient-to-r from-ocean to-teal text-ink-primary font-bold text-xs uppercase tracking-widest rounded-xl hover:scale-105 transition-all shadow-[0_0_20px_rgba(45,212,191,0.2)] disabled:opacity-50 disabled:hover:scale-100 flex items-center gap-2"
+                        className="py-3 px-6 bg-gradient-to-r from-ocean to-teal text-ink-primary font-bold text-xs uppercase tracking-widest rounded-xl hover:scale-105 transition-all shadow-[0_0_20px_rgba(147, 177, 166,0.2)] disabled:opacity-50 disabled:hover:scale-100 flex items-center gap-2"
                       >
                         {isLocating ? (
                           <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Detecting...</>
@@ -2436,7 +2436,7 @@ export const Home: React.FC = () => {
                         <div className="md:col-span-2 flex justify-end">
                           <button
                             type="submit"
-                            className="px-5 py-2 bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-bold text-xs uppercase tracking-wider rounded-full shadow-[0_5px_15px_rgba(16,185,129,0.25)] hover:scale-102 active:scale-97 transition-all flex items-center gap-1.5 cursor-pointer"
+                            className="px-5 py-2 bg-gradient-to-r from-ocean to-teal text-slate-950 font-bold text-xs uppercase tracking-wider rounded-full shadow-[0_5px_15px_rgba(16,185,129,0.25)] hover:scale-102 active:scale-97 transition-all flex items-center gap-1.5 cursor-pointer"
                           >
                             <PlusCircle className="w-4 h-4 text-slate-950" /> Add Song Registry
                           </button>
@@ -2482,8 +2482,8 @@ export const Home: React.FC = () => {
                               activeTrackMenu === track.id ? 'overflow-visible z-30' : 'overflow-hidden'
                             } ${
                               isSelected 
-                                ? 'border-teal/45 shadow-[0_8px_30px_rgba(136, 13, 30,0.15)] bg-gradient-to-r from-teal/10 to-transparent' 
-                                : 'border-silver/8 hover:border-teal/30 hover:bg-teal/5 hover:shadow-[0_8px_25px_rgba(136, 13, 30,0.1)]'
+                                ? 'border-teal/45 shadow-[0_8px_30px_rgba(24, 61, 61,0.15)] bg-gradient-to-r from-teal/10 to-transparent' 
+                                : 'border-silver/8 hover:border-teal/30 hover:bg-teal/5 hover:shadow-[0_8px_25px_rgba(24, 61, 61,0.1)]'
                             }`}
                           >
                             {/* Art */}
@@ -2741,7 +2741,7 @@ export const Home: React.FC = () => {
                   const getCover = (name: string, type: 'hero' | 'director' | 'artist') => {
                     if (name.includes('Sai Abhyankkar')) return '/covers/Sai-Abhyankkar.avif';
                     if (type === 'hero' || name.includes('Unknown')) return '/covers/hero-images.jpg';
-                    return `https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80&sig=${name.replace(/\s/g, '')}`;
+                    return `https://picsum.photos/seed/music15/400/400'')}`;
                   };
 
 
@@ -2772,7 +2772,7 @@ export const Home: React.FC = () => {
                           }}
                           className={`px-6 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap border ${
                             activeRegion === region 
-                              ? 'bg-teal border-teal text-white shadow-[0_0_15px_rgba(136, 13, 30,0.4)]' 
+                              ? 'bg-teal border-teal text-white shadow-[0_0_15px_rgba(24, 61, 61,0.4)]' 
                               : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:text-white'
                           }`}
                         >
@@ -2898,7 +2898,7 @@ export const Home: React.FC = () => {
                                 key={track.id}
                                 onClick={() => handleSelectTrack(track)}
                                 className={`group relative rounded-[2rem] overflow-hidden cursor-pointer aspect-video md:aspect-[16/10] lg:aspect-[16/9] border ${
-                                  isSelected ? 'border-teal shadow-[0_0_40px_rgba(45,212,191,0.2)]' : 'border-white/5 hover:border-white/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)]'
+                                  isSelected ? 'border-teal shadow-[0_0_40px_rgba(147, 177, 166,0.2)]' : 'border-white/5 hover:border-white/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)]'
                                 } transition-all duration-500`}
                               >
                                 <img src={track.coverUrl} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt={track.title} />
@@ -2910,7 +2910,7 @@ export const Home: React.FC = () => {
                                     {isNMD ? 'Updated Playlist' : 'New Release'}
                                   </span>
                                   {isSelected && playbackState === 'playing' ? (
-                                    <div className="w-10 h-10 rounded-full bg-teal flex items-center justify-center text-black shadow-[0_0_20px_rgba(45,212,191,0.5)] animate-pulse">
+                                    <div className="w-10 h-10 rounded-full bg-teal flex items-center justify-center text-black shadow-[0_0_20px_rgba(147, 177, 166,0.5)] animate-pulse">
                                       <Pause className="w-5 h-5 fill-current" />
                                     </div>
                                   ) : (
@@ -3035,8 +3035,8 @@ export const Home: React.FC = () => {
                           }}
                           className={`group relative rounded-2xl glass-panel p-4 cursor-pointer overflow-hidden transition-all duration-300 flex flex-col gap-3 border ${
                             isSelected 
-                              ? 'border-teal/45 shadow-[0_8px_30px_rgba(136, 13, 30,0.15)] bg-gradient-to-r from-teal/10 to-transparent' 
-                              : 'border-silver/8 hover:border-teal/30 hover:bg-teal/5 hover:shadow-[0_8px_25px_rgba(136, 13, 30,0.1)]'
+                              ? 'border-teal/45 shadow-[0_8px_30px_rgba(24, 61, 61,0.15)] bg-gradient-to-r from-teal/10 to-transparent' 
+                              : 'border-silver/8 hover:border-teal/30 hover:bg-teal/5 hover:shadow-[0_8px_25px_rgba(24, 61, 61,0.1)]'
                           }`}
                         >
                           <div className="flex gap-4">
@@ -3136,7 +3136,7 @@ export const Home: React.FC = () => {
                         </div>
                         <button
                           type="submit"
-                          className="self-end px-6 py-2.5 bg-gradient-to-r from-ocean to-teal text-white text-xs font-bold uppercase tracking-widest rounded-xl hover:shadow-[0_0_15px_rgba(136, 13, 30,0.4)] transition-all cursor-pointer"
+                          className="self-end px-6 py-2.5 bg-gradient-to-r from-ocean to-teal text-white text-xs font-bold uppercase tracking-widest rounded-xl hover:shadow-[0_0_15px_rgba(24, 61, 61,0.4)] transition-all cursor-pointer"
                         >
                           {editingPlaylistOldName ? 'Save Changes' : 'Create'}
                         </button>
@@ -3418,7 +3418,7 @@ export const Home: React.FC = () => {
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-teal/5 rounded-full filter blur-3xl pointer-events-none" />
 
                     {/* Icon */}
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-ocean/20 to-teal/10 border border-teal/15 flex items-center justify-center shadow-[0_0_25px_rgba(136, 13, 30,0.1)] relative z-10">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-ocean/20 to-teal/10 border border-teal/15 flex items-center justify-center shadow-[0_0_25px_rgba(24, 61, 61,0.1)] relative z-10">
                       {sidebarNav === 'radio' && <Radio className="w-7 h-7 text-teal/70" />}
                       {sidebarNav === 'made-for-you' && <LayoutGrid className="w-7 h-7 text-teal/70" />}
                     </div>
@@ -3441,7 +3441,7 @@ export const Home: React.FC = () => {
 
                     <button
                       onClick={() => setSidebarNav('home')}
-                      className="relative z-10 mt-2 px-5 py-2 bg-gradient-to-r from-ocean to-teal text-white text-[11px] font-bold uppercase tracking-wider rounded-full shadow-[0_4px_15px_rgba(136, 13, 30,0.25)] hover:shadow-[0_4px_20px_rgba(136, 13, 30,0.4)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                      className="relative z-10 mt-2 px-5 py-2 bg-gradient-to-r from-ocean to-teal text-white text-[11px] font-bold uppercase tracking-wider rounded-full shadow-[0_4px_15px_rgba(24, 61, 61,0.25)] hover:shadow-[0_4px_20px_rgba(24, 61, 61,0.4)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
                     >
                       Browse Library
                     </button>
@@ -3520,7 +3520,7 @@ export const Home: React.FC = () => {
               </button>
 
               <div className="text-center">
-                <div className="mx-auto w-12 h-12 bg-gradient-to-tr from-ocean to-teal rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(136, 13, 30,0.35)] mb-3">
+                <div className="mx-auto w-12 h-12 bg-gradient-to-tr from-ocean to-teal rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(24, 61, 61,0.35)] mb-3">
                   <Crown className="w-6 h-6 text-ink-primary fill-current animate-bounce" />
                 </div>
                 <h3 className="font-display font-extrabold text-xl text-white uppercase tracking-wider">AURA Subscription Portal</h3>

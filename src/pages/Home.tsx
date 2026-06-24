@@ -3266,23 +3266,14 @@ export const Home: React.FC = () => {
                 (() => {
                   const likedSongTracks = tracks.filter(t => currentUser?.likedTracks?.includes(t.id));
                   
-                  // Extract unique artists
-                  const likedArtistsMap = new Map<string, string>();
+                  // Extract unique heroes
+                  const likedHeroesMap = new Map<string, string>();
                   likedSongTracks.forEach(t => {
-                    if (!likedArtistsMap.has(t.artist)) {
-                      likedArtistsMap.set(t.artist, getCover(t.artist, 'artist'));
+                    if (t.hero && !likedHeroesMap.has(t.hero)) {
+                      likedHeroesMap.set(t.hero, getCover(t.hero, 'hero'));
                     }
                   });
-                  const likedArtists = Array.from(likedArtistsMap.entries()).map(([name, cover]) => ({ name, cover }));
-
-                  // Extract unique music directors
-                  const likedDirectorsMap = new Map<string, string>();
-                  likedSongTracks.forEach(t => {
-                    if (t.musicDirector && !likedDirectorsMap.has(t.musicDirector)) {
-                      likedDirectorsMap.set(t.musicDirector, getCover(t.musicDirector, 'director'));
-                    }
-                  });
-                  const likedDirectors = Array.from(likedDirectorsMap.entries()).map(([name, cover]) => ({ name, cover }));
+                  const likedHeroes = Array.from(likedHeroesMap.entries()).map(([name, cover]) => ({ name, cover }));
 
                   // Extract unique albums
                   const likedAlbumsMap = new Map<string, string>();
@@ -3337,41 +3328,19 @@ export const Home: React.FC = () => {
                             </div>
                           </div>
 
-                          {/* Liked Artists */}
-                          {likedArtists.length > 0 && (
+                          {/* Favorite Heroes */}
+                          {likedHeroes.length > 0 && (
                             <div className="flex flex-col gap-4">
                               <h3 className="text-sm font-bold text-white tracking-widest uppercase font-display border-b border-white/10 pb-2">
-                                Liked Artists
+                                Favorite Heroes
                               </h3>
                               <div className="flex gap-4 overflow-x-auto custom-scroll pb-6 pt-2 px-2 -mx-2 snap-x">
-                                {likedArtists.map(artist => (
-                                  <div key={`artist-${artist.name}`} className="min-w-[120px] max-w-[120px] flex flex-col items-center gap-3 snap-start group cursor-pointer text-center active:scale-95 transition-transform">
+                                {likedHeroes.map(hero => (
+                                  <div key={`hero-${hero.name}`} className="min-w-[120px] max-w-[120px] flex flex-col items-center gap-3 snap-start group cursor-pointer text-center active:scale-95 transition-transform">
                                     <div className="w-full aspect-square rounded-full overflow-hidden relative shadow-lg border-2 border-transparent group-hover:border-teal transition-all">
-                                      <img src={artist.cover} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={artist.name} />
+                                      <img src={hero.cover} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={hero.name} />
                                     </div>
-                                    <p className="text-xs font-bold text-white line-clamp-2 group-hover:text-teal transition-colors">{artist.name}</p>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Liked Music Directors */}
-                          {likedDirectors.length > 0 && (
-                            <div className="flex flex-col gap-4">
-                              <h3 className="text-sm font-bold text-white tracking-widest uppercase font-display border-b border-white/10 pb-2">
-                                Liked Music Directors
-                              </h3>
-                              <div className="flex gap-4 overflow-x-auto custom-scroll pb-6 pt-2 px-2 -mx-2 snap-x">
-                                {likedDirectors.map(director => (
-                                  <div key={`director-${director.name}`} className="min-w-[140px] max-w-[140px] flex flex-col gap-2 snap-start group cursor-pointer active:scale-95 transition-transform">
-                                    <div className="w-full aspect-video rounded-xl overflow-hidden relative shadow-lg border border-white/5 group-hover:border-teal/30 transition-colors">
-                                      <img src={director.cover} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-80 group-hover:opacity-100" alt={director.name} />
-                                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                                      <div className="absolute bottom-2 left-2 right-2">
-                                        <p className="text-xs font-bold text-white truncate">{director.name}</p>
-                                      </div>
-                                    </div>
+                                    <p className="text-xs font-bold text-white line-clamp-2 group-hover:text-teal transition-colors">{hero.name}</p>
                                   </div>
                                 ))}
                               </div>

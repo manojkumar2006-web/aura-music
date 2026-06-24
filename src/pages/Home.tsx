@@ -3296,10 +3296,17 @@ export const Home: React.FC = () => {
                   const shuffledRecommendations = [...recommendedTracks].sort(() => 0.5 - Math.random()).slice(0, 10);
                   
                   // Explicitly Liked Artists/Composers
-                  const explicitlyLikedArtists = currentUser?.likedArtists || [];
-                  const explicitArtistObjects = explicitlyLikedArtists.map(name => ({
+                  const explicitlyLikedCreators = currentUser?.likedArtists || [];
+                  const likedComposers = explicitlyLikedCreators.filter(name => tracks.some(t => t.musicDirector === name)).map(name => ({
                     name,
-                    cover: getCover(name, 'director')
+                    cover: getCover(name, 'director'),
+                    role: 'Music Director'
+                  }));
+                  
+                  const favoriteArtists = explicitlyLikedCreators.filter(name => !tracks.some(t => t.musicDirector === name)).map(name => ({
+                    name,
+                    cover: getCover(name, 'hero'),
+                    role: tracks.some(t => t.hero === name) ? 'Lead Actor' : 'Singer/Artist'
                   }));
 
                   return (
@@ -3347,18 +3354,43 @@ export const Home: React.FC = () => {
                           </div>
 
                           {/* Liked Music Composers */}
-                          {explicitArtistObjects.length > 0 && (
+                          {likedComposers.length > 0 && (
                             <div className="flex flex-col gap-4 mt-6">
                               <h3 className="text-sm font-bold text-white tracking-widest uppercase font-display border-b border-white/10 pb-2 flex items-center gap-2">
                                 <Heart className="w-4 h-4 text-[#fa2d48] fill-[#fa2d48]" /> Liked Music Composers
                               </h3>
                               <div className="flex gap-4 overflow-x-auto custom-scroll pb-6 pt-2 px-2 -mx-2 snap-x">
-                                {explicitArtistObjects.map(artist => (
-                                  <div key={`liked-artist-${artist.name}`} onClick={() => setSelectedDirector(artist.name)} className="min-w-[120px] max-w-[120px] flex flex-col items-center gap-3 snap-start group cursor-pointer text-center active:scale-95 transition-transform">
+                                {likedComposers.map(artist => (
+                                  <div key={`liked-composer-${artist.name}`} onClick={() => setSelectedDirector(artist.name)} className="min-w-[120px] max-w-[120px] flex flex-col items-center gap-3 snap-start group cursor-pointer text-center active:scale-95 transition-transform">
                                     <div className="w-full aspect-square rounded-full overflow-hidden relative shadow-lg border-2 border-transparent group-hover:border-[#fa2d48] transition-all">
                                       <img src={artist.cover} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={artist.name} />
                                     </div>
-                                    <p className="text-xs font-bold text-white line-clamp-2 group-hover:text-[#fa2d48] transition-colors">{artist.name}</p>
+                                    <div className="flex flex-col">
+                                      <p className="text-xs font-bold text-white line-clamp-2 group-hover:text-[#fa2d48] transition-colors">{artist.name}</p>
+                                      <span className="text-[10px] text-slate-400 truncate mt-0.5">{artist.role}</span>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Favorite Artists */}
+                          {favoriteArtists.length > 0 && (
+                            <div className="flex flex-col gap-4 mt-6">
+                              <h3 className="text-sm font-bold text-white tracking-widest uppercase font-display border-b border-white/10 pb-2 flex items-center gap-2">
+                                <Heart className="w-4 h-4 text-purple-400 fill-purple-400" /> Favorite Artists & Heroes
+                              </h3>
+                              <div className="flex gap-4 overflow-x-auto custom-scroll pb-6 pt-2 px-2 -mx-2 snap-x">
+                                {favoriteArtists.map(artist => (
+                                  <div key={`fav-artist-${artist.name}`} onClick={() => setSelectedDirector(artist.name)} className="min-w-[120px] max-w-[120px] flex flex-col items-center gap-3 snap-start group cursor-pointer text-center active:scale-95 transition-transform">
+                                    <div className="w-full aspect-square rounded-full overflow-hidden relative shadow-lg border-2 border-transparent group-hover:border-purple-400 transition-all">
+                                      <img src={artist.cover} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={artist.name} />
+                                    </div>
+                                    <div className="flex flex-col">
+                                      <p className="text-xs font-bold text-white line-clamp-2 group-hover:text-purple-400 transition-colors">{artist.name}</p>
+                                      <span className="text-[10px] text-slate-400 truncate mt-0.5">{artist.role}</span>
+                                    </div>
                                   </div>
                                 ))}
                               </div>

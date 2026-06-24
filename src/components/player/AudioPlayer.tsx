@@ -125,9 +125,9 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
 
     // Determine correct URL based on quality selection
     let audioUrl = currentTrack.audioUrl128k;
-    if (quality === '320k') audioUrl = currentTrack.audioUrl320k;
-    else if (quality === 'flac') audioUrl = currentTrack.audioUrlFlac;
-    else if (quality === 'atmos') audioUrl = currentTrack.audioUrlAtmos;
+    if (quality === '320k' && currentTrack.audioUrl320k) audioUrl = currentTrack.audioUrl320k;
+    else if (quality === 'flac' && currentTrack.audioUrlFlac) audioUrl = currentTrack.audioUrlFlac;
+    else if (quality === 'atmos' && currentTrack.audioUrlAtmos) audioUrl = currentTrack.audioUrlAtmos;
 
     // audio.src returns absolute URL, so we check if the ends match to avoid unnecessary reloads
     const isSameSource = audio.src.endsWith(audioUrl);

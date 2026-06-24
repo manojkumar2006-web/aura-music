@@ -5,6 +5,7 @@
 
 import { Router } from 'express';
 import { connectToDatabase } from '../lib/mongodb';
+import { GridFSBucket, ObjectId } from 'mongodb';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { sendVerificationEmail } from '../lib/email';
@@ -57,6 +58,51 @@ apiRouter.get('/tracks/:id', async (req, res) => {
   } catch (error) {
     console.error('Error fetching track:', error);
     res.status(500).json({ error: 'Failed to fetch track' });
+  }
+});
+
+// GET /api/audio/:id — Stream audio from GridFS
+apiRouter.get('/audio/:id', async (req, res) => {
+  try {
+    const { db } = await connectToDatabase();
+    const bucket = new GridFSBucket(db);
+    const id = new ObjectId(req.params.id);
+    
+    // Check if file exists to get content type/length if needed, here we just stream
+    res.set('Content-Type', 'audio/mpeg');
+    const downloadStream = bucket.openDownloadStream(id);
+    
+    downloadStream.on('error', (err) => {
+      console.error('GridFS audio download error:', err);
+      res.status(404).send('Audio not found');
+    });
+    
+    downloadStream.pipe(res);
+  } catch (error) {
+    console.error('Error fetching audio:', error);
+    res.status(500).json({ error: 'Failed to fetch audio' });
+  }
+});
+
+// GET /api/image/:id — Stream image from GridFS
+apiRouter.get('/image/:id', async (req, res) => {
+  try {
+    const { db } = await connectToDatabase();
+    const bucket = new GridFSBucket(db);
+    const id = new ObjectId(req.params.id);
+    
+    res.set('Content-Type', 'image/jpeg');
+    const downloadStream = bucket.openDownloadStream(id);
+    
+    downloadStream.on('error', (err) => {
+      console.error('GridFS image download error:', err);
+      res.status(404).send('Image not found');
+    });
+    
+    downloadStream.pipe(res);
+  } catch (error) {
+    console.error('Error fetching image:', error);
+    res.status(500).json({ error: 'Failed to fetch image' });
   }
 });
 

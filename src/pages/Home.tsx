@@ -108,8 +108,13 @@ export const Home: React.FC = () => {
     currentWeather,
     setCurrentWeather,
     userRegion,
-    setUserRegion
+    setUserRegion,
+    fetchTracks
   } = useMusicStore();
+
+  useEffect(() => {
+    fetchTracks();
+  }, [fetchTracks]);
 
   // Local UI States
   const [showLyricsModal, setShowLyricsModal] = useState(false);

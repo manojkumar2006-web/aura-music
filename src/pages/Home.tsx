@@ -59,6 +59,17 @@ import { Track, SubscriptionTier } from '../types';
 import { getUserLocation, getWeather, getRegionIndustry } from '../services/locationService';
 import { OnboardingWizard } from '../components/OnboardingWizard';
 
+export const getCover = (name: string, type: 'hero' | 'director' | 'artist' | 'album') => {
+  if (!name) return '/covers/hero-images.jpg';
+  const lower = name.toLowerCase();
+  if (lower.includes('vijay')) return '/covers/Vijay.jpg';
+  if (lower.includes('anirudh')) return '/covers/Anirudh.jpg';
+  if (lower.includes('lokesh')) return '/covers/Lokesh Kanagaraj.jpg';
+  if (lower.includes('leo')) return '/covers/Leo.jpg';
+  if (lower.includes('sai abhyankkar')) return '/covers/Sai-Abhyankkar.avif';
+  return '/covers/hero-images.jpg';
+};
+
 const COMMUNITY_PLAYLISTS = [
   { name: 'Synthwave Nights', author: 'NeonRider', coverUrl: 'https://picsum.photos/seed/music1/400/400', trackIds: ['track-1', 'track-2', 'track-3'] },
   { name: 'Focus Flow', author: 'StudyBot', coverUrl: 'https://picsum.photos/seed/music2/400/400', trackIds: ['track-4', 'track-5'] },
@@ -1614,16 +1625,6 @@ export const Home: React.FC = () => {
                 const latestAlbumTracks = directorTracks.filter(t => t.album === latestAlbumName);
                 const topSongs = directorTracks.slice(0, 6);
 
-                const getCover = (name: string, type: 'hero' | 'director' | 'artist' | 'album') => {
-                  if (!name) return '/covers/hero-images.jpg';
-                  const lower = name.toLowerCase();
-                  if (lower.includes('vijay')) return '/covers/Vijay.jpg';
-                  if (lower.includes('anirudh')) return '/covers/Anirudh.jpg';
-                  if (lower.includes('lokesh')) return '/covers/Lokesh Kanagaraj.jpg';
-                  if (lower.includes('leo')) return '/covers/Leo.jpg';
-                  if (lower.includes('sai abhyankkar')) return '/covers/Sai-Abhyankkar.avif';
-                  return '/covers/hero-images.jpg';
-                };
 
                 return (
                   <motion.div
@@ -2755,16 +2756,6 @@ export const Home: React.FC = () => {
                   const regionalDirectors = Array.from(new Set(regionTracks.map(t => t.musicDirector).filter(Boolean)));
                   const regionalArtists = Array.from(new Set(regionTracks.flatMap(t => t.artist.split(', '))));
 
-                  const getCover = (name: string, type: 'hero' | 'director' | 'artist' | 'album') => {
-                    if (!name) return '/covers/hero-images.jpg';
-                    const lower = name.toLowerCase();
-                    if (lower.includes('vijay')) return '/covers/Vijay.jpg';
-                    if (lower.includes('anirudh')) return '/covers/Anirudh.jpg';
-                    if (lower.includes('lokesh')) return '/covers/Lokesh Kanagaraj.jpg';
-                    if (lower.includes('leo')) return '/covers/Leo.jpg';
-                    if (lower.includes('sai abhyankkar')) return '/covers/Sai-Abhyankkar.avif';
-                    return '/covers/hero-images.jpg';
-                  };
 
 
 

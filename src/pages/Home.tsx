@@ -1619,7 +1619,7 @@ export const Home: React.FC = () => {
           ) : (
             <>
               {selectedDirector ? (() => {
-                const directorTracks = tracks.filter(t => t.musicDirector === selectedDirector || t.artist?.includes(selectedDirector));
+                const directorTracks = tracks.filter(t => t.musicDirector === selectedDirector || t.artist?.includes(selectedDirector) || t.hero?.includes(selectedDirector));
                 const directorAlbums = Array.from(new Set(directorTracks.map(t => t.album).filter(Boolean)));
                 const latestAlbumName = directorAlbums[0];
                 const latestAlbumTracks = directorTracks.filter(t => t.album === latestAlbumName);
@@ -2835,7 +2835,7 @@ export const Home: React.FC = () => {
                         </h3>
                         <div className="flex gap-5 overflow-x-auto custom-scroll pb-4 snap-x">
                           {regionalDirectors.map((director, i) => (
-                            <div key={director} className="min-w-[200px] w-[200px] glass-panel rounded-2xl p-5 flex items-center gap-4 cursor-pointer group snap-start hover:border-emerald-500/30 transition-colors">
+                            <div key={director} onClick={() => setSelectedDirector(director)} className="min-w-[200px] w-[200px] glass-panel rounded-2xl p-5 flex items-center gap-4 cursor-pointer group snap-start hover:border-emerald-500/30 transition-colors">
                               <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
                                 <img src={getCover(director, 'director')} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={director} />
                               </div>
@@ -2857,7 +2857,7 @@ export const Home: React.FC = () => {
                         </h3>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           {regionalHeroes.map((hero, i) => (
-                            <div key={hero} className="glass-panel p-3 rounded-2xl flex flex-col gap-3 cursor-pointer hover:bg-white/5 transition-all group">
+                            <div key={hero} onClick={() => setSelectedDirector(hero)} className="glass-panel p-3 rounded-2xl flex flex-col gap-3 cursor-pointer hover:bg-white/5 transition-all group">
                               <div className="w-full aspect-video rounded-xl overflow-hidden relative">
                                 <img src={getCover(hero, 'hero')} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt={hero} />
                                 <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />

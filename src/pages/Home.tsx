@@ -3266,23 +3266,20 @@ export const Home: React.FC = () => {
                 (() => {
                   const likedSongTracks = tracks.filter(t => currentUser?.likedTracks?.includes(t.id));
                   
-                  // Extract unique heroes
-                  const likedHeroesMap = new Map<string, string>();
-                  likedSongTracks.forEach(t => {
-                    if (t.hero && !likedHeroesMap.has(t.hero)) {
-                      likedHeroesMap.set(t.hero, getCover(t.hero, 'hero'));
-                    }
-                  });
-                  const likedHeroes = Array.from(likedHeroesMap.entries()).map(([name, cover]) => ({ name, cover }));
+                  // Extract artists and directors from liked songs
+                  const likedArtists = new Set(likedSongTracks.flatMap(t => t.artist.split(', ')));
+                  const likedDirectors = new Set(likedSongTracks.map(t => t.musicDirector).filter(Boolean));
 
-                  // Extract unique albums
-                  const likedAlbumsMap = new Map<string, string>();
-                  likedSongTracks.forEach(t => {
-                    if (t.album && t.album !== 'Single' && !likedAlbumsMap.has(t.album)) {
-                      likedAlbumsMap.set(t.album, getCover(t.album, 'album') !== '/covers/hero-images.jpg' ? getCover(t.album, 'album') : t.coverUrl);
-                    }
+                  // Find recommendations: tracks not liked, but sharing artist or director
+                  const recommendedTracks = tracks.filter(t => {
+                    if (currentUser?.likedTracks?.includes(t.id)) return false;
+                    const hasSharedArtist = t.artist.split(', ').some(a => likedArtists.has(a));
+                    const hasSharedDirector = t.musicDirector && likedDirectors.has(t.musicDirector);
+                    return hasSharedArtist || hasSharedDirector;
                   });
-                  const likedAlbums = Array.from(likedAlbumsMap.entries()).map(([name, cover]) => ({ name, cover }));
+                  
+                  // Shuffle and limit to 10 recommendations to keep it fresh
+                  const shuffledRecommendations = [...recommendedTracks].sort(() => 0.5 - Math.random()).slice(0, 10);
 
                   return (
                     <motion.div
@@ -3328,39 +3325,25 @@ export const Home: React.FC = () => {
                             </div>
                           </div>
 
-                          {/* Favorite Heroes */}
-                          {likedHeroes.length > 0 && (
+                          {/* Recommended For You */}
+                          {shuffledRecommendations.length > 0 && (
                             <div className="flex flex-col gap-4">
                               <h3 className="text-sm font-bold text-white tracking-widest uppercase font-display border-b border-white/10 pb-2">
-                                Favorite Heroes
+                                Recommended Based on Your Likes
                               </h3>
                               <div className="flex gap-4 overflow-x-auto custom-scroll pb-6 pt-2 px-2 -mx-2 snap-x">
-                                {likedHeroes.map(hero => (
-                                  <div key={`hero-${hero.name}`} className="min-w-[120px] max-w-[120px] flex flex-col items-center gap-3 snap-start group cursor-pointer text-center active:scale-95 transition-transform">
-                                    <div className="w-full aspect-square rounded-full overflow-hidden relative shadow-lg border-2 border-transparent group-hover:border-teal transition-all">
-                                      <img src={hero.cover} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={hero.name} />
+                                {shuffledRecommendations.map(track => (
+                                  <div key={`rec-${track.id}`} className="min-w-[140px] max-w-[140px] flex flex-col gap-2 snap-start group cursor-pointer active:scale-95 transition-transform" onClick={() => handleSelectTrack(track, shuffledRecommendations)}>
+                                    <div className="w-full aspect-square rounded-2xl overflow-hidden relative shadow-lg">
+                                      <img src={track.coverUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={track.title} />
+                                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <Play className="w-8 h-8 text-white fill-white ml-1" />
+                                      </div>
                                     </div>
-                                    <p className="text-xs font-bold text-white line-clamp-2 group-hover:text-teal transition-colors">{hero.name}</p>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Liked Albums */}
-                          {likedAlbums.length > 0 && (
-                            <div className="flex flex-col gap-4">
-                              <h3 className="text-sm font-bold text-white tracking-widest uppercase font-display border-b border-white/10 pb-2">
-                                Liked Albums
-                              </h3>
-                              <div className="flex gap-4 overflow-x-auto custom-scroll pb-6 pt-2 px-2 -mx-2 snap-x">
-                                {likedAlbums.map(album => (
-                                  <div key={`album-${album.name}`} className="min-w-[140px] max-w-[140px] flex flex-col gap-2 snap-start group cursor-pointer active:scale-95 transition-transform">
-                                    <div className="w-full aspect-square rounded-md overflow-hidden relative shadow-lg">
-                                      <img src={album.cover} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={album.name} />
-                                      <div className="absolute inset-0 border border-white/10 rounded-md group-hover:border-teal/30 transition-colors" />
+                                    <div>
+                                      <p className="text-sm font-bold text-white truncate group-hover:text-teal transition-colors">{track.title}</p>
+                                      <p className="text-[10px] text-slate-400 truncate">{track.artist}</p>
                                     </div>
-                                    <p className="text-xs font-bold text-white truncate group-hover:text-teal transition-colors">{album.name}</p>
                                   </div>
                                 ))}
                               </div>

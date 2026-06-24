@@ -3272,7 +3272,7 @@ export const Home: React.FC = () => {
                   const likedArtistsMap = new Map<string, string>();
                   likedSongTracks.forEach(t => {
                     if (!likedArtistsMap.has(t.artist)) {
-                      likedArtistsMap.set(t.artist, t.coverUrl);
+                      likedArtistsMap.set(t.artist, getCover(t.artist, 'artist'));
                     }
                   });
                   const likedArtists = Array.from(likedArtistsMap.entries()).map(([name, cover]) => ({ name, cover }));
@@ -3281,7 +3281,7 @@ export const Home: React.FC = () => {
                   const likedDirectorsMap = new Map<string, string>();
                   likedSongTracks.forEach(t => {
                     if (t.musicDirector && !likedDirectorsMap.has(t.musicDirector)) {
-                      likedDirectorsMap.set(t.musicDirector, t.coverUrl);
+                      likedDirectorsMap.set(t.musicDirector, getCover(t.musicDirector, 'director'));
                     }
                   });
                   const likedDirectors = Array.from(likedDirectorsMap.entries()).map(([name, cover]) => ({ name, cover }));
@@ -3290,7 +3290,7 @@ export const Home: React.FC = () => {
                   const likedAlbumsMap = new Map<string, string>();
                   likedSongTracks.forEach(t => {
                     if (t.album && t.album !== 'Single' && !likedAlbumsMap.has(t.album)) {
-                      likedAlbumsMap.set(t.album, t.coverUrl);
+                      likedAlbumsMap.set(t.album, getCover(t.album, 'album') !== '/covers/hero-images.jpg' ? getCover(t.album, 'album') : t.coverUrl);
                     }
                   });
                   const likedAlbums = Array.from(likedAlbumsMap.entries()).map(([name, cover]) => ({ name, cover }));

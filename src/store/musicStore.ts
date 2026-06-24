@@ -60,6 +60,7 @@ interface MusicStore {
   incrementStats: (stat: 'play' | 'minute') => void;
   fetchTracks: () => Promise<void>;
   toggleLike: (trackId: string) => Promise<{ success: boolean; error?: string }>;
+  toggleArtistLike: (artistName: string) => Promise<{ success: boolean; error?: string }>;
 
   // Weather & Region States
   currentWeather: string | null;
@@ -329,13 +330,49 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
         throw new Error('Failed to sync like');
       }
       get().logAnalyticsEvent(`${!isLiked ? 'Liked' : 'Unliked'} track: ${trackId}`);
-      return { success: true };
     } catch (error) {
-      // Rollback on error
+      console.error('Like toggle sync error:', error);
+      // Revert optimistic update on failure
       set({ currentUser });
       localStorage.setItem('aura_current_user', JSON.stringify(currentUser));
-      return { success: false, error: 'Network error' };
+      return { success: false, error: 'Failed to sync like' };
     }
+    return { success: true };
+  },
+  toggleArtistLike: async (artistName: string) => {
+    const currentUser = get().currentUser;
+    if (!currentUser) return { success: false, error: 'Not logged in' };
+
+    const currentLikes = currentUser.likedArtists || [];
+    const isLiked = currentLikes.includes(artistName);
+    
+    // Optimistic update
+    const updatedLikes = isLiked 
+      ? currentLikes.filter(name => name !== artistName)
+      : [...currentLikes, artistName];
+      
+    const updatedUser = { ...currentUser, likedArtists: updatedLikes };
+    set({ currentUser: updatedUser });
+    localStorage.setItem('aura_current_user', JSON.stringify(updatedUser));
+    
+    // Sync with backend
+    try {
+      const response = await fetch('/api/users/artist-likes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: currentUser.id, artistName }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to sync artist like');
+      }
+    } catch (error) {
+      console.error('Artist like toggle sync error:', error);
+      // Revert optimistic update on failure
+      set({ currentUser });
+      localStorage.setItem('aura_current_user', JSON.stringify(currentUser));
+      return { success: false, error: 'Failed to sync artist like' };
+    }
+    return { success: true };
   },
   addTrack: (track: Track) => {
     set((state) => ({ tracks: [...state.tracks, track] }));

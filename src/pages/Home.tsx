@@ -121,7 +121,8 @@ export const Home: React.FC = () => {
     userRegion,
     setUserRegion,
     fetchTracks,
-    toggleLike
+    toggleLike,
+    toggleArtistLike
   } = useMusicStore();
 
   useEffect(() => {
@@ -1620,10 +1621,12 @@ export const Home: React.FC = () => {
             <>
               {selectedDirector ? (() => {
                 const directorTracks = tracks.filter(t => t.musicDirector === selectedDirector || t.artist?.includes(selectedDirector) || t.hero?.includes(selectedDirector));
+                const isHero = directorTracks.some(t => t.hero === selectedDirector);
                 const directorAlbums = Array.from(new Set(directorTracks.map(t => t.album).filter(Boolean)));
                 const latestAlbumName = directorAlbums[0];
                 const latestAlbumTracks = directorTracks.filter(t => t.album === latestAlbumName);
                 const topSongs = directorTracks.slice(0, 6);
+                const isArtistLiked = currentUser?.likedArtists?.includes(selectedDirector);
 
 
                 return (
@@ -1659,6 +1662,17 @@ export const Home: React.FC = () => {
                          <Play className="w-6 h-6 fill-current" />
                        </button>
                        <h2 className="text-4xl md:text-5xl font-black text-white font-display tracking-tight truncate">{selectedDirector}</h2>
+                       {currentUser && (
+                         <button 
+                           onClick={(e) => {
+                             e.stopPropagation();
+                             toggleArtistLike(selectedDirector);
+                           }}
+                           className="ml-auto p-3 rounded-full bg-white/5 hover:bg-white/10 transition-colors flex-shrink-0 group/like"
+                         >
+                           <Heart className={`w-6 h-6 transition-transform group-hover/like:scale-110 ${isArtistLiked ? 'text-[#fa2d48] fill-[#fa2d48]' : 'text-slate-400'}`} />
+                         </button>
+                       )}
                     </div>
 
                     {/* Latest Release & Top Songs Grid */}
@@ -1666,7 +1680,7 @@ export const Home: React.FC = () => {
                       {/* Latest Release */}
                       <div className="md:col-span-4 flex flex-col gap-4">
                         <h3 className="text-xl font-bold text-white font-display tracking-wide flex items-center justify-between">
-                          Latest Release
+                          {isHero ? 'Latest Film' : 'Latest Release'}
                           <ChevronRight className="w-5 h-5 text-slate-500 cursor-pointer hover:text-white" />
                         </h3>
                         {latestAlbumName && (
@@ -1693,7 +1707,7 @@ export const Home: React.FC = () => {
                       {/* Top Songs */}
                       <div className="md:col-span-8 flex flex-col gap-4">
                         <h3 className="text-xl font-bold text-white font-display tracking-wide flex items-center justify-between">
-                          Top Songs
+                          {isHero ? 'Popular Songs' : 'Top Songs'}
                           <ChevronRight className="w-5 h-5 text-slate-500 cursor-pointer hover:text-white" />
                         </h3>
                         <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
@@ -2855,15 +2869,15 @@ export const Home: React.FC = () => {
                         <h3 className="font-display font-bold text-base text-white tracking-wider flex items-center gap-2">
                           <Mic2 className="w-4 h-4 text-purple-400" /> Trending Artists
                         </h3>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="flex gap-4 overflow-x-auto custom-scroll pb-6 pt-2 px-2 -mx-2 snap-x">
                           {regionalHeroes.map((hero, i) => (
-                            <div key={hero} onClick={() => setSelectedDirector(hero)} className="glass-panel p-3 rounded-2xl flex flex-col gap-3 cursor-pointer hover:bg-white/5 transition-all group">
-                              <div className="w-full aspect-video rounded-xl overflow-hidden relative">
-                                <img src={getCover(hero, 'hero')} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt={hero} />
+                            <div key={hero} onClick={() => setSelectedDirector(hero)} className="min-w-[120px] max-w-[120px] flex flex-col items-center gap-3 snap-start group cursor-pointer text-center active:scale-95 transition-transform">
+                              <div className="w-full aspect-square rounded-full overflow-hidden relative shadow-lg border-2 border-transparent group-hover:border-teal transition-all">
+                                <img src={getCover(hero, 'hero')} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={hero} />
                                 <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
                               </div>
                               <div className="flex flex-col">
-                                <span className="text-xs font-bold text-white truncate">{hero}</span>
+                                <span className="text-xs font-bold text-white line-clamp-2 group-hover:text-teal transition-colors">{hero}</span>
                                 <span className="text-[10px] text-slate-400 truncate mt-0.5">Lead Actor</span>
                               </div>
                             </div>

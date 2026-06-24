@@ -291,6 +291,34 @@ apiRouter.post('/users/likes', async (req, res) => {
   }
 });
 
+// POST /api/users/artist-likes - Toggle a liked artist
+apiRouter.post('/users/artist-likes', async (req, res) => {
+  try {
+    const { userId, artistName } = req.body;
+    if (!userId || !artistName) return res.status(400).json({ error: 'userId and artistName are required' });
+
+    const { db } = await connectToDatabase();
+    const usersCol = db.collection('users');
+
+    const user = await usersCol.findOne({ id: userId });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const likedArtists = user.likedArtists || [];
+    const isLiked = likedArtists.includes(artistName);
+
+    if (isLiked) {
+      await usersCol.updateOne({ id: userId }, { $pull: { likedArtists: artistName } as any });
+    } else {
+      await usersCol.updateOne({ id: userId }, { $addToSet: { likedArtists: artistName } as any });
+    }
+
+    res.json({ success: true, isLiked: !isLiked });
+  } catch (error) {
+    console.error('Artist like toggle error:', error);
+    res.status(500).json({ error: 'Failed to toggle artist like' });
+  }
+});
+
 // GET /api/users/profile?userId=xxx — Get user profile
 apiRouter.get('/users/profile', async (req, res) => {
   try {

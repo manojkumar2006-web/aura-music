@@ -56,4 +56,5 @@ export interface UserProfile {
   languages?: string[];
   favoriteDirectors?: string[];
   likedTracks?: string[];
+  likedArtists?: string[];
 }

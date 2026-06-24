@@ -1617,10 +1617,15 @@ export const Home: React.FC = () => {
                 const latestAlbumTracks = directorTracks.filter(t => t.album === latestAlbumName);
                 const topSongs = directorTracks.slice(0, 6);
 
-                const getCover = (name: string, type: 'hero' | 'director' | 'artist') => {
-                  if (name.includes('Sai Abhyankkar')) return '/covers/Sai-Abhyankkar.avif';
-                  if (type === 'hero' || name.includes('Unknown')) return '/covers/hero-images.jpg';
-                  return `https://picsum.photos/seed/music13/400/400'')}`;
+                const getCover = (name: string, type: 'hero' | 'director' | 'artist' | 'album') => {
+                  if (!name) return '/covers/hero-images.jpg';
+                  const lower = name.toLowerCase();
+                  if (lower.includes('vijay')) return '/covers/Vijay.jpg';
+                  if (lower.includes('anirudh')) return '/covers/Anirudh.jpg';
+                  if (lower.includes('lokesh')) return '/covers/Lokesh Kanagaraj.jpg';
+                  if (lower.includes('leo')) return '/covers/Leo.jpg';
+                  if (lower.includes('sai abhyankkar')) return '/covers/Sai-Abhyankkar.avif';
+                  return '/covers/hero-images.jpg';
                 };
 
                 return (
@@ -2743,10 +2748,15 @@ export const Home: React.FC = () => {
                   const regionalDirectors = Array.from(new Set(regionTracks.map(t => t.musicDirector).filter(Boolean)));
                   const regionalArtists = Array.from(new Set(regionTracks.flatMap(t => t.artist.split(', '))));
 
-                  const getCover = (name: string, type: 'hero' | 'director' | 'artist') => {
-                    if (name.includes('Sai Abhyankkar')) return '/covers/Sai-Abhyankkar.avif';
-                    if (type === 'hero' || name.includes('Unknown')) return '/covers/hero-images.jpg';
-                    return `https://picsum.photos/seed/music15/400/400'')}`;
+                  const getCover = (name: string, type: 'hero' | 'director' | 'artist' | 'album') => {
+                    if (!name) return '/covers/hero-images.jpg';
+                    const lower = name.toLowerCase();
+                    if (lower.includes('vijay')) return '/covers/Vijay.jpg';
+                    if (lower.includes('anirudh')) return '/covers/Anirudh.jpg';
+                    if (lower.includes('lokesh')) return '/covers/Lokesh Kanagaraj.jpg';
+                    if (lower.includes('leo')) return '/covers/Leo.jpg';
+                    if (lower.includes('sai abhyankkar')) return '/covers/Sai-Abhyankkar.avif';
+                    return '/covers/hero-images.jpg';
                   };
 
 
@@ -2804,7 +2814,7 @@ export const Home: React.FC = () => {
                               className="min-w-[140px] w-[140px] flex flex-col gap-2 cursor-pointer group snap-start"
                             >
                               <div className="w-full aspect-[2/3] rounded-xl overflow-hidden relative shadow-lg bg-black/40">
-                                <img src={albumTrack?.coverUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={albumName} />
+                                <img src={albumName.toLowerCase().includes('leo') ? '/covers/Leo.jpg' : albumTrack?.coverUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={albumName} />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
                                 <div className="absolute bottom-3 left-3 right-3 flex flex-col">
                                   <span className="text-xs font-bold text-white truncate">{albumName}</span>

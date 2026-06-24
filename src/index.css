@@ -7,29 +7,29 @@
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
   /* Antigravity Color System */
-  --color-onyx: #0b0b0d;
-  --color-onyx-2: #151517;
-  --color-carbon-black: #1b1b1d;
-  --color-shadow-grey: #212124;
-  --color-shadow-grey-2: #262629;
-  --color-graphite: #2b2b2e;
+  --color-onyx: #1f0704;
+  --color-onyx-2: #280905;
+  --color-carbon-black: #280905;
+  --color-shadow-grey: #400e08;
+  --color-shadow-grey-2: #52120a;
+  --color-graphite: #61150c;
   --color-silver: #ABAAA5;
-  --color-crushed-berry: #880d1e;
+  --color-crushed-berry: #C3110C;
 
   /* Semantic Aliases mapped to new monochrome palette */
   --color-shadow: var(--color-onyx);
   --color-slate-default: var(--color-carbon-black);
   --color-slate-soft: var(--color-shadow-grey-2);
   
-  /* Restoring Accent Colors with Crushed Berry variations */
-  --color-teal: var(--color-crushed-berry);
-  --color-ocean: #6b0917; /* Darker crushed berry */
-  --color-deepblue: #40040d; /* Deepest berry */
+  /* Restoring Accent Colors with User Red Palette */
+  --color-teal: #E6501B; /* Orange Accent */
+  --color-ocean: #C3110C; /* Primary Red */
+  --color-deepblue: #740A03; /* Dark Red */
 
   /* Neutrals for Text */
   --color-ink-primary: #F4F2EE;
   --color-ink-secondary: #ABAAA5;
-  --color-ink-tertiary: #6E6C67;
+  --color-ink-tertiary: #a84742;
 }
 
 body {

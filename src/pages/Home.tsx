@@ -2868,69 +2868,142 @@ export const Home: React.FC = () => {
               })()
               ) : sidebarNav === 'new' ? (
                 /* ===== Dedicated New Releases Page ===== */
-                <motion.div
-                  key="new-page"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.25 }}
-                  className="flex flex-col gap-6 pb-10"
-                >
-                  {/* Page Header */}
-                  <div className="flex items-center justify-between border-b border-white/5 pb-4">
-                    <h2 className="text-xl font-extrabold text-white tracking-widest uppercase font-display flex items-center gap-2">
-                      <Sparkles className="w-6 h-6 text-teal animate-pulse" /> New Releases
-                    </h2>
-                  </div>
+                (() => {
+                  const newTracks = tracks
+                    .filter(t => t.releaseDate)
+                    .sort((a, b) => new Date(b.releaseDate!).getTime() - new Date(a.releaseDate!).getTime());
+                  
+                  const heroTracks = newTracks.slice(0, 2);
+                  const listTracks = newTracks.slice(2);
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {/* Sort tracks by releaseDate (newest first) */}
-                    {tracks
-                      .filter(t => t.releaseDate)
-                      .sort((a, b) => new Date(b.releaseDate!).getTime() - new Date(a.releaseDate!).getTime())
-                      .map((track) => {
-                      const isSelected = currentTrack?.id === track.id;
-                      const dateObj = new Date(track.releaseDate!);
-                      const releaseDateStr = dateObj.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+                  return (
+                    <motion.div
+                      key="new-page"
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.25 }}
+                      className="flex flex-col gap-10 pb-10"
+                    >
+                      {/* Page Header */}
+                      <div className="flex items-center justify-between">
+                        <h1 className="text-4xl font-extrabold text-white tracking-widest uppercase font-display flex items-center gap-3">
+                          <Sparkles className="w-8 h-8 text-teal animate-pulse" /> New
+                        </h1>
+                      </div>
 
-                      return (
-                        <div
-                          key={track.id}
-                          onClick={() => handleSelectTrack(track)}
-                          className={`group relative rounded-2xl glass-panel p-4 cursor-pointer overflow-hidden transition-all duration-300 flex flex-col gap-3 border ${
-                            isSelected 
-                              ? 'border-teal/45 shadow-[0_8px_30px_rgba(136, 13, 30,0.15)] bg-gradient-to-r from-teal/10 to-transparent' 
-                              : 'border-silver/8 hover:border-teal/30 hover:bg-teal/5 hover:shadow-[0_8px_25px_rgba(136, 13, 30,0.1)]'
-                          }`}
-                        >
-                          <div className="flex gap-4">
-                            <div className="w-16 h-16 rounded-xl overflow-hidden bg-black/40 relative flex-shrink-0">
-                              <img src={track.coverUrl} className="w-full h-full object-cover" alt="" />
-                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                {isSelected && playbackState === 'playing' ? (
-                                  <Pause className="w-4 h-4 fill-current text-white" />
-                                ) : (
-                                  <Play className="w-4 h-4 fill-current text-white ml-0.5" />
-                                )}
+                      {/* Hero Section */}
+                      {heroTracks.length > 0 && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {heroTracks.map((track, i) => {
+                            const isSelected = currentTrack?.id === track.id;
+                            const isNMD = i === 1; // Add variety to the badge
+                            return (
+                              <div
+                                key={track.id}
+                                onClick={() => handleSelectTrack(track)}
+                                className={`group relative rounded-[2rem] overflow-hidden cursor-pointer aspect-video md:aspect-[16/10] lg:aspect-[16/9] border ${
+                                  isSelected ? 'border-teal shadow-[0_0_40px_rgba(45,212,191,0.2)]' : 'border-white/5 hover:border-white/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)]'
+                                } transition-all duration-500`}
+                              >
+                                <img src={track.coverUrl} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt={track.title} />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/10" />
+                                
+                                {/* Top Badges */}
+                                <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
+                                  <span className="text-[10px] font-bold uppercase tracking-widest text-teal bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-teal/20 shadow-lg">
+                                    {isNMD ? 'Updated Playlist' : 'New Release'}
+                                  </span>
+                                  {isSelected && playbackState === 'playing' ? (
+                                    <div className="w-10 h-10 rounded-full bg-teal flex items-center justify-center text-black shadow-[0_0_20px_rgba(45,212,191,0.5)] animate-pulse">
+                                      <Pause className="w-5 h-5 fill-current" />
+                                    </div>
+                                  ) : (
+                                    <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 border border-white/20">
+                                      <Play className="w-5 h-5 fill-current ml-0.5" />
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* Content Bottom */}
+                                <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col gap-1 transform transition-transform duration-500 group-hover:-translate-y-2">
+                                  <h3 className="text-2xl md:text-3xl font-black font-display text-white leading-tight drop-shadow-lg">
+                                    {track.album || track.title}
+                                  </h3>
+                                  <p className="text-slate-300 text-sm md:text-base font-medium drop-shadow-md">
+                                    {track.artist}
+                                  </p>
+                                  {track.musicDirector && (
+                                    <p className="text-[10px] uppercase tracking-widest text-white/50 mt-2 font-mono">
+                                      Director: {track.musicDirector}
+                                    </p>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                            <div className="flex-1 min-w-0 flex flex-col justify-center">
-                              <span className="text-[10px] text-teal font-mono uppercase font-bold mb-1 tracking-wider">{releaseDateStr}</span>
-                              <h3 className="font-display font-bold text-sm text-white truncate group-hover:text-teal transition-colors">
-                                {track.title}
-                              </h3>
-                              <p className="text-[11px] text-slate-400 truncate mt-0.5">{track.artist}</p>
-                            </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* Best New Songs List */}
+                      {listTracks.length > 0 && (
+                        <div className="flex flex-col gap-4">
+                          <div className="flex items-center gap-2 border-b border-white/10 pb-3">
+                            <h2 className="text-2xl font-bold text-white tracking-wide flex items-center gap-2">
+                              Best New Songs <span className="text-teal text-xl">›</span>
+                            </h2>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+                            {listTracks.map((track) => {
+                              const isSelected = currentTrack?.id === track.id;
+                              return (
+                                <div
+                                  key={track.id}
+                                  onClick={() => handleSelectTrack(track)}
+                                  className={`group flex items-center gap-4 p-2 rounded-xl cursor-pointer transition-all border border-transparent ${
+                                    isSelected 
+                                      ? 'bg-white/10 border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.05)]' 
+                                      : 'hover:bg-white/5 hover:border-white/10'
+                                  }`}
+                                >
+                                  <div className="w-12 h-12 rounded-lg overflow-hidden relative flex-shrink-0 shadow-md">
+                                    <img src={track.coverUrl} className="w-full h-full object-cover" alt={track.title} />
+                                    <div className={`absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                                      {isSelected && playbackState === 'playing' ? (
+                                        <Pause className="w-4 h-4 fill-current text-white" />
+                                      ) : (
+                                        <Play className="w-4 h-4 fill-current text-white ml-0.5" />
+                                      )}
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="flex-1 min-w-0">
+                                    <h4 className={`font-bold text-sm truncate ${isSelected ? 'text-teal' : 'text-white group-hover:text-teal'} transition-colors`}>
+                                      {track.title}
+                                    </h4>
+                                    <p className="text-[11px] text-slate-400 truncate mt-0.5">
+                                      {track.artist}
+                                    </p>
+                                  </div>
+
+                                  <div className="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-slate-400 hover:text-white">
+                                    <MoreVertical className="w-4 h-4" />
+                                  </div>
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
-                      );
-                    })}
-                    {tracks.filter(t => t.releaseDate).length === 0 && (
-                      <div className="col-span-full text-xs text-slate-500 font-mono py-8 text-center border border-dashed border-white/5 rounded-xl">
-                        No tracks with release dates found.
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
+                      )}
+                      
+                      {newTracks.length === 0 && (
+                        <div className="text-sm text-slate-500 font-mono py-12 text-center border border-dashed border-white/5 rounded-2xl">
+                          No new releases available at the moment.
+                        </div>
+                      )}
+                    </motion.div>
+                  );
+                })()
               ) : sidebarNav === 'downloads' ? (
                 /* ===== Dedicated Downloads Page ===== */
                 <motion.div

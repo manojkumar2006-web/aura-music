@@ -51,7 +51,8 @@ import {
   MoreVertical,
   Trash2,
   Edit3,
-  BarChart2
+  BarChart2,
+  Share2
 } from 'lucide-react';
 import { useMusicStore } from '../store/musicStore';
 import { AudioPlayer } from '../components/player/AudioPlayer';
@@ -238,6 +239,7 @@ export const Home: React.FC = () => {
   const [selectedAlbum, setSelectedAlbum] = useState<string | null>(null);
   const [selectedDirector, setSelectedDirector] = useState<string | null>(null);
   const [selectedPlaylist, setSelectedPlaylist] = useState<string | null>(null);
+  const [selectedMix, setSelectedMix] = useState<{title: string, desc: string, coverUrl?: string, tracks: Track[]} | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   const showToastMessage = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
@@ -2412,16 +2414,16 @@ export const Home: React.FC = () => {
 
                           // Fallbacks and Fillers to guarantee 10+ mixes
                           const generics = [
-                            { title: 'Top Hits', desc: 'Global chart toppers', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
-                            { title: 'Chill Vibes', desc: 'Relaxing tunes', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
-                            { title: 'Workout Mix', desc: 'High energy', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
-                            { title: 'Late Night Drive', desc: 'Night vibes', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
-                            { title: 'Daily Mix 1', desc: 'Made for you', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
-                            { title: 'Upbeats', desc: 'Feel good songs', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
-                            { title: 'Lo-Fi Chill', desc: 'Study beats', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
-                            { title: 'Tollywood Top 10', desc: 'Regional hits', tracks: tracks.filter(t => t.region === 'Tollywood').slice(0, 10) },
-                            { title: 'Kollywood Top 10', desc: 'Regional hits', tracks: tracks.filter(t => t.region === 'Kollywood').slice(0, 10) },
-                            { title: 'Bollywood Chartbusters', desc: 'Regional hits', tracks: tracks.filter(t => t.region === 'Bollywood').slice(0, 10) }
+                            { title: 'Top Hits', desc: 'Global chart toppers', coverUrl: '/covers/mix_top_hits_1782360170480.png', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
+                            { title: 'Chill Vibes', desc: 'Relaxing tunes', coverUrl: '/covers/mix_chill_vibes_1782360181446.png', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
+                            { title: 'Workout Mix', desc: 'High energy', coverUrl: '/covers/mix_workout_1782360193898.png', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
+                            { title: 'Late Night Drive', desc: 'Night vibes', coverUrl: '/covers/mix_late_night_1782360208454.png', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
+                            { title: 'Daily Mix 1', desc: 'Made for you', coverUrl: '/covers/mix_top_hits_1782360170480.png', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
+                            { title: 'Upbeats', desc: 'Feel good songs', coverUrl: '/covers/mix_upbeats_1782360219265.png', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
+                            { title: 'Lo-Fi Chill', desc: 'Study beats', coverUrl: '/covers/mix_lofi_1782360233562.png', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
+                            { title: 'Tollywood Top 10', desc: 'Regional hits', coverUrl: '/covers/hero-images.jpg', tracks: tracks.filter(t => t.region === 'Tollywood').slice(0, 10) },
+                            { title: 'Kollywood Top 10', desc: 'Regional hits', coverUrl: '/covers/hero-images.jpg', tracks: tracks.filter(t => t.region === 'Kollywood').slice(0, 10) },
+                            { title: 'Bollywood Chartbusters', desc: 'Regional hits', coverUrl: '/covers/hero-images.jpg', tracks: tracks.filter(t => t.region === 'Bollywood').slice(0, 10) }
                           ].filter(m => m.tracks.length > 0);
 
                           for (const g of generics) {
@@ -2432,9 +2434,13 @@ export const Home: React.FC = () => {
                           }
 
                           return mixes.map((mix, i) => (
-                            <div key={i} onClick={() => mix.tracks.length > 0 && handleSelectTrack(mix.tracks[0], mix.tracks)} className="min-w-[160px] w-[160px] glass-panel rounded-2xl p-4 flex flex-col gap-4 cursor-pointer transition-all snap-start group border border-white/5 hover:border-teal/30 premium-card-hover">
+                            <div key={i} onClick={() => { if (mix.tracks.length > 0) { setSelectedMix(mix as any); setSidebarNav('mix'); } }} className="min-w-[160px] w-[160px] glass-panel rounded-2xl p-4 flex flex-col gap-4 cursor-pointer transition-all snap-start group border border-white/5 hover:border-teal/30 premium-card-hover">
                               <div className="w-full aspect-square rounded-xl bg-gradient-to-br from-purple-500/20 to-teal/20 relative overflow-hidden flex items-center justify-center premium-image-hover">
-                                <Disc className="w-10 h-10 text-white/50" />
+                                {(mix as any).coverUrl ? (
+                                  <img src={(mix as any).coverUrl} className="w-full h-full object-cover" alt={mix.title} />
+                                ) : (
+                                  <Disc className="w-10 h-10 text-white/50" />
+                                )}
                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                   <Play className="w-8 h-8 text-white fill-white ml-1" />
                                 </div>
@@ -3147,6 +3153,83 @@ export const Home: React.FC = () => {
                 </motion.div>
                 );
               })()
+              ) : sidebarNav === 'mix' && selectedMix ? (
+                /* ===== Dedicated Mix Details Page ===== */
+                <motion.div
+                  key="mix-details"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="flex flex-col gap-8 pb-10"
+                >
+                  <button onClick={() => setSidebarNav('home')} className="self-start flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-xs font-bold uppercase tracking-wider mb-2">
+                    <ChevronLeft className="w-4 h-4" /> Back to Home
+                  </button>
+
+                  <div className="flex flex-col md:flex-row gap-8 items-start">
+                    <div className="w-64 h-64 rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex-shrink-0 relative group">
+                      {selectedMix.coverUrl ? (
+                        <img src={selectedMix.coverUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt={selectedMix.title} />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-purple-500/20 to-teal/20 flex items-center justify-center">
+                          <Disc className="w-24 h-24 text-white/50" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    </div>
+                    <div className="flex flex-col gap-4 justify-end h-full pt-4 md:pt-16">
+                      <span className="text-xs font-bold text-teal uppercase tracking-widest flex items-center gap-2">
+                        <Sparkles className="w-4 h-4" /> AI Curated Mix
+                      </span>
+                      <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight">{selectedMix.title}</h1>
+                      <p className="text-slate-400 text-sm md:text-base max-w-xl">{selectedMix.desc} • {selectedMix.tracks.length} tracks</p>
+                      <div className="flex items-center gap-4 mt-2">
+                        <button 
+                          onClick={() => handleSelectTrack(selectedMix.tracks[0], selectedMix.tracks)}
+                          className="w-14 h-14 rounded-full bg-teal hover:bg-teal/90 hover:scale-105 flex items-center justify-center shadow-[0_0_30px_rgba(24,61,61,0.5)] transition-all cursor-pointer"
+                        >
+                          <Play className="w-6 h-6 text-white fill-white ml-1" />
+                        </button>
+                        <button className="w-12 h-12 rounded-full border border-white/10 hover:border-white/30 hover:bg-white/5 flex items-center justify-center transition-all">
+                          <Heart className="w-5 h-5 text-white" />
+                        </button>
+                        <button className="w-12 h-12 rounded-full border border-white/10 hover:border-white/30 hover:bg-white/5 flex items-center justify-center transition-all">
+                          <Share2 className="w-5 h-5 text-white" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col mt-4">
+                    <div className="grid grid-cols-[16px_1fr_120px_50px] gap-4 px-4 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 mb-4">
+                      <span>#</span>
+                      <span>Title</span>
+                      <span>Album</span>
+                      <span className="text-right">Time</span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      {selectedMix.tracks.map((track, i) => (
+                        <div 
+                          key={`${track.id}-${i}`}
+                          onClick={() => handleSelectTrack(track, selectedMix.tracks)}
+                          className="grid grid-cols-[16px_1fr_120px_50px] gap-4 px-4 py-3 items-center rounded-xl hover:bg-white/5 group cursor-pointer transition-colors"
+                        >
+                          <span className="text-xs text-slate-500 group-hover:hidden">{i + 1}</span>
+                          <Play className="w-3 h-3 text-white fill-white hidden group-hover:block" />
+                          <div className="flex items-center gap-3 min-w-0">
+                            <img src={track.coverUrl} className="w-10 h-10 rounded-md object-cover shadow-md" alt="" />
+                            <div className="flex flex-col min-w-0">
+                              <span className={`text-sm font-bold truncate ${currentTrack?.id === track.id ? 'text-teal' : 'text-white group-hover:text-teal'} transition-colors`}>{track.title}</span>
+                              <span className="text-[10px] text-slate-400 truncate">{track.artist}</span>
+                            </div>
+                          </div>
+                          <span className="text-xs text-slate-400 truncate hidden md:block">{track.album}</span>
+                          <span className="text-xs text-slate-400 text-right">{track.duration || '3:45'}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
               ) : sidebarNav === 'new' ? (
                 /* ===== Dedicated New Releases Page ===== */
                 (() => {

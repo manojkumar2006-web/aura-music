@@ -1134,7 +1134,7 @@ export const Home: React.FC = () => {
                       {item.label}
                     </span>
                     {item.id === 'new' && (
-                      <span className="ml-auto text-[8px] font-bold uppercase tracking-widest bg-gradient-to-r from-ocean to-teal text-ink-primary px-1.5 py-0.5 rounded-full shadow-[0_0_6px_rgba(24, 61, 61,0.3)]">
+                      <span className="ml-auto text-[8px] font-bold uppercase tracking-widest bg-gradient-to-r from-ocean to-teal text-black px-1.5 py-0.5 rounded-full shadow-[0_0_6px_rgba(255,255,255,0.2)]">
                         New
                       </span>
                     )}
@@ -1432,7 +1432,7 @@ export const Home: React.FC = () => {
                         </button>
                         <button
                           type="submit"
-                          className="py-2 px-5 bg-gradient-to-r from-ocean to-teal text-ink-primary font-bold text-xs uppercase tracking-wider rounded-xl hover:scale-102 shadow-lg cursor-pointer"
+                          className="py-2 px-5 bg-gradient-to-r from-ocean to-teal text-black font-bold text-xs uppercase tracking-wider rounded-xl hover:scale-102 shadow-[0_0_15px_rgba(255,255,255,0.1)] cursor-pointer"
                         >
                           Save Profile
                         </button>
@@ -1742,7 +1742,7 @@ export const Home: React.FC = () => {
                 <p className="text-xs text-ink-secondary">Please sign up or log in to view your listening metrics.</p>
                 <button
                   onClick={() => alert("Please log in using the menu on the bottom left")}
-                  className="mt-2 py-2 px-5 bg-gradient-to-r from-ocean to-teal text-ink-primary font-bold text-xs uppercase rounded-xl hover:scale-102 transition-transform cursor-pointer"
+                  className="mt-2 py-2 px-5 bg-gradient-to-r from-ocean to-teal text-black font-bold text-xs uppercase rounded-xl hover:scale-102 transition-transform cursor-pointer shadow-[0_0_15px_rgba(255,255,255,0.1)]"
                 >
                   Authenticate
                 </button>
@@ -2229,7 +2229,7 @@ export const Home: React.FC = () => {
                               e.stopPropagation();
                               setSidebarNav('search');
                             }}
-                            className="px-6 py-2.5 bg-gradient-to-r from-ocean to-teal hover:scale-105 active:scale-95 text-white font-extrabold text-sm rounded-xl transition-all shadow-[0_0_20px_rgba(147,177,166,0.3)]"
+                            className="px-6 py-2.5 bg-gradient-to-r from-ocean to-teal hover:scale-105 active:scale-95 text-black font-extrabold text-sm rounded-xl transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)]"
                           >
                             Search
                           </button>
@@ -2338,7 +2338,7 @@ export const Home: React.FC = () => {
                       <button 
                         onClick={handleLocationVibe}
                         disabled={isLocating}
-                        className="py-3 px-6 bg-gradient-to-r from-ocean to-teal text-ink-primary font-bold text-xs uppercase tracking-widest rounded-xl hover:scale-105 transition-all shadow-[0_0_20px_rgba(147, 177, 166,0.2)] disabled:opacity-50 disabled:hover:scale-100 flex items-center gap-2"
+                        className="py-3 px-6 bg-gradient-to-r from-ocean to-teal text-black font-bold text-xs uppercase tracking-widest rounded-xl hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] disabled:opacity-50 disabled:hover:scale-100 flex items-center gap-2"
                       >
                         {isLocating ? (
                           <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Detecting...</>
@@ -3506,7 +3506,7 @@ export const Home: React.FC = () => {
                           setNewPlaylistCover('');
                         }
                       }}
-                      className="px-4 py-2 bg-teal/10 text-teal hover:bg-teal hover:text-white rounded-full text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2 cursor-pointer"
+                      className="px-4 py-2 bg-teal/10 text-teal hover:bg-teal hover:text-black rounded-full text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2 cursor-pointer"
                     >
                       {isCreatingPlaylist ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                       {isCreatingPlaylist ? 'Cancel' : 'Create Playlist'}
@@ -3549,7 +3549,7 @@ export const Home: React.FC = () => {
                         </div>
                         <button
                           type="submit"
-                          className="self-end px-6 py-2.5 bg-gradient-to-r from-ocean to-teal text-white text-xs font-bold uppercase tracking-widest rounded-xl hover:shadow-[0_0_15px_rgba(24, 61, 61,0.4)] transition-all cursor-pointer"
+                          className="self-end px-6 py-2.5 bg-gradient-to-r from-ocean to-teal text-black text-xs font-bold uppercase tracking-widest rounded-xl hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all cursor-pointer"
                         >
                           {editingPlaylistOldName ? 'Save Changes' : 'Create'}
                         </button>
@@ -4012,7 +4012,7 @@ export const Home: React.FC = () => {
                         setShowSleepTimerModal(false);
                       }
                     }}
-                    className="px-6 bg-teal hover:bg-teal/90 text-white font-bold rounded-xl transition-all shadow-xl"
+                    className="px-6 bg-teal hover:bg-teal/90 text-black font-bold rounded-xl transition-all shadow-xl"
                   >
                     Set
                   </button>
@@ -4249,7 +4249,7 @@ export const Home: React.FC = () => {
 
                   <button
                     onClick={() => handleUpgrade('Premium+')}
-                    className="w-full mt-4 py-2 bg-gradient-to-r from-deepblue via-ocean to-teal text-ink-primary font-black text-[10px] uppercase tracking-wider rounded-xl transition-transform active:scale-95 cursor-pointer shadow-lg"
+                    className="w-full mt-4 py-2 bg-gradient-to-r from-deepblue via-ocean to-teal text-black font-black text-[10px] uppercase tracking-wider rounded-xl transition-transform active:scale-95 cursor-pointer shadow-lg"
                   >
                     Activate Premium+
                   </button>

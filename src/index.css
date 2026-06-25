@@ -121,23 +121,24 @@ body {
 
 /* Premium button hover glow */
 .btn-premium {
-  background: linear-gradient(90deg, var(--color-carbon-black), var(--color-crushed-berry));
-  box-shadow: 0 8px 24px -4px rgba(136, 13, 30, 0.25),
+  background: linear-gradient(90deg, rgba(250, 45, 72, 0.8), #fa2d48);
+  box-shadow: 0 8px 24px -4px rgba(250, 45, 72, 0.3),
               0 4px 8px -2px rgba(0, 0, 0, 0.5);
   transition: box-shadow 0.3s ease, transform 0.3s ease, background 0.3s ease;
-  border: 1px solid rgba(136, 13, 30, 0.4);
+  border: 1px solid rgba(250, 45, 72, 0.3);
 }
 
 .btn-premium:hover {
-  box-shadow: 0 16px 44px -4px rgba(136, 13, 30, 0.5),
+  background: linear-gradient(90deg, #fa2d48, #fb4a65);
+  box-shadow: 0 16px 44px -4px rgba(250, 45, 72, 0.5),
               0 8px 16px -4px rgba(0, 0, 0, 0.6);
-  transform: translateY(-5px);
-  border: 1px solid rgba(136, 13, 30, 0.8);
+  transform: translateY(-2px);
+  border: 1px solid rgba(250, 45, 72, 0.5);
 }
 
 .btn-premium:active {
-  background: linear-gradient(270deg, var(--color-carbon-black), var(--color-crushed-berry));
-  transform: translateY(-1px);
+  background: linear-gradient(90deg, #e02840, #fa2d48);
+  transform: translateY(1px);
 }
 
 /* Beautiful dynamic sweeping shine used on premium elements */

@@ -929,13 +929,13 @@ export const Home: React.FC = () => {
                 <div className="grid grid-cols-2 gap-2 mt-1">
                   <button
                     onClick={() => triggerUpgradePrompt("unlock Premium features", "Premium")}
-                    className="py-2.5 bg-gradient-to-r from-teal/80 to-ocean hover:from-teal hover:to-ocean shadow-lg shadow-teal/20 text-white font-bold text-[10px] rounded-xl cursor-pointer uppercase font-sans tracking-widest transition-all hover:scale-[1.02] border border-teal/30"
+                    className="py-2.5 btn-premium text-ink-primary font-bold text-[10px] rounded-xl cursor-pointer uppercase font-sans tracking-widest transition-all"
                   >
                     Premium
                   </button>
                   <button
                     onClick={() => triggerUpgradePrompt("unlock Lossless FLAC & Spatial Audio", "Premium+")}
-                    className="py-2.5 bg-gradient-to-r from-rose-600/80 to-rose-500 hover:from-rose-500 hover:to-rose-400 shadow-lg shadow-rose-500/20 text-white font-bold text-[10px] rounded-xl cursor-pointer uppercase font-sans tracking-widest shimmer-sweep transition-all hover:scale-[1.02] border border-rose-500/30"
+                    className="py-2.5 btn-premium text-ink-primary font-bold text-[10px] rounded-xl cursor-pointer uppercase font-sans tracking-widest shimmer-sweep transition-all"
                   >
                     Premium+
                   </button>

@@ -915,7 +915,7 @@ export const Home: React.FC = () => {
                   <Crown className="w-2.5 h-2.5 fill-current" /> Premium
                 </span>
               ) : (
-                <span className="text-[9px] uppercase font-mono tracking-widest text-slate-soft font-bold bg-slate-default/15 px-2 py-0.5 rounded border border-slate-default/20">
+                <span className="text-[9px] uppercase font-mono tracking-widest text-slate-300 font-bold bg-white/10 px-2 py-0.5 rounded border border-white/20">
                   Free Player
                 </span>
               )}
@@ -926,16 +926,16 @@ export const Home: React.FC = () => {
                 <p className="text-[10px] text-ink-secondary leading-normal">
                   Unlock ad-free streaming, 320kbps, spatial Atmos, custom themes & offline downloads.
                 </p>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2 mt-1">
                   <button
                     onClick={() => triggerUpgradePrompt("unlock Premium features", "Premium")}
-                    className="py-2 btn-premium text-ink-primary font-bold text-[10px] rounded-xl cursor-pointer uppercase font-sans tracking-wide"
+                    className="py-2.5 bg-gradient-to-r from-teal/80 to-ocean hover:from-teal hover:to-ocean shadow-lg shadow-teal/20 text-white font-bold text-[10px] rounded-xl cursor-pointer uppercase font-sans tracking-widest transition-all hover:scale-[1.02] border border-teal/30"
                   >
                     Premium
                   </button>
                   <button
                     onClick={() => triggerUpgradePrompt("unlock Lossless FLAC & Spatial Audio", "Premium+")}
-                    className="py-2 btn-premium text-ink-primary font-bold text-[10px] rounded-xl cursor-pointer uppercase font-sans tracking-wide shimmer-sweep"
+                    className="py-2.5 bg-gradient-to-r from-rose-600/80 to-rose-500 hover:from-rose-500 hover:to-rose-400 shadow-lg shadow-rose-500/20 text-white font-bold text-[10px] rounded-xl cursor-pointer uppercase font-sans tracking-widest shimmer-sweep transition-all hover:scale-[1.02] border border-rose-500/30"
                   >
                     Premium+
                   </button>

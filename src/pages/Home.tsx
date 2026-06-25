@@ -2083,6 +2083,107 @@ export const Home: React.FC = () => {
                 );
               })() : sidebarNav === 'home' ? (
                 <div data-scroll-reveal className="flex flex-col gap-10 pb-10">
+                  {/* Top: Getting Started & Radio */}
+                  <div className="flex flex-col xl:flex-row gap-6">
+                    {/* Getting Started Card */}
+                    <div className="xl:w-[45%] relative rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-[#d4bc28] to-[#918115] p-6 flex justify-between min-h-[240px] group cursor-pointer premium-card-hover">
+                      <div className="flex flex-col justify-between relative z-10 w-[60%]">
+                        <div className="mb-4">
+                          <h2 className="text-3xl font-extrabold text-white tracking-tight mb-2 group-hover:-translate-y-1 transition-transform duration-500">1. Start playing</h2>
+                          <p className="text-white/90 text-sm leading-relaxed font-medium">Search, browse, and play your favorite artists and creators.</p>
+                        </div>
+                        <div className="flex items-center gap-4 mt-auto">
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSidebarNav('search');
+                            }}
+                            className="px-6 py-2.5 bg-[#1ed760] hover:bg-[#1fdf64] hover:scale-105 active:scale-95 text-black font-extrabold text-sm rounded-full transition-all shadow-xl shadow-black/20"
+                          >
+                            Search
+                          </button>
+                          <span className="text-white font-bold text-sm cursor-pointer hover:underline underline-offset-4 hidden sm:block">Show more tips</span>
+                        </div>
+                      </div>
+                      
+                      {/* Collage */}
+                      <div className="absolute right-0 top-0 bottom-0 w-[45%] pointer-events-none hidden sm:block">
+                         {tracks.slice(0, 4).map((t, i) => {
+                           const rotations = ['rotate-12', '-rotate-6', 'rotate-3', '-rotate-12'];
+                           const positions = [
+                             'top-[-10%] right-[-10%]', 
+                             'top-[20%] right-[15%]', 
+                             'bottom-[-10%] right-[5%]',
+                             'bottom-[10%] right-[30%]'
+                           ];
+                           const sizes = ['w-24 h-24', 'w-32 h-32', 'w-28 h-28', 'w-20 h-20'];
+                           const delays = ['delay-0', 'delay-75', 'delay-150', 'delay-200'];
+                           
+                           return (
+                             <div key={`collage-${i}`} className={`absolute ${positions[i]} ${sizes[i]} rounded-lg overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.5)] transform ${rotations[i]} group-hover:scale-110 group-hover:rotate-0 transition-all duration-700 ${delays[i]}`}>
+                               <img src={t.coverUrl} className="w-full h-full object-cover" alt="" />
+                             </div>
+                           );
+                         })}
+                      </div>
+                    </div>
+
+                    {/* Popular Radio */}
+                    <div className="xl:flex-1 flex flex-col gap-3 min-w-0">
+                      <div className="flex items-center justify-between px-1">
+                         <h2 className="text-xl font-extrabold text-white">Popular radio</h2>
+                         <span className="text-xs font-bold text-slate-300 hover:text-white cursor-pointer hover:underline">Show all</span>
+                      </div>
+                      <div className="flex gap-4 overflow-x-auto custom-scroll pb-4 snap-x">
+                         {[
+                           { id: 'arijit', title: 'Arijit Singh', subtitle: 'With Pritam, Shreya Ghoshal...', bg: 'bg-[#f3d37a]', artistQuery: 'Arijit' },
+                           { id: 'arrahman', title: 'A.R. Rahman', subtitle: 'With Unnikrishnan, Hariharan...', bg: 'bg-[#ffb3c6]', artistQuery: 'Rahman' },
+                           { id: 'anirudh', title: 'Anirudh', subtitle: 'With Dhanush, Jonita Gandhi...', bg: 'bg-[#95f0d3]', artistQuery: 'Anirudh' },
+                           { id: 'sid', title: 'Sid Sriram', subtitle: 'With Thaman S, Hesham Abdul...', bg: 'bg-[#a0c4ff]', artistQuery: 'Sid Sriram' }
+                         ].map((radio, i) => {
+                            const radioTracks = tracks.filter(t => t.artist.includes(radio.artistQuery) || t.musicDirector?.includes(radio.artistQuery) || t.title.includes(radio.artistQuery));
+                            const displayTracks = radioTracks.length >= 3 ? radioTracks : [...tracks].sort(() => 0.5 - Math.random()).slice(0, 3);
+                            
+                            return (
+                              <div key={i} className={`min-w-[190px] w-[190px] h-[210px] rounded-[16px] ${radio.bg} p-4 flex flex-col justify-between relative group cursor-pointer overflow-hidden snap-start premium-card-hover`}>
+                                <div className="flex justify-end">
+                                  <span className="text-[10px] font-black text-black/70 tracking-widest">RADIO</span>
+                                </div>
+                                
+                                {/* Overlapping Circles */}
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[45%] flex items-center justify-center w-[120%] h-[120px] scale-110 group-hover:scale-[1.20] transition-transform duration-500">
+                                   <div className="w-16 h-16 rounded-full overflow-hidden shadow-xl absolute left-2 z-10 opacity-90 group-hover:opacity-100 group-hover:-translate-x-2 transition-all duration-500">
+                                     <img src={displayTracks[1]?.coverUrl} className="w-full h-full object-cover" alt="" />
+                                   </div>
+                                   <div className="w-24 h-24 rounded-full overflow-hidden shadow-2xl z-30 group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] transition-shadow duration-500">
+                                     <img src={displayTracks[0]?.coverUrl} className="w-full h-full object-cover" alt="" />
+                                   </div>
+                                   <div className="w-16 h-16 rounded-full overflow-hidden shadow-xl absolute right-2 z-20 opacity-90 group-hover:opacity-100 group-hover:translate-x-2 transition-all duration-500">
+                                     <img src={displayTracks[2]?.coverUrl} className="w-full h-full object-cover" alt="" />
+                                   </div>
+                                   
+                                   {/* Play Button Overlay */}
+                                   <div 
+                                     onClick={(e) => {
+                                       e.stopPropagation();
+                                       if (radioTracks.length > 0) handleSelectTrack(radioTracks[0], radioTracks);
+                                     }}
+                                     className="absolute bottom-2 right-[25%] w-10 h-10 bg-[#1ed760] rounded-full flex items-center justify-center shadow-2xl opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 z-50 hover:scale-110 hover:bg-[#1fdf64] active:scale-95"
+                                   >
+                                     <Play className="w-5 h-5 text-black fill-black ml-1" />
+                                   </div>
+                                </div>
+                                
+                                <div className="flex flex-col z-10 relative">
+                                  <h3 className="text-[17px] font-black text-black tracking-tight group-hover:text-black/80 transition-colors truncate">{radio.title}</h3>
+                                  <p className="text-[10px] text-black/70 font-semibold truncate mt-0.5">{radio.subtitle}</p>
+                                </div>
+                              </div>
+                            );
+                         })}
+                      </div>
+                    </div>
+                  </div>
                   {/* Weather & Region Vibe Banner */}
                   <div className="flex flex-col gap-4 relative overflow-hidden rounded-3xl glass-panel p-8 border border-white/10 bg-gradient-to-br from-indigo-950/40 via-black/40 to-ocean/20">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-teal/20 rounded-full filter blur-[80px] pointer-events-none" />
@@ -2128,9 +2229,9 @@ export const Home: React.FC = () => {
                           <div className="flex gap-4 overflow-x-auto custom-scroll pb-4 snap-x">
                             {tracks.filter(t => t.weather === currentWeather && (t.region === userRegion || t.region === 'Bollywood')).length > 0 ? (
                               tracks.filter(t => t.weather === currentWeather && (t.region === userRegion || t.region === 'Bollywood')).map((track) => (
-                                <div key={track.id} onClick={() => handleSelectTrack(track)} className="min-w-[140px] w-[140px] flex flex-col gap-2 cursor-pointer group snap-start">
-                                  <div className="w-full aspect-square rounded-xl overflow-hidden relative shadow-lg">
-                                    <img src={track.coverUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={track.title} />
+                                <div key={track.id} onClick={() => handleSelectTrack(track)} className="min-w-[140px] w-[140px] flex flex-col gap-2 cursor-pointer group snap-start premium-card-hover">
+                                  <div className="w-full aspect-square rounded-xl overflow-hidden relative shadow-lg premium-image-hover">
+                                    <img src={track.coverUrl} className="w-full h-full object-cover" alt={track.title} />
                                     <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
                                     <div className="absolute bottom-2 right-2 bg-teal text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg translate-y-2 group-hover:translate-y-0">
                                       <Play className="w-3 h-3 fill-white" />
@@ -2239,9 +2340,9 @@ export const Home: React.FC = () => {
                           }
 
                           return mixes.map((mix, i) => (
-                            <div key={i} onClick={() => mix.tracks.length > 0 && handleSelectTrack(mix.tracks[0], mix.tracks)} className="min-w-[160px] w-[160px] glass-panel rounded-2xl p-4 flex flex-col gap-4 cursor-pointer hover:bg-white/5 transition-all snap-start group border border-white/5 hover:border-teal/30 shadow-lg">
-                              <div className="w-full aspect-square rounded-xl bg-gradient-to-br from-purple-500/20 to-teal/20 relative overflow-hidden flex items-center justify-center">
-                                <Disc className="w-10 h-10 text-white/50 group-hover:scale-110 transition-transform duration-500" />
+                            <div key={i} onClick={() => mix.tracks.length > 0 && handleSelectTrack(mix.tracks[0], mix.tracks)} className="min-w-[160px] w-[160px] glass-panel rounded-2xl p-4 flex flex-col gap-4 cursor-pointer transition-all snap-start group border border-white/5 hover:border-teal/30 premium-card-hover">
+                              <div className="w-full aspect-square rounded-xl bg-gradient-to-br from-purple-500/20 to-teal/20 relative overflow-hidden flex items-center justify-center premium-image-hover">
+                                <Disc className="w-10 h-10 text-white/50" />
                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                   <Play className="w-8 h-8 text-white fill-white ml-1" />
                                 </div>
@@ -2318,8 +2419,8 @@ export const Home: React.FC = () => {
                     </h2>
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                       {COMMUNITY_PLAYLISTS.map((pl, i) => (
-                        <div key={i} onClick={() => setSelectedPlaylist(pl.name)} className="glass-panel p-4 rounded-2xl flex flex-col gap-4 cursor-pointer hover:bg-white/5 hover:border-white/10 transition-all border border-transparent group shadow-md active:scale-[0.98]">
-                          <div className="w-full aspect-square rounded-xl bg-gradient-to-br from-slate-800 to-[#121212] relative flex items-center justify-center overflow-hidden">
+                        <div key={i} onClick={() => setSelectedPlaylist(pl.name)} className="glass-panel p-4 rounded-2xl flex flex-col gap-4 cursor-pointer hover:bg-white/5 hover:border-white/10 transition-all border border-transparent group shadow-md active:scale-[0.98] premium-card-hover">
+                          <div className="w-full aspect-square rounded-xl bg-gradient-to-br from-slate-800 to-[#121212] relative flex items-center justify-center overflow-hidden premium-image-hover">
                             {pl.coverUrl ? (
                               <img src={pl.coverUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={pl.name} />
                             ) : (

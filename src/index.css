@@ -70,6 +70,24 @@ body {
   border: 1px solid rgba(171, 170, 165, 0.08);  /* silver at 8% */
 }
 
+/* Global premium hover animations */
+.premium-card-hover {
+  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+
+.premium-card-hover:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.5), 0 0 30px rgba(92, 131, 116, 0.15) !important;
+}
+
+.premium-image-hover img {
+  transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+
+.premium-image-hover:hover img {
+  transform: scale(1.08) !important;
+}
+
 /* Gated lock overlay */
 .lock-overlay {
   background: rgba(21, 21, 23, 0.75);   /* onyx-2 at 75% */

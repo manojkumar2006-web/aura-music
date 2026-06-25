@@ -150,6 +150,63 @@ export const Home: React.FC = () => {
   const [authSuccess, setAuthSuccess] = useState<string | null>(null);
   const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
 
+  // AI Mood Analysis for Personalize your Vibe
+  const vibeTracks = useMemo(() => {
+    if (!currentWeather || !userRegion) return [];
+    
+    const w = currentWeather.toLowerCase();
+    
+    // Pseudo-AI Mood Mapping based on climate
+    let moodKeywords: string[] = [];
+    if (w.includes('rain') || w.includes('storm')) {
+      moodKeywords = ['sad', 'lofi', 'melancholy', 'chill', 'acoustic', 'slow', 'rain', 'heartbreak'];
+    } else if (w.includes('sun') || w.includes('clear')) {
+      moodKeywords = ['upbeat', 'dance', 'happy', 'party', 'pop', 'energy', 'fast'];
+    } else if (w.includes('cloud')) {
+      moodKeywords = ['relax', 'calm', 'indie', 'ambient', 'focus', 'soft', 'breeze'];
+    } else if (w.includes('snow')) {
+      moodKeywords = ['cozy', 'winter', 'acoustic', 'peaceful', 'warm'];
+    } else {
+      moodKeywords = ['chill', 'pop', 'hits'];
+    }
+
+    // Filter tracks by region first (loose match)
+    let regionTracks = tracks.filter(t => 
+      t.region?.toLowerCase() === userRegion.toLowerCase() || 
+      t.region?.toLowerCase() === 'bollywood' ||
+      userRegion.toLowerCase() === 'global'
+    );
+    
+    // Fallback if region has too few tracks
+    if (regionTracks.length < 5) regionTracks = tracks;
+
+    // Score tracks based on mood keyword matches
+    const scoredTracks = regionTracks.map(track => {
+      let score = 0;
+      const searchableText = `${track.title} ${track.artist} ${track.album} ${track.musicDirector} ${track.weather}`.toLowerCase();
+      
+      // Explicit weather match bonus
+      if (track.weather?.toLowerCase() === w) score += 50;
+      
+      // Mood keyword analysis
+      moodKeywords.forEach(keyword => {
+        if (searchableText.includes(keyword)) score += 15;
+      });
+      
+      // Add random entropy to simulate dynamic AI discovery
+      score += Math.random() * 10;
+      
+      return { track, score };
+    });
+
+    // Sort by score descending and take top tracks
+    return scoredTracks
+      .sort((a, b) => b.score - a.score)
+      .map(st => st.track)
+      .slice(0, 10);
+      
+  }, [currentWeather, userRegion, tracks]);
+
   // Edit Profile States
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [editDisplayName, setEditDisplayName] = useState('');
@@ -2236,8 +2293,8 @@ export const Home: React.FC = () => {
                           </div>
                           
                           <div className="flex gap-4 overflow-x-auto custom-scroll pb-4 snap-x">
-                            {tracks.filter(t => t.weather === currentWeather && (t.region === userRegion || t.region === 'Bollywood')).length > 0 ? (
-                              tracks.filter(t => t.weather === currentWeather && (t.region === userRegion || t.region === 'Bollywood')).map((track) => (
+                            {vibeTracks.length > 0 ? (
+                              vibeTracks.map((track) => (
                                 <div key={track.id} onClick={() => handleSelectTrack(track)} className="min-w-[140px] w-[140px] flex flex-col gap-2 cursor-pointer group snap-start premium-card-hover">
                                   <div className="w-full aspect-square rounded-xl overflow-hidden relative shadow-lg premium-image-hover">
                                     <img src={track.coverUrl} className="w-full h-full object-cover" alt={track.title} />

@@ -6,30 +6,30 @@
   --font-display: "Space Grotesk", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
-  /* Frosted Titanium (Monochrome) Color System */
-  --color-onyx: #050505;
-  --color-onyx-2: #0a0a0a;
-  --color-carbon-black: #121212;
-  --color-shadow-grey: #171717;
-  --color-shadow-grey-2: #262626;
-  --color-graphite: #404040;
-  --color-silver: #a1a1aa; /* Titanium silver */
+  /* Premium Pure Black Color System */
+  --color-onyx: #000000; /* Pitch black */
+  --color-onyx-2: #050505;
+  --color-carbon-black: #121212; /* Spotify card color */
+  --color-shadow-grey: #000000; 
+  --color-shadow-grey-2: #181818; 
+  --color-graphite: #242424; /* Lighter gray for hovers */
+  --color-silver: #a1a1aa; 
   --color-crushed-berry: #ffffff;
 
-  /* Semantic Aliases mapped to new monochrome palette */
+  /* Semantic Aliases mapped to pure black palette */
   --color-shadow: var(--color-onyx);
   --color-slate-default: var(--color-carbon-black);
   --color-slate-soft: var(--color-shadow-grey-2);
   
   /* Restoring Accent Colors with Monochrome Palette */
   --color-teal: #ffffff; /* Pure white accent */
-  --color-ocean: #e4e4e7; /* Light titanium */
-  --color-deepblue: #27272a; /* Zinc gray */
+  --color-ocean: #a1a1aa; /* Light titanium */
+  --color-deepblue: #282828; /* Zinc gray */
 
   /* Neutrals for Text */
   --color-ink-primary: #ffffff;
   --color-ink-secondary: #a1a1aa;
-  --color-ink-tertiary: #52525b;
+  --color-ink-tertiary: #71717a;
 }
 
 body {
@@ -48,18 +48,7 @@ body {
 }
 
 .star-field::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: 
-    radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
-    radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
-    radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px);
-  background-size: 550px 550px, 350px 350px, 250px 250px;
-  background-position: 0 0, 40px 60px, 130px 270px;
-  opacity: 0.12;
-  animation: slow-twinkle 15s infinite ease-in-out;
-  pointer-events: none;
+  display: none;
 }
 
 /* Smooth custom glassmorphism panels matched exactly to the Immersive UI design specifications */
@@ -77,7 +66,7 @@ body {
 
 .premium-card-hover:hover {
   transform: translateY(-4px) !important;
-  box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.5), 0 0 30px rgba(92, 131, 116, 0.15) !important;
+  box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 255, 255, 0.05) !important;
 }
 
 .premium-image-hover img {
@@ -98,13 +87,7 @@ body {
 
 /* 2 large fixed ambient blobs behind main content */
 .ambient-blob {
-  position: absolute;
-  width: 500px;
-  height: 500px;
-  border-radius: 50%;
-  filter: blur(130px);
-  pointer-events: none;
-  z-index: 0;
+  display: none;
 }
 
 .ambient-blob.free {
@@ -123,39 +106,39 @@ body {
 
 /* Free button hover glow */
 .btn-free {
-  background: rgba(58, 82, 86, 0.18);
-  border: 1px solid rgba(58, 82, 86, 0.4);
-  box-shadow: 0 8px 24px -4px rgba(58, 82, 86, 0.35),
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.35),
               0 4px 8px -2px rgba(0, 0, 0, 0.5);
   transition: box-shadow 0.3s ease, transform 0.3s ease, background 0.3s ease;
 }
 
 .btn-free:hover {
-  background: rgba(58, 82, 86, 0.28);
-  box-shadow: 0 16px 40px -4px rgba(58, 82, 86, 0.55),
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 16px 40px -4px rgba(0, 0, 0, 0.55),
               0 8px 16px -4px rgba(0, 0, 0, 0.6);
   transform: translateY(-5px);
 }
 
 /* Premium button hover glow */
 .btn-premium {
-  background: linear-gradient(90deg, var(--color-deepblue), var(--color-ocean));
-  box-shadow: 0 8px 24px -4px rgba(92, 131, 116, 0.25),
+  background: linear-gradient(90deg, #171717, #262626);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.35),
               0 4px 8px -2px rgba(0, 0, 0, 0.5);
   transition: box-shadow 0.3s ease, transform 0.3s ease, background 0.3s ease;
-  border: 1px solid rgba(92, 131, 116, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .btn-premium:hover {
-  background: linear-gradient(90deg, var(--color-ocean), var(--color-teal));
-  box-shadow: 0 16px 44px -4px rgba(92, 131, 116, 0.5),
+  background: linear-gradient(90deg, #262626, #404040);
+  box-shadow: 0 16px 44px -4px rgba(0, 0, 0, 0.5),
               0 8px 16px -4px rgba(0, 0, 0, 0.6);
   transform: translateY(-2px);
-  border: 1px solid rgba(92, 131, 116, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .btn-premium:active {
-  background: linear-gradient(90deg, var(--color-deepblue), var(--color-ocean));
+  background: linear-gradient(90deg, #171717, #262626);
   transform: translateY(1px);
 }
 
@@ -168,11 +151,11 @@ body {
 .shimmer-sweep {
   background: linear-gradient(
     90deg,
-    var(--color-deepblue) 0%,
-    var(--color-ocean) 35%,
-    var(--color-teal) 50%,
-    var(--color-ocean) 65%,
-    var(--color-deepblue) 100%
+    #171717 0%,
+    #262626 35%,
+    #52525b 50%,
+    #262626 65%,
+    #171717 100%
   );
   background-size: 200% 100%;
   animation: shimmer 6s ease-in-out infinite;

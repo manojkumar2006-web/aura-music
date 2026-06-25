@@ -2156,19 +2156,78 @@ export const Home: React.FC = () => {
                     <h2 className="font-display font-bold text-xl text-white tracking-wider flex items-center gap-2">
                       <Sparkles className="w-5 h-5 text-teal" /> Your Mixes
                     </h2>
-                    <div className="flex gap-4 overflow-x-auto custom-scroll pb-4 snap-x">
-                      {['Daily Mix 1', 'Chill Vibes', 'Discover Weekly', 'Late Night Drive', 'Upbeats', 'Lo-Fi Chill'].map((mix, i) => (
-                        <div key={i} className="min-w-[160px] w-[160px] glass-panel rounded-2xl p-4 flex flex-col gap-4 cursor-pointer hover:bg-white/5 transition-all snap-start group border border-white/5 hover:border-teal/30 shadow-lg">
-                          <div className="w-full aspect-square rounded-xl bg-gradient-to-br from-purple-500/20 to-teal/20 relative overflow-hidden flex items-center justify-center">
-                            <Disc className="w-10 h-10 text-white/50 group-hover:scale-110 transition-transform duration-500" />
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="text-sm font-bold text-white truncate">{mix}</span>
-                            <span className="text-[10px] text-slate-400 mt-0.5">Made for you</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                      <div className="flex gap-4 overflow-x-auto custom-scroll pb-4 snap-x">
+                        {(() => {
+                          const likedTracksList = tracks.filter(t => currentUser?.likedTracks?.includes(t.id));
+                          const explicitArtists = currentUser?.likedArtists || [];
+                          
+                          const mixes = [];
+                          
+                          // Mix 1: On Repeat (Randomized Liked Songs)
+                          if (likedTracksList.length > 0) {
+                            mixes.push({
+                              title: 'On Repeat',
+                              desc: 'Songs you love',
+                              tracks: [...likedTracksList].sort(() => 0.5 - Math.random())
+                            });
+                          }
+                          
+                          // Mix 2: Favorite Artists Mix
+                          if (explicitArtists.length > 0) {
+                            const artistTracks = tracks.filter(t => explicitArtists.some(a => t.artist.includes(a) || t.hero?.includes(a) || t.musicDirector === a));
+                            if (artistTracks.length > 0) {
+                              mixes.push({
+                                title: 'Favorite Artists Mix',
+                                desc: 'Based on your likes',
+                                tracks: artistTracks.sort(() => 0.5 - Math.random())
+                              });
+                            }
+                          }
+
+                          // Mix 3: Discovery Mix (Songs from same artists/directors but not liked)
+                          if (likedTracksList.length > 0 || explicitArtists.length > 0) {
+                            const discoveryTracks = tracks.filter(t => {
+                               if (currentUser?.likedTracks?.includes(t.id)) return false;
+                               const fromExplicitArtist = explicitArtists.some(a => t.artist.includes(a) || t.hero?.includes(a) || t.musicDirector === a);
+                               const fromLikedTrackArtist = likedTracksList.some(lt => {
+                                 const likedTrackArtists = lt.artist.split(', ');
+                                 const currentTrackArtists = t.artist.split(', ');
+                                 return likedTrackArtists.some(lta => currentTrackArtists.includes(lta)) || (lt.musicDirector && lt.musicDirector === t.musicDirector);
+                               });
+                               return fromExplicitArtist || fromLikedTrackArtist;
+                            });
+                            if (discoveryTracks.length > 0) {
+                              mixes.push({
+                                title: 'Discover Weekly',
+                                desc: 'New recommendations',
+                                tracks: discoveryTracks.sort(() => 0.5 - Math.random()).slice(0, 20)
+                              });
+                            }
+                          }
+
+                          // Fallbacks if user is new or has no likes
+                          if (mixes.length === 0) {
+                            mixes.push({ title: 'Top Hits', desc: 'Global chart toppers', tracks: tracks.slice(0, 15) });
+                            mixes.push({ title: 'Chill Vibes', desc: 'Relaxing tunes', tracks: tracks.slice(15, 30) });
+                            mixes.push({ title: 'Workout Mix', desc: 'High energy', tracks: tracks.slice(30, 45) });
+                          }
+
+                          return mixes.map((mix, i) => (
+                            <div key={i} onClick={() => mix.tracks.length > 0 && handleSelectTrack(mix.tracks[0], mix.tracks)} className="min-w-[160px] w-[160px] glass-panel rounded-2xl p-4 flex flex-col gap-4 cursor-pointer hover:bg-white/5 transition-all snap-start group border border-white/5 hover:border-teal/30 shadow-lg">
+                              <div className="w-full aspect-square rounded-xl bg-gradient-to-br from-purple-500/20 to-teal/20 relative overflow-hidden flex items-center justify-center">
+                                <Disc className="w-10 h-10 text-white/50 group-hover:scale-110 transition-transform duration-500" />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                  <Play className="w-8 h-8 text-white fill-white ml-1" />
+                                </div>
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="text-sm font-bold text-white truncate group-hover:text-teal transition-colors">{mix.title}</span>
+                                <span className="text-[10px] text-slate-400 mt-0.5 truncate">{mix.desc}</span>
+                              </div>
+                            </div>
+                          ));
+                        })()}
+                      </div>
                   </div>
 
                   {/* Liked Songs Preview */}

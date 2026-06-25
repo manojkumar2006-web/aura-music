@@ -250,17 +250,8 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
   setUserRegion: (region) => set({ userRegion: region }),
   
   fetchTracks: async () => {
-    try {
-      const response = await fetch('/api/tracks');
-      if (response.ok) {
-        const data = await response.json();
-        if (data && data.length > 0) {
-          set({ tracks: data });
-        }
-      }
-    } catch (error) {
-      console.error('Failed to fetch tracks from MongoDB API:', error);
-    }
+    // Disabled MongoDB API fetch to use the massive local mock database (PRESET_TRACKS)
+    console.log('Using local PRESET_TRACKS database.');
   },
   toggleLike: async (trackId: string) => {
     const currentUser = get().currentUser;

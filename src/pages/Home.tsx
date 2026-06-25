@@ -1668,7 +1668,7 @@ export const Home: React.FC = () => {
                              e.stopPropagation();
                              toggleArtistLike(selectedDirector);
                            }}
-                           className="ml-auto p-3 rounded-full bg-white/5 hover:bg-white/10 transition-colors flex-shrink-0 group/like"
+                           className="ml-4 p-3 rounded-full bg-white/5 hover:bg-white/10 transition-colors flex-shrink-0 group/like"
                          >
                            <Heart className={`w-6 h-6 transition-transform group-hover/like:scale-110 ${isArtistLiked ? 'text-[#fa2d48] fill-[#fa2d48]' : 'text-slate-400'}`} />
                          </button>

@@ -3643,41 +3643,117 @@ export const Home: React.FC = () => {
                     </h2>
                   </div>
 
-                  {/* Empty State Card */}
-                  <div className="glass-panel rounded-3xl p-16 border border-silver/8 bg-gradient-to-br from-graphite/30 to-transparent flex flex-col items-center justify-center gap-5 text-center relative overflow-hidden">
-                    {/* Background glow */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-teal/[0.03] via-transparent to-ocean/[0.02] pointer-events-none" />
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-teal/5 rounded-full filter blur-3xl pointer-events-none" />
+                  {sidebarNav === 'radio' ? (
+                    <div className="flex flex-col gap-12 pb-8">
+                      {/* On Air Now (Aura Live Stations) */}
+                      <div className="flex flex-col gap-4">
+                        <h2 className="text-2xl font-extrabold text-white tracking-tight">On Air Now</h2>
+                        <div className="flex gap-4 overflow-x-auto custom-scroll pb-4 snap-x hide-scrollbar">
+                          {[
+                            { id: '1', label: '1', title: 'HITS', subtitle: 'Aura Radio', bg: 'bg-[#ff0000]', textColor: 'text-white' },
+                            { id: 'hits', label: 'HITS\nHITS\nHITS', title: 'BOLLYWOOD', subtitle: 'Aura Radio', bg: 'bg-white', textColor: 'text-[#007aff]' },
+                            { id: 'country', label: 'COUNTRY', title: 'COUNTRY', subtitle: 'Aura Radio', bg: 'bg-white', textColor: 'text-[#ff9f0a]' },
+                            { id: 'musica', label: 'MÚSICA\nUNO', title: 'LATIN', subtitle: 'Aura Radio', bg: 'bg-white', textColor: 'text-[#ff2d55]' },
+                            { id: 'club', label: 'Club', title: 'DANCE', subtitle: 'Aura Radio', bg: 'bg-white', textColor: 'text-[#1c1c1e]' },
+                            { id: 'chill', label: 'Chill', title: 'LO-FI', subtitle: 'Aura Radio', bg: 'bg-white', textColor: 'text-[#32ade6]' },
+                          ].map((station, i) => {
+                            return (
+                              <div 
+                                key={i} 
+                                onClick={() => handleSelectTrack(tracks[Math.floor(Math.random() * tracks.length)], [...tracks].sort(() => 0.5 - Math.random()))}
+                                className={`min-w-[280px] w-[280px] h-[280px] rounded-[32px] ${station.bg} p-6 flex flex-col justify-between relative cursor-pointer snap-start overflow-hidden premium-card-hover group shadow-xl`}
+                              >
+                                <div className="flex-grow flex items-center justify-center">
+                                   <h3 className={`${station.id === '1' ? 'text-[150px] leading-none' : 'text-5xl'} font-black ${station.textColor} text-center tracking-tighter leading-tight group-hover:scale-105 transition-transform duration-500 whitespace-pre-line`}>
+                                     {station.label}
+                                   </h3>
+                                </div>
+                                <div className={`flex items-center gap-1.5 mt-auto ${station.bg === 'bg-white' ? 'text-black/80' : 'text-white'}`}>
+                                  <Radio className={`w-4 h-4 ${station.bg === 'bg-white' ? 'fill-black/80' : 'fill-white'}`} />
+                                  <span className="font-bold text-sm tracking-tight">{station.subtitle}</span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
 
-                    {/* Icon */}
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-ocean/20 to-teal/10 border border-teal/15 flex items-center justify-center shadow-[0_0_25px_rgba(24, 61, 61,0.1)] relative z-10">
-                      {sidebarNav === 'radio' && <Radio className="w-7 h-7 text-teal/70" />}
-                      {sidebarNav === 'made-for-you' && <LayoutGrid className="w-7 h-7 text-teal/70" />}
+                      {/* Subscribe to Play Episodes */}
+                      <div className="flex flex-col gap-4">
+                        <div className="flex items-center justify-between">
+                          <h2 className="text-lg font-bold text-white hover:underline cursor-pointer flex items-center gap-1">
+                            Subscribe to Play Episodes <ChevronRight className="w-5 h-5 text-slate-400" />
+                          </h2>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-4">
+                          {[
+                            { title: 'livies radio', subtitle: 'FOR THE FANS', desc: "We break down Olivia Rodrigo's third studio album.", cover: tracks[0]?.coverUrl },
+                            { title: 'Ariana Grande, Petal: How We Got Here', subtitle: 'HOW WE GOT HERE', desc: "The story of how her album bloomed.", cover: tracks[1]?.coverUrl },
+                            { title: 'Episode 735', subtitle: 'SOULECTION', desc: "Highlights from Joe Kay's set at Tempo NY.", cover: tracks[2]?.coverUrl },
+                            { title: 'Key Glock', subtitle: 'NEW MUSIC DAILY RADIO', desc: "Spotlighting LPs from Key Glock, Tierra Whack and more.", cover: tracks[3]?.coverUrl },
+                            { title: 'Track of the Week', subtitle: 'THE MATT WILKINSON SHOW', desc: "Matt salutes mary in the junkyard's 'New Muscles'.", cover: tracks[4]?.coverUrl },
+                            { title: 'Essential Album: VICE VERSA', subtitle: 'ESSENTIALS RADIO', desc: "El álbum que nos presentó a un nuevo Rauw Alejandro.", cover: tracks[5]?.coverUrl },
+                          ].map((episode, i) => (
+                            <div 
+                              key={i}
+                              onClick={() => handleSelectTrack(tracks[Math.floor(Math.random() * tracks.length)], [...tracks].sort(() => 0.5 - Math.random()))}
+                              className="flex gap-4 items-center cursor-pointer group p-2 rounded-2xl hover:bg-white/5 transition-colors border border-transparent hover:border-white/5"
+                            >
+                              <div className="w-[100px] h-[100px] rounded-xl overflow-hidden flex-shrink-0 shadow-lg relative premium-image-hover">
+                                <img src={episode.cover} className="w-full h-full object-cover" alt="" />
+                                <div className="absolute top-1.5 right-1.5 bg-black/60 rounded px-1 py-0.5 flex items-center gap-1 backdrop-blur-md">
+                                  <Radio className="w-2 h-2 text-white fill-white" />
+                                  <span className="text-[7px] font-bold text-white uppercase tracking-wider">Music</span>
+                                </div>
+                              </div>
+                              <div className="flex flex-col min-w-0 pr-2">
+                                <p className="text-[10px] font-bold text-slate-400 tracking-wider uppercase truncate mb-0.5">{episode.subtitle}</p>
+                                <h4 className="text-[15px] font-bold text-white truncate group-hover:text-teal transition-colors leading-tight mb-1">{episode.title}</h4>
+                                <p className="text-xs text-slate-400 line-clamp-2 leading-snug">{episode.desc}</p>
+                              </div>
+                              <button className="ml-auto opacity-0 group-hover:opacity-100 p-2 hover:bg-white/10 rounded-full transition-all text-slate-400 hover:text-white" onClick={(e) => e.stopPropagation()}>
+                                <MoreVertical className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
+                  ) : (
+                    /* Empty State Card */
+                    <div className="glass-panel rounded-3xl p-16 border border-silver/8 bg-gradient-to-br from-graphite/30 to-transparent flex flex-col items-center justify-center gap-5 text-center relative overflow-hidden">
+                      {/* Background glow */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-teal/[0.03] via-transparent to-ocean/[0.02] pointer-events-none" />
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-teal/5 rounded-full filter blur-3xl pointer-events-none" />
 
-                    <div className="relative z-10 flex flex-col gap-2">
-                      <h3 className="text-lg font-bold text-white/90 font-display tracking-wide capitalize">
-                        {sidebarNav === 'recent' ? 'Recently Added' : sidebarNav}
-                      </h3>
-                      <p className="text-xs text-silver/50 max-w-xs leading-relaxed">
-                        {sidebarNav === 'albums' && 'Your album collection will appear here. Start exploring to build your library.'}
-                        {sidebarNav === 'artists' && 'Artists you follow and listen to will show up here.'}
-                        {sidebarNav === 'new' && 'Fresh releases and new additions will be featured here.'}
-                        {sidebarNav === 'radio' && 'Curated radio stations and live streams coming soon.'}
-                        {sidebarNav === 'recent' && 'Your recently added tracks and albums will appear here.'}
-                        {sidebarNav === 'downloads' && 'Songs you\'ve downloaded for offline listening will appear here.'}
-                        {sidebarNav === 'playlists' && 'Your custom playlists and saved collections live here.'}
-                        {sidebarNav === 'made-for-you' && 'Personalized mixes and recommendations tailored to your taste.'}
-                      </p>
+                      {/* Icon */}
+                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-ocean/20 to-teal/10 border border-teal/15 flex items-center justify-center shadow-[0_0_25px_rgba(24, 61, 61,0.1)] relative z-10">
+                        {sidebarNav === 'made-for-you' && <LayoutGrid className="w-7 h-7 text-teal/70" />}
+                      </div>
+
+                      <div className="relative z-10 flex flex-col gap-2">
+                        <h3 className="text-lg font-bold text-white/90 font-display tracking-wide capitalize">
+                          {sidebarNav === 'recent' ? 'Recently Added' : sidebarNav}
+                        </h3>
+                        <p className="text-xs text-silver/50 max-w-xs leading-relaxed">
+                          {sidebarNav === 'albums' && 'Your album collection will appear here. Start exploring to build your library.'}
+                          {sidebarNav === 'artists' && 'Artists you follow and listen to will show up here.'}
+                          {sidebarNav === 'new' && 'Fresh releases and new additions will be featured here.'}
+                          {sidebarNav === 'recent' && 'Your recently added tracks and albums will appear here.'}
+                          {sidebarNav === 'downloads' && 'Songs you\'ve downloaded for offline listening will appear here.'}
+                          {sidebarNav === 'playlists' && 'Your custom playlists and saved collections live here.'}
+                          {sidebarNav === 'made-for-you' && 'Personalized mixes and recommendations tailored to your taste.'}
+                        </p>
+                      </div>
+
+                      <button
+                        onClick={() => setSidebarNav('home')}
+                        className="relative z-10 mt-2 px-6 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-bold uppercase tracking-widest transition-all"
+                      >
+                        Explore Music
+                      </button>
                     </div>
-
-                    <button
-                      onClick={() => setSidebarNav('home')}
-                      className="relative z-10 mt-2 px-5 py-2 bg-gradient-to-r from-ocean to-teal text-white text-[11px] font-bold uppercase tracking-wider rounded-full shadow-[0_4px_15px_rgba(24, 61, 61,0.25)] hover:shadow-[0_4px_20px_rgba(24, 61, 61,0.4)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
-                    >
-                      Browse Library
-                    </button>
-                  </div>
+                  )}
                 </motion.div>
               )}
             </>

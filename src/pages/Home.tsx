@@ -2182,6 +2182,18 @@ export const Home: React.FC = () => {
                                 tracks: artistTracks.sort(() => 0.5 - Math.random())
                               });
                             }
+                            
+                            // Mix 2.5: Individual Artist Mixes
+                            explicitArtists.slice(0, 5).forEach(artist => {
+                               const singleArtistTracks = tracks.filter(t => t.artist.includes(artist) || t.hero?.includes(artist) || t.musicDirector === artist);
+                               if (singleArtistTracks.length >= 3) {
+                                 mixes.push({
+                                   title: `${artist} Mix`,
+                                   desc: 'Made for you',
+                                   tracks: singleArtistTracks.sort(() => 0.5 - Math.random())
+                                 });
+                               }
+                            });
                           }
 
                           // Mix 3: Discovery Mix (Songs from same artists/directors but not liked)
@@ -2205,11 +2217,25 @@ export const Home: React.FC = () => {
                             }
                           }
 
-                          // Fallbacks if user is new or has no likes
-                          if (mixes.length === 0) {
-                            mixes.push({ title: 'Top Hits', desc: 'Global chart toppers', tracks: tracks.slice(0, 15) });
-                            mixes.push({ title: 'Chill Vibes', desc: 'Relaxing tunes', tracks: tracks.slice(15, 30) });
-                            mixes.push({ title: 'Workout Mix', desc: 'High energy', tracks: tracks.slice(30, 45) });
+                          // Fallbacks and Fillers to guarantee 10+ mixes
+                          const generics = [
+                            { title: 'Top Hits', desc: 'Global chart toppers', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
+                            { title: 'Chill Vibes', desc: 'Relaxing tunes', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
+                            { title: 'Workout Mix', desc: 'High energy', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
+                            { title: 'Late Night Drive', desc: 'Night vibes', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
+                            { title: 'Daily Mix 1', desc: 'Made for you', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
+                            { title: 'Upbeats', desc: 'Feel good songs', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
+                            { title: 'Lo-Fi Chill', desc: 'Study beats', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
+                            { title: 'Tollywood Top 10', desc: 'Regional hits', tracks: tracks.filter(t => t.region === 'Tollywood').slice(0, 10) },
+                            { title: 'Kollywood Top 10', desc: 'Regional hits', tracks: tracks.filter(t => t.region === 'Kollywood').slice(0, 10) },
+                            { title: 'Bollywood Chartbusters', desc: 'Regional hits', tracks: tracks.filter(t => t.region === 'Bollywood').slice(0, 10) }
+                          ].filter(m => m.tracks.length > 0);
+
+                          for (const g of generics) {
+                            if (mixes.length >= 10 && mixes.length > generics.length) break; 
+                            if (!mixes.some(m => m.title === g.title)) {
+                              mixes.push(g);
+                            }
                           }
 
                           return mixes.map((mix, i) => (

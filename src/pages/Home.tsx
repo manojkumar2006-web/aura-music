@@ -4289,11 +4289,13 @@ export const Home: React.FC = () => {
       </AnimatePresence>
 
       {/* ================= FIXED BOTTOM PLAYER BAR ================= */}
-      <footer className="fixed bottom-0 left-0 right-0 z-40 bg-[#0a0e27]/95 backdrop-blur-md border-t border-white/5 shadow-2xl">
-        <AudioPlayer 
-          onLyricsToggle={() => setShowLyricsModal(true)} 
-          onUpgradePrompt={(msg, target) => triggerUpgradePrompt(msg, target)} 
-        />
+      <footer className="fixed bottom-6 left-0 right-0 z-50 flex justify-center pointer-events-none px-4">
+        <div className="pointer-events-auto">
+          <AudioPlayer 
+            onLyricsToggle={() => setShowLyricsModal(true)} 
+            onUpgradePrompt={(msg, target) => triggerUpgradePrompt(msg, target)} 
+          />
+        </div>
       </footer>
 
     </div>

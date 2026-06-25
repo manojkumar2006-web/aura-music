@@ -334,172 +334,97 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   const isDownloaded = currentTrack ? downloadedTracks.includes(currentTrack.id) : false;
 
   return (
-    <div className="w-full flex flex-col md:flex-row items-center justify-between gap-4 px-4 py-3 bg-graphite/70 backdrop-blur-lg border-t border-slate-default/40 shadow-2xl relative z-40">
+    <div className="flex items-center gap-4 px-6 py-2.5 bg-[#2c2c2c]/95 backdrop-blur-xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-full relative z-40 mx-auto w-max max-w-[95vw] transition-all">
       
-      {/* Left section: Song Details */}
-      <div className="flex items-center gap-3 w-full md:w-1/4 min-w-[200px]">
+      {/* Left section: Playback Controls */}
+      <div className="flex items-center gap-4 text-slate-300">
+        <button 
+          onClick={() => setIsShuffle(!isShuffle)} 
+          className={`transition-colors cursor-pointer ${isShuffle ? 'text-teal' : 'hover:text-white'}`}
+          title="Shuffle"
+        >
+          <Shuffle className="w-4 h-4" />
+        </button>
+        
+        <button onClick={handlePrev} className="hover:text-white transition-colors cursor-pointer" title="Previous">
+          <SkipBack className="w-4 h-4 fill-current" />
+        </button>
+
+        <button 
+          onClick={handlePlayPause} 
+          className="text-white hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center justify-center"
+          title={playbackState === 'playing' ? 'Pause' : 'Play'}
+        >
+          {playbackState === 'playing' ? (
+            <Pause className="w-6 h-6 fill-current" />
+          ) : (
+            <Play className="w-6 h-6 fill-current ml-0.5" />
+          )}
+        </button>
+
+        <button onClick={handleNext} className="hover:text-white transition-colors cursor-pointer" title="Next">
+          <SkipForward className="w-4 h-4 fill-current" />
+        </button>
+
+        <button 
+          onClick={() => setIsRepeat(!isRepeat)} 
+          className={`transition-colors cursor-pointer ${isRepeat ? 'text-teal' : 'hover:text-white'}`}
+          title="Repeat"
+        >
+          <Repeat className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Center section: Song Details & Scrubber */}
+      <div className="flex items-center gap-3 relative min-w-[250px] max-w-[350px] mx-4">
         {currentTrack ? (
           <>
-            <div className="w-12 h-12 rounded-lg overflow-hidden bg-black/40 border border-silver/15 shadow-md flex-shrink-0 relative">
-              <AnimatePresence mode="popLayout">
-                <motion.img 
-                  key={currentTrack.id}
-                  src={currentTrack.coverUrl} 
-                  className="w-full h-full object-cover absolute inset-0" 
-                  alt="" 
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 1.1 }}
-                  transition={{ duration: 0.3 }}
-                />
-              </AnimatePresence>
-            </div>
-            <div className="min-w-0 flex-1">
+            <img src={currentTrack.coverUrl} className="w-9 h-9 rounded object-cover shadow-md" alt="" />
+            <div className="flex flex-col justify-center min-w-0 w-full relative pb-1">
               <div className="flex items-center gap-1.5">
-                <h4 className="text-sm font-semibold text-ink-primary truncate hover:underline cursor-pointer">
-                  {currentTrack.title}
-                </h4>
-                {currentTrack.isPremiumPlus && (
-                  <span className="text-[7.5px] uppercase font-mono tracking-widest text-teal font-bold bg-teal/10 px-1 py-0.5 rounded border border-teal/20">Plus</span>
-                )}
-                {!currentTrack.isPremiumPlus && currentTrack.isPremium && (
-                  <span className="text-[7.5px] uppercase font-mono tracking-widest text-silver font-bold bg-silver/10 px-1 py-0.5 rounded border border-silver/20">Prem</span>
+                <h4 className="text-[12px] font-bold text-white truncate">{currentTrack.title}</h4>
+                {currentTrack.isPremium && (
+                  <span className="text-[8px] bg-white/20 text-white px-1 py-0.5 rounded-sm font-bold uppercase leading-none">E</span>
                 )}
               </div>
-              <p className="text-xs text-ink-secondary truncate">{currentTrack.artist}</p>
-            </div>
-            <div className="flex items-center gap-1">
-              {/* Like trigger */}
-              <button 
-                onClick={() => {
-                  if (currentUser && currentTrack) {
-                    toggleLike(currentTrack.id);
-                  }
-                }} 
-                className="p-1 hover:text-white transition-colors"
-              >
-                <Heart className={`w-4.5 h-4.5 ${currentUser?.likedTracks?.includes(currentTrack.id) ? 'fill-rose-500 text-rose-500' : 'text-slate-400'}`} />
-              </button>
+              <p className="text-[10px] text-slate-400 truncate">{currentTrack.artist} — {currentTrack.album}</p>
               
-              {/* Lyrics trigger */}
-              {onLyricsToggle && currentTrack.lyrics && (
-                <button 
-                  onClick={onLyricsToggle} 
-                  className="p-1 text-slate-400 hover:text-white transition-colors" 
-                  title="View Lyrics"
-                >
-                  <AlignLeft className="w-4.5 h-4.5" />
-                </button>
-              )}
-
-              {/* Download trigger */}
-              <button
-                onClick={handleDownload}
-                className={`p-1 transition-colors cursor-pointer ${
-                  isDownloaded ? 'text-emerald-450' : 'text-slate-400 hover:text-white'
-                }`}
-                title={isDownloaded ? 'Offline Downloaded' : 'Download Offline'}
-              >
-                {isDownloaded ? <Check className="w-4.5 h-4.5" /> : <Download className="w-4.5 h-4.5" />}
-              </button>
+              {/* Integrated ultra-thin progress bar below text */}
+              <div className="absolute -bottom-1 left-0 right-0 h-[2px] bg-white/10 rounded-full overflow-hidden pointer-events-none">
+                <div 
+                  className="h-full bg-white rounded-full transition-all duration-100 ease-linear" 
+                  style={{ width: `${(currentTime / (duration || 1)) * 100}%` }} 
+                />
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={duration || 100}
+                value={currentTime}
+                onChange={handleScrub}
+                className="absolute -bottom-2 left-0 right-0 w-full h-4 opacity-0 cursor-pointer z-10"
+                title={`${formatTime(currentTime)} / ${formatTime(duration)}`}
+              />
             </div>
           </>
         ) : (
-          <div className="text-slate-500 text-xs font-mono">No Song Selected</div>
+          <div className="text-slate-500 text-xs font-mono w-full text-center py-2">No Song Selected</div>
         )}
       </div>
 
-      {/* Center section: Media Controls */}
-      <div className="flex flex-col items-center gap-2 w-full md:w-2/4">
-        {/* Playback Buttons */}
-        <div className="flex items-center gap-5">
-          <button 
-            onClick={() => setIsShuffle(!isShuffle)} 
-            className={`p-1.5 transition-colors cursor-pointer ${isShuffle ? 'text-teal' : 'text-ink-secondary hover:text-white'}`}
-            title="Shuffle"
-          >
-            <Shuffle className="w-4 h-4" />
-          </button>
-          
-          <button 
-            onClick={handlePrev} 
-            className="p-1.5 text-ink-secondary hover:text-white transition-colors cursor-pointer"
-            title="Previous"
-          >
-            <SkipBack className="w-4.5 h-4.5 fill-current" />
-          </button>
-
-          <button 
-            onClick={handlePlayPause} 
-            className="p-3 bg-ink-primary text-shadow rounded-full hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-md flex items-center justify-center animate-pulse"
-            title={playbackState === 'playing' ? 'Pause' : 'Play'}
-            style={{ animationDuration: '3s' }}
-          >
-            {playbackState === 'playing' ? (
-              <Pause className="w-5 h-5 fill-current text-shadow" />
-            ) : (
-              <Play className="w-5 h-5 fill-current text-shadow ml-0.5" />
-            )}
-          </button>
-
-          <button 
-            onClick={handleNext} 
-            className="p-1.5 text-ink-secondary hover:text-white transition-colors cursor-pointer"
-            title="Next"
-          >
-            <SkipForward className="w-4.5 h-4.5 fill-current" />
-          </button>
-
-          <button 
-            onClick={() => setIsRepeat(!isRepeat)} 
-            className={`p-1.5 transition-colors cursor-pointer ${isRepeat ? 'text-teal' : 'text-ink-secondary hover:text-white'}`}
-            title="Repeat"
-          >
-            <Repeat className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Scrubber Progress Slider */}
-        <div className="w-full flex items-center gap-2.5">
-          <span className="text-[10px] font-mono text-ink-tertiary min-w-[30px] text-right">
-            {formatTime(currentTime)}
-          </span>
-          
-          <input
-            type="range"
-            min={0}
-            max={duration || 100}
-            value={currentTime}
-            onChange={handleScrub}
-            className="w-full accent-teal h-1 bg-white/10 rounded-lg appearance-none cursor-pointer hover:accent-ocean transition-all"
-          />
-
-          <span className="text-[10px] font-mono text-ink-tertiary min-w-[30px]">
-            {formatTime(duration)}
-          </span>
-        </div>
-      </div>
-
-      {/* Right section: Quality Selector, Vol, Skips remaining */}
-      <div className="flex items-center gap-4 w-full md:w-1/4 justify-end min-w-[200px]">
-        {/* Free Skips Indicator */}
-        {userTier === 'Free' && (
-          <span className="text-[9px] font-mono text-ink-tertiary" title="Skips remaining before upgrade required">
-            Skips: {remainingSkips}/6
-          </span>
-        )}
-
-        {/* Bitrate Selector Dropdown */}
+      {/* Right section: Actions & Volume */}
+      <div className="flex items-center gap-4 text-slate-300">
+        
+        {/* Quality/Preview Badge */}
         <div className="relative">
           <button
             onClick={() => setShowQualityMenu(!showQualityMenu)}
-            className={`flex items-center gap-1.5 px-2.5 py-1 text-[9px] font-mono font-bold rounded-lg border uppercase tracking-wider transition-all cursor-pointer ${getQualityBadgeColor()}`}
+            className="px-2 py-0.5 bg-white/10 hover:bg-white/20 rounded-full text-[9px] font-bold tracking-wider text-slate-300 transition-colors uppercase cursor-pointer"
             title="Stream Quality"
           >
-            <Settings className="w-3 h-3 animate-spin" style={{ animationDuration: '8s' }} />
-            <span>{quality}</span>
+            {quality === '128k' ? 'PREVIEW' : quality}
           </button>
-
+          
           <AnimatePresence>
             {showQualityMenu && (
               <>
@@ -508,48 +433,22 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
-                  className="absolute bottom-full right-0 mb-2 z-50 bg-[#0e1026] border border-white/10 rounded-xl p-1.5 shadow-2xl w-40 flex flex-col gap-0.5"
+                  className="absolute bottom-full right-0 mb-4 z-50 bg-[#2c2c2c] border border-white/10 rounded-xl p-1.5 shadow-2xl w-40 flex flex-col gap-0.5 origin-bottom-right"
                 >
-                  <div className="text-[8.5px] uppercase font-mono text-slate-500 font-bold px-2 py-1 select-none">
+                  <div className="text-[8.5px] uppercase font-mono text-slate-400 font-bold px-2 py-1 select-none">
                     Select Audio Quality
                   </div>
-
-                  <button
-                    onClick={() => handleQualitySelect('128k')}
-                    className="w-full flex items-center justify-between px-2 py-1.5 text-[10px] text-ink-primary hover:bg-white/5 rounded-lg text-left cursor-pointer font-mono"
-                  >
-                    <span>128kbps Standard</span>
-                    {quality === '128k' && <Check className="w-3 h-3 text-teal" />}
+                  <button onClick={() => handleQualitySelect('128k')} className="w-full flex items-center justify-between px-2 py-1.5 text-[10px] text-white hover:bg-white/10 rounded-lg text-left cursor-pointer">
+                    <span>Preview (128kbps)</span>
+                    {quality === '128k' && <Check className="w-3 h-3 text-white" />}
                   </button>
-
-                  <button
-                    onClick={() => handleQualitySelect('320k')}
-                    className="w-full flex items-center justify-between px-2 py-1.5 text-[10px] text-ink-primary hover:bg-white/5 rounded-lg text-left cursor-pointer font-mono"
-                  >
-                    <span className="flex items-center gap-1">
-                      320kbps High {userTier === 'Free' && <Crown className="w-3 h-3 text-teal fill-teal/20" />}
-                    </span>
-                    {quality === '320k' && <Check className="w-3 h-3 text-teal" />}
+                  <button onClick={() => handleQualitySelect('320k')} className="w-full flex items-center justify-between px-2 py-1.5 text-[10px] text-white hover:bg-white/10 rounded-lg text-left cursor-pointer">
+                    <span className="flex items-center gap-1">High (320kbps) {userTier === 'Free' && <Crown className="w-3 h-3 text-yellow-500 fill-yellow-500/20" />}</span>
+                    {quality === '320k' && <Check className="w-3 h-3 text-white" />}
                   </button>
-
-                  <button
-                    onClick={() => handleQualitySelect('flac')}
-                    className="w-full flex items-center justify-between px-2 py-1.5 text-[10px] text-ink-primary hover:bg-white/5 rounded-lg text-left cursor-pointer font-mono"
-                  >
-                    <span className="flex items-center gap-1">
-                      Lossless FLAC {userTier !== 'Premium+' && <Crown className="w-3 h-3 text-teal fill-teal/20" />}
-                    </span>
-                    {quality === 'flac' && <Check className="w-3 h-3 text-teal" />}
-                  </button>
-
-                  <button
-                    onClick={() => handleQualitySelect('atmos')}
-                    className="w-full flex items-center justify-between px-2 py-1.5 text-[10px] text-ink-primary hover:bg-white/5 rounded-lg text-left cursor-pointer font-mono"
-                  >
-                    <span className="flex items-center gap-1">
-                      Dolby Atmos {userTier !== 'Premium+' && <Crown className="w-3 h-3 text-teal fill-teal/20" />}
-                    </span>
-                    {quality === 'atmos' && <Check className="w-3 h-3 text-teal" />}
+                  <button onClick={() => handleQualitySelect('flac')} className="w-full flex items-center justify-between px-2 py-1.5 text-[10px] text-white hover:bg-white/10 rounded-lg text-left cursor-pointer">
+                    <span className="flex items-center gap-1">Lossless FLAC {userTier !== 'Premium+' && <Crown className="w-3 h-3 text-yellow-500 fill-yellow-500/20" />}</span>
+                    {quality === 'flac' && <Check className="w-3 h-3 text-white" />}
                   </button>
                 </motion.div>
               </>
@@ -557,19 +456,31 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
           </AnimatePresence>
         </div>
 
-        <div className="flex items-center gap-3 relative">
-          {/* Queue UI */}
+        {/* Mini Context Actions */}
+        <div className="flex items-center gap-3">
           <button 
-            onClick={() => setShowQueue(!showQueue)}
-            className={`p-1.5 transition-all cursor-pointer rounded-full ${showQueue || queue.length > 0 ? 'text-teal hover:bg-teal/10' : 'text-ink-secondary hover:text-white hover:bg-white/5'}`}
-            title="Up Next"
+            onClick={() => { if (currentUser && currentTrack) toggleLike(currentTrack.id); }} 
+            className="hover:text-white transition-colors cursor-pointer"
+            title="Like"
           >
-            <div className="relative">
-              <ListMusic className="w-4 h-4" />
-              {queue.length > 0 && (
-                <div className="absolute -top-1 -right-1 w-2 h-2 bg-teal rounded-full animate-pulse" />
-              )}
-            </div>
+            <Heart className={`w-4 h-4 ${currentUser?.likedTracks?.includes(currentTrack?.id || '') ? 'fill-white text-white' : ''}`} />
+          </button>
+
+          {onLyricsToggle && currentTrack?.lyrics && (
+            <button onClick={onLyricsToggle} className="hover:text-white transition-colors cursor-pointer" title="Lyrics">
+              <AlignLeft className="w-4 h-4" />
+            </button>
+          )}
+
+          <button onClick={handleDownload} className={`hover:text-white transition-colors cursor-pointer ${isDownloaded ? 'text-white' : ''}`} title="Download">
+            {isDownloaded ? <Check className="w-4 h-4" /> : <Download className="w-4 h-4" />}
+          </button>
+        </div>
+
+        {/* Queue Menu */}
+        <div className="relative">
+          <button onClick={() => setShowQueue(!showQueue)} className={`hover:text-white transition-colors cursor-pointer ${showQueue ? 'text-white' : ''}`} title="Queue">
+            <ListMusic className="w-4 h-4" />
           </button>
 
           <AnimatePresence>
@@ -579,13 +490,13 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                 transition={{ duration: 0.2 }}
-                className="absolute bottom-full right-0 mb-6 w-72 max-h-80 bg-[#0a0e27]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_0_40px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden z-50 origin-bottom-right"
+                className="absolute bottom-full right-0 mb-6 w-72 max-h-80 bg-[#2c2c2c]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_0_40px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden z-50 origin-bottom-right"
               >
                 <div className="p-3 border-b border-white/10 flex justify-between items-center bg-white/5">
                   <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                    <ListMusic className="w-3.5 h-3.5 text-teal" /> Up Next
+                    <ListMusic className="w-3.5 h-3.5" /> Up Next
                   </h3>
-                  <span className="text-[10px] text-slate-400 font-mono bg-black/40 px-2 py-0.5 rounded-full">{queue.length} track{queue.length !== 1 && 's'}</span>
+                  <span className="text-[10px] text-slate-300 bg-white/10 px-2 py-0.5 rounded-full">{queue.length} track{queue.length !== 1 && 's'}</span>
                 </div>
                 <div className="flex-1 overflow-y-auto custom-scroll p-1.5 flex flex-col gap-1">
                   {queue.map((track, idx) => (
@@ -601,7 +512,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
                         </div>
                       </div>
                       <div className="flex flex-col overflow-hidden flex-1">
-                        <span className="text-[11px] font-bold text-slate-200 group-hover:text-teal transition-colors truncate">{track.title}</span>
+                        <span className="text-[11px] font-bold text-slate-200 group-hover:text-white transition-colors truncate">{track.title}</span>
                         <span className="text-[9px] text-slate-400 group-hover:text-slate-300 transition-colors truncate">{track.artist}</span>
                       </div>
                     </div>
@@ -610,32 +521,31 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
               </motion.div>
             )}
           </AnimatePresence>
+        </div>
 
-          {/* Volume controls */}
-        <div className="flex items-center gap-2">
-          <button 
-            onClick={() => setMuted(!isMuted)} 
-            className="p-1 text-ink-secondary hover:text-white transition-colors cursor-pointer"
-            title={isMuted ? 'Unmute' : 'Mute'}
-          >
+        {/* Volume */}
+        <div className="flex items-center gap-2 group relative">
+          <button onClick={() => setMuted(!isMuted)} className="hover:text-white transition-colors cursor-pointer" title={isMuted ? 'Unmute' : 'Mute'}>
             {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
           
-          <input
-            type="range"
-            min={0}
-            max={1}
-            step={0.01}
-            value={isMuted ? 0 : volume}
-            onChange={(e) => {
-              setVolume(Number(e.target.value));
-              setMuted(false);
-            }}
-            className="w-16 accent-teal h-1 bg-white/10 rounded-lg appearance-none cursor-pointer"
-            title="Volume"
-          />
+          {/* Hover volume slider */}
+          <div className="absolute bottom-full right-0 mb-4 p-3 bg-[#2c2c2c] border border-white/10 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all origin-bottom flex items-center justify-center">
+            <input
+              type="range"
+              min={0}
+              max={1}
+              step={0.01}
+              value={isMuted ? 0 : volume}
+              onChange={(e) => {
+                setVolume(Number(e.target.value));
+                setMuted(false);
+              }}
+              className="w-24 accent-white h-1 bg-white/20 rounded-lg appearance-none cursor-pointer"
+            />
+          </div>
         </div>
-        </div>
+
       </div>
 
     </div>

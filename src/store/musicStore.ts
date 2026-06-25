@@ -79,165 +79,165 @@ const PRESET_TRACKS: Track[] = [
   // ================= KOLLYWOOD =================
   {
     "id": "k-leo-1", "title": "Badass", "artist": "Anirudh Ravichander", "album": "Leo", "duration": "3:45",
-    "coverUrl": "https://picsum.photos/seed/leo1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/13/a8/70/13a87001-28ba-1bc7-0ca6-52cf10dd6f52/196871556415.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     "releaseDate": "2023-10-19", "hero": "Thalapathy Vijay", "musicDirector": "Anirudh Ravichander", "region": "Kollywood", "isPremium": false, "weather": "Sunny"
   },
   {
     "id": "k-leo-2", "title": "Naa Ready", "artist": "Anirudh Ravichander, Thalapathy Vijay", "album": "Leo", "duration": "4:08",
-    "coverUrl": "https://picsum.photos/seed/leo2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/13/a8/70/13a87001-28ba-1bc7-0ca6-52cf10dd6f52/196871556415.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
     "releaseDate": "2023-10-19", "hero": "Thalapathy Vijay", "musicDirector": "Anirudh Ravichander", "region": "Kollywood", "isPremium": false, "weather": "Cloudy"
   },
   {
     "id": "k-leo-3", "title": "Ordinary Person", "artist": "Anirudh Ravichander, Nikhita Gandhi", "album": "Leo", "duration": "2:50",
-    "coverUrl": "https://picsum.photos/seed/leo3/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/13/a8/70/13a87001-28ba-1bc7-0ca6-52cf10dd6f52/196871556415.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
     "releaseDate": "2023-10-19", "hero": "Thalapathy Vijay", "musicDirector": "Anirudh Ravichander", "region": "Kollywood", "isPremium": false, "weather": "Rainy"
   },
   {
     "id": "k-jailer-1", "title": "Hukum", "artist": "Anirudh Ravichander", "album": "Jailer", "duration": "3:27",
-    "coverUrl": "https://picsum.photos/seed/jailer1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/2c/df/14/2cdf140e-6d11-a98d-bfbf-bc5e30c3c4a1/197189528187.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
     "releaseDate": "2023-08-10", "hero": "Rajinikanth", "musicDirector": "Anirudh Ravichander", "region": "Kollywood", "isPremium": false, "weather": "Stormy"
   },
   {
     "id": "k-jailer-2", "title": "Kaavaalaa", "artist": "Anirudh Ravichander, Shilpa Rao", "album": "Jailer", "duration": "3:10",
-    "coverUrl": "https://picsum.photos/seed/jailer2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/2c/df/14/2cdf140e-6d11-a98d-bfbf-bc5e30c3c4a1/197189528187.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     "releaseDate": "2023-08-10", "hero": "Rajinikanth", "musicDirector": "Anirudh Ravichander", "region": "Kollywood", "isPremium": false, "weather": "Sunny"
   },
   {
     "id": "k-vikram-1", "title": "Pathala Pathala", "artist": "Anirudh Ravichander, Kamal Haasan", "album": "Vikram", "duration": "3:30",
-    "coverUrl": "https://picsum.photos/seed/vikram1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/41/41/01/41410135-baa0-1aab-7417-f6746b0f3c25/196589186973.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
     "releaseDate": "2022-06-03", "hero": "Kamal Haasan", "musicDirector": "Anirudh Ravichander", "region": "Kollywood", "isPremium": false, "weather": "Sunny"
   },
   {
     "id": "k-vikram-2", "title": "Vikram Title Track", "artist": "Anirudh Ravichander", "album": "Vikram", "duration": "3:15",
-    "coverUrl": "https://picsum.photos/seed/vikram2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/41/41/01/41410135-baa0-1aab-7417-f6746b0f3c25/196589186973.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
     "releaseDate": "2022-06-03", "hero": "Kamal Haasan", "musicDirector": "Anirudh Ravichander", "region": "Kollywood", "isPremium": false, "weather": "Stormy"
   },
   {
     "id": "k-master-1", "title": "Vaathi Coming", "artist": "Anirudh Ravichander, Gana Balachandar", "album": "Master", "duration": "3:50",
-    "coverUrl": "https://picsum.photos/seed/master1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/a3/f2/dc/a3f2dc29-fc54-07bb-8f9c-2a3936d21a5d/886448363347.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
     "releaseDate": "2021-01-13", "hero": "Thalapathy Vijay", "musicDirector": "Anirudh Ravichander", "region": "Kollywood", "isPremium": false, "weather": "Sunny"
   },
 
   // ================= TOLLYWOOD =================
   {
     "id": "t-rrr-1", "title": "Naatu Naatu", "artist": "Rahul Sipligunj, Kaala Bhairava", "album": "RRR", "duration": "3:35",
-    "coverUrl": "https://picsum.photos/seed/rrr1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/91/85/29/918529f8-5187-19c7-ac4f-983a9c7c5b78/8903431821683_cover.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     "releaseDate": "2022-03-24", "hero": "Ram Charan", "musicDirector": "M. M. Keeravani", "region": "Tollywood", "isPremium": false, "weather": "Sunny"
   },
   {
     "id": "t-rrr-2", "title": "Dosti", "artist": "Hemachandra", "album": "RRR", "duration": "5:40",
-    "coverUrl": "https://picsum.photos/seed/rrr2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/91/85/29/918529f8-5187-19c7-ac4f-983a9c7c5b78/8903431821683_cover.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
     "releaseDate": "2022-03-24", "hero": "Jr NTR", "musicDirector": "M. M. Keeravani", "region": "Tollywood", "isPremium": false, "weather": "Cloudy"
   },
   {
     "id": "t-pushpa-1", "title": "Oo Antava", "artist": "Indravathi Chauhan", "album": "Pushpa", "duration": "3:44",
-    "coverUrl": "https://picsum.photos/seed/pushpa1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/ec/34/7b/ec347b9b-0add-c529-4746-799277a5e1c0/cover.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
     "releaseDate": "2021-12-17", "hero": "Allu Arjun", "musicDirector": "Devi Sri Prasad", "region": "Tollywood", "isPremium": false, "weather": "Sunny"
   },
   {
     "id": "t-pushpa-2", "title": "Srivalli", "artist": "Sid Sriram", "album": "Pushpa", "duration": "3:40",
-    "coverUrl": "https://picsum.photos/seed/pushpa2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/ec/34/7b/ec347b9b-0add-c529-4746-799277a5e1c0/cover.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
     "releaseDate": "2021-12-17", "hero": "Allu Arjun", "musicDirector": "Devi Sri Prasad", "region": "Tollywood", "isPremium": false, "weather": "Rainy"
   },
   {
     "id": "t-ala-1", "title": "Butta Bomma", "artist": "Armaan Malik", "album": "Ala Vaikunthapurramuloo", "duration": "3:18",
-    "coverUrl": "https://picsum.photos/seed/ala1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music113/v4/94/b5/51/94b551b2-036f-4d49-cf7b-9a2cd9056ef8/cover.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     "releaseDate": "2020-01-12", "hero": "Allu Arjun", "musicDirector": "Thaman S", "region": "Tollywood", "isPremium": false, "weather": "Sunny"
   },
   {
     "id": "t-ala-2", "title": "Ramuloo Ramulaa", "artist": "Anurag Kulkarni, Mangli", "album": "Ala Vaikunthapurramuloo", "duration": "4:30",
-    "coverUrl": "https://picsum.photos/seed/ala2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music113/v4/94/b5/51/94b551b2-036f-4d49-cf7b-9a2cd9056ef8/cover.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
     "releaseDate": "2020-01-12", "hero": "Allu Arjun", "musicDirector": "Thaman S", "region": "Tollywood", "isPremium": false, "weather": "Sunny"
   },
   {
     "id": "t-baahu-1", "title": "Dheevara", "artist": "Ramya Behara, Deepu", "album": "Baahubali", "duration": "5:43",
-    "coverUrl": "https://picsum.photos/seed/baahu1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/e1/fb/24/e1fb245a-7d27-6505-10c3-3693bbf307d9/8905778095697.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
     "releaseDate": "2015-07-10", "hero": "Prabhas", "musicDirector": "M. M. Keeravani", "region": "Tollywood", "isPremium": false, "weather": "Cloudy"
   },
 
   // ================= BOLLYWOOD =================
   {
     "id": "b-jawan-1", "title": "Chaleya", "artist": "Arijit Singh, Shilpa Rao", "album": "Jawan", "duration": "3:20",
-    "coverUrl": "https://picsum.photos/seed/jawan1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/bb/f4/f5/bbf4f511-3c12-c25e-a475-b6d06faa8c13/8902894362047_cover.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
     "releaseDate": "2023-09-07", "hero": "Shah Rukh Khan", "musicDirector": "Anirudh Ravichander", "region": "Bollywood", "isPremium": false, "weather": "Rainy"
   },
   {
     "id": "b-jawan-2", "title": "Zinda Banda", "artist": "Anirudh Ravichander", "album": "Jawan", "duration": "4:24",
-    "coverUrl": "https://picsum.photos/seed/jawan2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/bb/f4/f5/bbf4f511-3c12-c25e-a475-b6d06faa8c13/8902894362047_cover.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     "releaseDate": "2023-09-07", "hero": "Shah Rukh Khan", "musicDirector": "Anirudh Ravichander", "region": "Bollywood", "isPremium": false, "weather": "Sunny"
   },
   {
     "id": "b-pathaan-1", "title": "Jhoome Jo Pathaan", "artist": "Arijit Singh, Sukriti Kakar", "album": "Pathaan", "duration": "3:28",
-    "coverUrl": "https://picsum.photos/seed/pathaan1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/8d/6a/19/8d6a197e-2aaa-5504-cd43-533351597487/Pathaan-Album-Audio-Cover-Final.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
     "releaseDate": "2023-01-25", "hero": "Shah Rukh Khan", "musicDirector": "Vishal-Shekhar", "region": "Bollywood", "isPremium": false, "weather": "Sunny"
   },
   {
     "id": "b-pathaan-2", "title": "Besharam Rang", "artist": "Shilpa Rao, Caralisa Monteiro", "album": "Pathaan", "duration": "4:18",
-    "coverUrl": "https://picsum.photos/seed/pathaan2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/8d/6a/19/8d6a197e-2aaa-5504-cd43-533351597487/Pathaan-Album-Audio-Cover-Final.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
     "releaseDate": "2023-01-25", "hero": "Shah Rukh Khan", "musicDirector": "Vishal-Shekhar", "region": "Bollywood", "isPremium": false, "weather": "Cloudy"
   },
   {
     "id": "b-animal-1", "title": "Arjan Vailly", "artist": "Bhupinder Babbal", "album": "Animal", "duration": "3:02",
-    "coverUrl": "https://picsum.photos/seed/animal1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/db/ad/5e/dbad5e8b-0bee-d962-92d4-021c90e375ac/8902894362092_cover.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
     "releaseDate": "2023-12-01", "hero": "Ranbir Kapoor", "musicDirector": "Harshavardhan Rameshwar", "region": "Bollywood", "isPremium": false, "weather": "Stormy"
   },
   {
     "id": "b-brahmastra-1", "title": "Kesariya", "artist": "Arijit Singh", "album": "Brahmastra", "duration": "4:28",
-    "coverUrl": "https://picsum.photos/seed/brah1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/01/ef/35/01ef35ac-c046-656c-638f-928c4af51c8d/196589554871.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     "releaseDate": "2022-09-09", "hero": "Ranbir Kapoor", "musicDirector": "Pritam", "region": "Bollywood", "isPremium": false, "weather": "Sunny"
   },
   {
     "id": "b-brahmastra-2", "title": "Deva Deva", "artist": "Arijit Singh, Jonita Gandhi", "album": "Brahmastra", "duration": "4:39",
-    "coverUrl": "https://picsum.photos/seed/brah2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/01/ef/35/01ef35ac-c046-656c-638f-928c4af51c8d/196589554871.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
     "releaseDate": "2022-09-09", "hero": "Ranbir Kapoor", "musicDirector": "Pritam", "region": "Bollywood", "isPremium": false, "weather": "Cloudy"
   },
 
   // ================= HOLLYWOOD / GLOBAL =================
   {
     "id": "h-weeknd-1", "title": "Blinding Lights", "artist": "The Weeknd", "album": "After Hours", "duration": "3:20",
-    "coverUrl": "https://picsum.photos/seed/weeknd1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/2b/b9/fe/2bb9fef5-d7f3-8345-25a9-db0e79fde4e4/20UMGIM11048.rgb.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
     "releaseDate": "2020-03-20", "hero": "The Weeknd", "musicDirector": "Max Martin", "region": "Hollywood", "isPremium": false, "weather": "Night"
   },
   {
     "id": "h-weeknd-2", "title": "Starboy", "artist": "The Weeknd, Daft Punk", "album": "Starboy", "duration": "3:50",
-    "coverUrl": "https://picsum.photos/seed/weeknd2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/b5/92/bb/b592bb72-52e3-e756-9b26-9f56d08f47ab/16UMGIM67864.rgb.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
     "releaseDate": "2016-11-25", "hero": "The Weeknd", "musicDirector": "Daft Punk", "region": "Hollywood", "isPremium": false, "weather": "Night"
   },
   {
     "id": "h-swift-1", "title": "Cruel Summer", "artist": "Taylor Swift", "album": "Lover", "duration": "2:58",
-    "coverUrl": "https://picsum.photos/seed/swift1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/49/3d/ab/493dab54-f920-9043-6181-80993b8116c9/19UMGIM53909.rgb.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     "releaseDate": "2019-08-23", "hero": "Taylor Swift", "musicDirector": "Jack Antonoff", "region": "Hollywood", "isPremium": false, "weather": "Sunny"
   },
   {
     "id": "h-swift-2", "title": "Anti-Hero", "artist": "Taylor Swift", "album": "Midnights", "duration": "3:20",
-    "coverUrl": "https://picsum.photos/seed/swift2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/67/b5/01/67b501d5-362e-797e-7dbd-942b9e273084/22UM1IM24801.rgb.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
     "releaseDate": "2022-10-21", "hero": "Taylor Swift", "musicDirector": "Jack Antonoff", "region": "Hollywood", "isPremium": false, "weather": "Cloudy"
   },
   {
     "id": "h-ed-1", "title": "Shape of You", "artist": "Ed Sheeran", "album": "Divide", "duration": "3:53",
-    "coverUrl": "https://picsum.photos/seed/ed1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/15/e6/e8/15e6e8a4-4190-6a8b-86c3-ab4a51b88288/190295851286.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
     "releaseDate": "2017-03-03", "hero": "Ed Sheeran", "musicDirector": "Steve Mac", "region": "Hollywood", "isPremium": false, "weather": "Sunny"
   },
   {
     "id": "h-ed-2", "title": "Bad Habits", "artist": "Ed Sheeran", "album": "Equals", "duration": "3:51",
-    "coverUrl": "https://picsum.photos/seed/ed2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/c5/d8/c6/c5d8c675-63e3-6632-33db-2401eabe574d/190296491412.jpg/1000x1000bb.jpg", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
     "releaseDate": "2021-10-29", "hero": "Ed Sheeran", "musicDirector": "Johnny McDaid", "region": "Hollywood", "isPremium": false, "weather": "Night"
   },
 
   // ================= LO-FI / VIBE =================
   {
     "id": "lofi-1", "title": "3 AM Study Session", "artist": "Lofi Girl", "album": "Lofi Vibes", "duration": "2:45",
-    "coverUrl": "https://picsum.photos/seed/lofi1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b273d722d3b769ea8d88e6dfd150", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     "releaseDate": "2023-01-01", "hero": "Lofi Girl", "musicDirector": "ChilledCow", "region": "Lo-Fi", "isPremium": false, "weather": "Night"
   },
   {
     "id": "lofi-2", "title": "Rainy Days", "artist": "Kudasai", "album": "Falling", "duration": "3:10",
-    "coverUrl": "https://picsum.photos/seed/lofi2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b27306231bd4bf9f2b1c7ab1286c", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
     "releaseDate": "2022-04-15", "hero": "Lofi Girl", "musicDirector": "Kudasai", "region": "Lo-Fi", "isPremium": false, "weather": "Rainy"
   },
   {
     "id": "lofi-3", "title": "Sunset Chill", "artist": "Idealism", "album": "Hiraeth", "duration": "2:30",
-    "coverUrl": "https://picsum.photos/seed/lofi3/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    "coverUrl": "https://i.scdn.co/image/ab67616d0000b2734a6a0eec3ccce5f76f4995eb", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
     "releaseDate": "2021-08-20", "hero": "Lofi Girl", "musicDirector": "Idealism", "region": "Lo-Fi", "isPremium": false, "weather": "Cloudy"
   }
 ];

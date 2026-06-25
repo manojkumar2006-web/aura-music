@@ -134,6 +134,7 @@ export const Home: React.FC = () => {
   const [activeView, setActiveView] = useState<'library' | 'profile'>('library');
   const [sidebarNav, setSidebarNav] = useState<string>('home');
   const [activeTrackMenu, setActiveTrackMenu] = useState<string | null>(null);
+  const [showTipsModal, setShowTipsModal] = useState(false);
   const [trackToAddPlaylist, setTrackToAddPlaylist] = useState<string | null>(null);
   
   // Auth Form Input States
@@ -2102,7 +2103,15 @@ export const Home: React.FC = () => {
                           >
                             Search
                           </button>
-                          <span className="text-white font-bold text-sm cursor-pointer hover:underline underline-offset-4 hidden sm:block">Show more tips</span>
+                          <span 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setShowTipsModal(true);
+                            }}
+                            className="text-white font-bold text-sm cursor-pointer hover:underline underline-offset-4 hidden sm:block"
+                          >
+                            Show more tips
+                          </span>
                         </div>
                       </div>
                       
@@ -3679,6 +3688,92 @@ export const Home: React.FC = () => {
 
       {/* ================= LYRICS MODAL OVERLAY ================= */}
       <AnimatePresence>
+        {/* Getting Started Tips Modal */}
+        <AnimatePresence>
+          {showTipsModal && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                onClick={() => setShowTipsModal(false)}
+              />
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                className="relative bg-graphite/95 backdrop-blur-xl border border-white/10 rounded-[32px] p-8 max-w-lg w-full shadow-2xl flex flex-col gap-6"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button 
+                  onClick={() => setShowTipsModal(false)}
+                  className="absolute top-6 right-6 p-2 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+                
+                <div className="flex flex-col gap-1 pr-12">
+                  <h2 className="text-2xl font-black text-white tracking-tight">Getting started</h2>
+                  <p className="text-slate-400 text-sm">Hints and tips for the best Aura experience.</p>
+                </div>
+                
+                <div className="flex flex-col gap-4 mt-2">
+                  <div className="flex gap-4 items-start group">
+                    <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-teal/20 group-hover:border-teal/30 transition-colors">
+                      <Play className="w-6 h-6 text-slate-300 group-hover:text-teal transition-colors ml-1" />
+                    </div>
+                    <div className="flex flex-col gap-1 pt-1">
+                      <h4 className="text-white font-bold text-[15px]">1. Start playing</h4>
+                      <p className="text-slate-400 text-sm leading-relaxed">Search, browse, and play your favorite artists and creators effortlessly.</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-4 items-start group">
+                    <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-teal/20 group-hover:border-teal/30 transition-colors">
+                      <Globe className="w-6 h-6 text-slate-300 group-hover:text-teal transition-colors" />
+                    </div>
+                    <div className="flex flex-col gap-1 pt-1">
+                      <h4 className="text-white font-bold text-[15px]">2. Personalize your Vibe</h4>
+                      <p className="text-slate-400 text-sm leading-relaxed">Let Aura detect your location and climate to curate music for your current environment.</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-4 items-start group">
+                    <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-teal/20 group-hover:border-teal/30 transition-colors">
+                      <Disc className="w-6 h-6 text-slate-300 group-hover:text-teal transition-colors" />
+                    </div>
+                    <div className="flex flex-col gap-1 pt-1">
+                      <h4 className="text-white font-bold text-[15px]">3. Dynamic Mixes</h4>
+                      <p className="text-slate-400 text-sm leading-relaxed">Enjoy "On Repeat" and "Discover Weekly" mixes generated dynamically based on your likes.</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-4 items-start group">
+                    <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-teal/20 group-hover:border-teal/30 transition-colors">
+                      <Music className="w-6 h-6 text-slate-300 group-hover:text-teal transition-colors" />
+                    </div>
+                    <div className="flex flex-col gap-1 pt-1">
+                      <h4 className="text-white font-bold text-[15px]">4. Premium Sound</h4>
+                      <p className="text-slate-400 text-sm leading-relaxed">Experience uninterrupted high-fidelity audio with our immersive 3D player interface.</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-4 items-start group">
+                    <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-teal/20 group-hover:border-teal/30 transition-colors">
+                      <PlusCircle className="w-6 h-6 text-slate-300 group-hover:text-teal transition-colors" />
+                    </div>
+                    <div className="flex flex-col gap-1 pt-1">
+                      <h4 className="text-white font-bold text-[15px]">5. Queue it up</h4>
+                      <p className="text-slate-400 text-sm leading-relaxed">Add tracks to your Queue to effortlessly control what plays next.</p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
         {showLyricsModal && currentTrack?.lyrics && (
           <motion.div
             initial={{ opacity: 0 }}

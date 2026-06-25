@@ -150,11 +150,11 @@ body {
 .shimmer-sweep {
   background: linear-gradient(
     90deg,
-    var(--color-carbon-black) 0%,
-    var(--color-crushed-berry) 35%,
-    #e21b36 50%,
-    var(--color-crushed-berry) 65%,
-    var(--color-carbon-black) 100%
+    var(--color-deepblue) 0%,
+    var(--color-ocean) 35%,
+    var(--color-teal) 50%,
+    var(--color-ocean) 65%,
+    var(--color-deepblue) 100%
   );
   background-size: 200% 100%;
   animation: shimmer 6s ease-in-out infinite;

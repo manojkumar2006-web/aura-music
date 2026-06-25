@@ -1647,7 +1647,7 @@ export const Home: React.FC = () => {
 
                     {/* Circular Image Header */}
                     <div className="flex flex-col items-center justify-center pt-4 pb-6 border-b border-white/5 relative">
-                       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#fa2d48]/20 blur-[100px] rounded-full opacity-50 pointer-events-none" />
+                       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-teal/20 blur-[100px] rounded-full opacity-50 pointer-events-none" />
                        <div className="w-64 h-64 rounded-full overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] z-10 relative border-4 border-white/10">
                          <img src={getCover(selectedDirector, 'director')} alt={selectedDirector} className="w-full h-full object-cover" />
                        </div>
@@ -1657,7 +1657,7 @@ export const Home: React.FC = () => {
                     <div className="flex items-center justify-center md:justify-start gap-4 border-b border-white/5 pb-8">
                        <button 
                          onClick={() => topSongs[0] && handleSelectTrack(topSongs[0], topSongs)}
-                         className="bg-[#fa2d48] hover:bg-[#fa2d48]/90 text-white p-4 rounded-full flex items-center justify-center transition-all hover:scale-105 shadow-lg flex-shrink-0"
+                         className="bg-teal hover:bg-teal/90 text-white p-4 rounded-full flex items-center justify-center transition-all hover:scale-105 shadow-lg flex-shrink-0"
                        >
                          <Play className="w-6 h-6 fill-current" />
                        </button>
@@ -1670,7 +1670,7 @@ export const Home: React.FC = () => {
                            }}
                            className="ml-4 p-3 rounded-full bg-white/5 hover:bg-white/10 transition-colors flex-shrink-0 group/like"
                          >
-                           <Heart className={`w-6 h-6 transition-transform group-hover/like:scale-110 ${isArtistLiked ? 'text-[#fa2d48] fill-[#fa2d48]' : 'text-slate-400'}`} />
+                           <Heart className={`w-6 h-6 transition-transform group-hover/like:scale-110 ${isArtistLiked ? 'text-teal fill-teal' : 'text-slate-400'}`} />
                          </button>
                        )}
                     </div>
@@ -1696,8 +1696,8 @@ export const Home: React.FC = () => {
                               <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
                             </div>
                             <div className="flex flex-col">
-                              <span className="text-xs font-mono text-slate-400 uppercase tracking-widest">{latestAlbumTracks[0]?.releaseDate || '2026'}</span>
-                              <span className="text-base font-bold text-white truncate mt-1 group-hover:text-[#fa2d48] transition-colors">{latestAlbumName} (Original Motion Picture Soundtrack)</span>
+                              <span className="text-xs uppercase tracking-widest text-slate-400 font-bold mb-1">Latest Release</span>
+                              <span className="text-base font-bold text-white truncate mt-1 group-hover:text-teal transition-colors">{latestAlbumName} (Original Motion Picture Soundtrack)</span>
                               <span className="text-xs text-slate-400 mt-0.5">{latestAlbumTracks.length} song{latestAlbumTracks.length !== 1 && 's'}</span>
                             </div>
                           </div>
@@ -1806,12 +1806,12 @@ export const Home: React.FC = () => {
                               <div className="w-full aspect-square rounded-2xl overflow-hidden relative shadow-lg bg-black/40">
                                 <img src={albumTrack?.coverUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={albumName} />
                                 <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
-                                <div className="absolute bottom-2 right-2 bg-[#fa2d48] text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg translate-y-2 group-hover:translate-y-0">
-                                  <Play className="w-3 h-3 fill-white" />
+                                <div className="absolute bottom-2 right-2 bg-teal text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg translate-y-2 group-hover:translate-y-0">
+                                  <Play className="w-5 h-5 fill-current ml-0.5" />
                                 </div>
                               </div>
-                              <div className="flex flex-col">
-                                <span className="text-sm font-bold text-white truncate group-hover:text-[#fa2d48] transition-colors">{albumName}</span>
+                              <div className="flex flex-col text-center px-1">
+                                <span className="text-sm font-bold text-white truncate group-hover:text-teal transition-colors">{albumName}</span>
                                 <span className="text-xs text-slate-400 truncate mt-0.5">{albumTrack?.releaseDate || '2026'}</span>
                               </div>
                             </div>
@@ -3357,16 +3357,16 @@ export const Home: React.FC = () => {
                           {likedComposers.length > 0 && (
                             <div className="flex flex-col gap-4 mt-6">
                               <h3 className="text-sm font-bold text-white tracking-widest uppercase font-display border-b border-white/10 pb-2 flex items-center gap-2">
-                                <Heart className="w-4 h-4 text-[#fa2d48] fill-[#fa2d48]" /> Liked Music Composers
+                                <Heart className="w-4 h-4 text-teal fill-teal" /> Liked Music Composers
                               </h3>
                               <div className="flex gap-4 overflow-x-auto custom-scroll pb-6 pt-2 px-2 -mx-2 snap-x">
                                 {likedComposers.map(artist => (
                                   <div key={`liked-composer-${artist.name}`} onClick={() => setSelectedDirector(artist.name)} className="min-w-[120px] max-w-[120px] flex flex-col items-center gap-3 snap-start group cursor-pointer text-center active:scale-95 transition-transform">
-                                    <div className="w-full aspect-square rounded-full overflow-hidden relative shadow-lg border-2 border-transparent group-hover:border-[#fa2d48] transition-all">
+                                    <div className="w-full aspect-square rounded-full overflow-hidden relative shadow-lg border-2 border-transparent group-hover:border-teal transition-all">
                                       <img src={artist.cover} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={artist.name} />
                                     </div>
                                     <div className="flex flex-col">
-                                      <p className="text-xs font-bold text-white line-clamp-2 group-hover:text-[#fa2d48] transition-colors">{artist.name}</p>
+                                      <p className="text-xs font-bold text-white line-clamp-2 group-hover:text-teal transition-colors">{artist.name}</p>
                                       <span className="text-[10px] text-slate-400 truncate mt-0.5">{artist.role}</span>
                                     </div>
                                   </div>

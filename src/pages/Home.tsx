@@ -2086,7 +2086,7 @@ export const Home: React.FC = () => {
                   {/* Top: Getting Started & Radio */}
                   <div className="flex flex-col xl:flex-row gap-6">
                     {/* Getting Started Card */}
-                    <div className="xl:w-[45%] relative rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-[#d4bc28] to-[#918115] p-6 flex justify-between min-h-[240px] group cursor-pointer premium-card-hover">
+                    <div className="xl:w-[45%] relative rounded-3xl overflow-hidden shadow-lg bg-gradient-to-br from-ocean/40 to-deepblue/60 border border-white/10 p-6 flex justify-between min-h-[240px] group cursor-pointer premium-card-hover">
                       <div className="flex flex-col justify-between relative z-10 w-[60%]">
                         <div className="mb-4">
                           <h2 className="text-3xl font-extrabold text-white tracking-tight mb-2 group-hover:-translate-y-1 transition-transform duration-500">1. Start playing</h2>
@@ -2098,7 +2098,7 @@ export const Home: React.FC = () => {
                               e.stopPropagation();
                               setSidebarNav('search');
                             }}
-                            className="px-6 py-2.5 bg-[#1ed760] hover:bg-[#1fdf64] hover:scale-105 active:scale-95 text-black font-extrabold text-sm rounded-full transition-all shadow-xl shadow-black/20"
+                            className="px-6 py-2.5 bg-gradient-to-r from-ocean to-teal hover:scale-105 active:scale-95 text-white font-extrabold text-sm rounded-xl transition-all shadow-[0_0_20px_rgba(147,177,166,0.3)]"
                           >
                             Search
                           </button>
@@ -2136,18 +2136,18 @@ export const Home: React.FC = () => {
                       </div>
                       <div className="flex gap-4 overflow-x-auto custom-scroll pb-4 snap-x">
                          {[
-                           { id: 'arijit', title: 'Arijit Singh', subtitle: 'With Pritam, Shreya Ghoshal...', bg: 'bg-[#f3d37a]', artistQuery: 'Arijit' },
-                           { id: 'arrahman', title: 'A.R. Rahman', subtitle: 'With Unnikrishnan, Hariharan...', bg: 'bg-[#ffb3c6]', artistQuery: 'Rahman' },
-                           { id: 'anirudh', title: 'Anirudh', subtitle: 'With Dhanush, Jonita Gandhi...', bg: 'bg-[#95f0d3]', artistQuery: 'Anirudh' },
-                           { id: 'sid', title: 'Sid Sriram', subtitle: 'With Thaman S, Hesham Abdul...', bg: 'bg-[#a0c4ff]', artistQuery: 'Sid Sriram' }
+                           { id: 'arijit', title: 'Arijit Singh', subtitle: 'With Pritam, Shreya Ghoshal...', bg: 'bg-gradient-to-br from-amber-500/20 to-black/40 border border-amber-500/20', artistQuery: 'Arijit' },
+                           { id: 'arrahman', title: 'A.R. Rahman', subtitle: 'With Unnikrishnan, Hariharan...', bg: 'bg-gradient-to-br from-rose-500/20 to-black/40 border border-rose-500/20', artistQuery: 'Rahman' },
+                           { id: 'anirudh', title: 'Anirudh', subtitle: 'With Dhanush, Jonita Gandhi...', bg: 'bg-gradient-to-br from-teal/20 to-black/40 border border-teal/20', artistQuery: 'Anirudh' },
+                           { id: 'sid', title: 'Sid Sriram', subtitle: 'With Thaman S, Hesham Abdul...', bg: 'bg-gradient-to-br from-indigo-500/20 to-black/40 border border-indigo-500/20', artistQuery: 'Sid Sriram' }
                          ].map((radio, i) => {
                             const radioTracks = tracks.filter(t => t.artist.includes(radio.artistQuery) || t.musicDirector?.includes(radio.artistQuery) || t.title.includes(radio.artistQuery));
                             const displayTracks = radioTracks.length >= 3 ? radioTracks : [...tracks].sort(() => 0.5 - Math.random()).slice(0, 3);
                             
                             return (
-                              <div key={i} className={`min-w-[190px] w-[190px] h-[210px] rounded-[16px] ${radio.bg} p-4 flex flex-col justify-between relative group cursor-pointer overflow-hidden snap-start premium-card-hover`}>
+                              <div key={i} className={`glass-panel min-w-[190px] w-[190px] h-[210px] rounded-3xl ${radio.bg} p-4 flex flex-col justify-between relative group cursor-pointer overflow-hidden snap-start premium-card-hover`}>
                                 <div className="flex justify-end">
-                                  <span className="text-[10px] font-black text-black/70 tracking-widest">RADIO</span>
+                                  <span className="text-[10px] font-black text-white/50 tracking-widest">RADIO</span>
                                 </div>
                                 
                                 {/* Overlapping Circles */}
@@ -2168,15 +2168,15 @@ export const Home: React.FC = () => {
                                        e.stopPropagation();
                                        if (radioTracks.length > 0) handleSelectTrack(radioTracks[0], radioTracks);
                                      }}
-                                     className="absolute bottom-2 right-[25%] w-10 h-10 bg-[#1ed760] rounded-full flex items-center justify-center shadow-2xl opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 z-50 hover:scale-110 hover:bg-[#1fdf64] active:scale-95"
+                                     className="absolute bottom-2 right-[25%] w-10 h-10 bg-teal rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(147,177,166,0.4)] opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 z-50 hover:scale-110 hover:bg-teal/90 active:scale-95"
                                    >
-                                     <Play className="w-5 h-5 text-black fill-black ml-1" />
+                                     <Play className="w-5 h-5 text-white fill-white ml-1" />
                                    </div>
                                 </div>
                                 
                                 <div className="flex flex-col z-10 relative">
-                                  <h3 className="text-[17px] font-black text-black tracking-tight group-hover:text-black/80 transition-colors truncate">{radio.title}</h3>
-                                  <p className="text-[10px] text-black/70 font-semibold truncate mt-0.5">{radio.subtitle}</p>
+                                  <h3 className="text-[17px] font-black text-white tracking-tight group-hover:text-teal transition-colors truncate">{radio.title}</h3>
+                                  <p className="text-[10px] text-slate-300 font-semibold truncate mt-0.5">{radio.subtitle}</p>
                                 </div>
                               </div>
                             );

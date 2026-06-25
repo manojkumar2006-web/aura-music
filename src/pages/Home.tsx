@@ -60,9 +60,40 @@ import { Track, SubscriptionTier } from '../types';
 import { getUserLocation, getWeather, getRegionIndustry } from '../services/locationService';
 import { OnboardingWizard } from '../components/OnboardingWizard';
 
+const ARTIST_IMAGES: Record<string, string> = {
+  "Thalapathy Vijay": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/C._Joseph_Vijay_%28cropped%29.jpg/330px-C._Joseph_Vijay_%28cropped%29.jpg",
+  "Rajinikanth": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Rajinikanth_in_2019.jpg/330px-Rajinikanth_in_2019.jpg",
+  "Kamal Haasan": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Kamal_Haasan_at_2023_San_Diego_Comic-Con_International_by_Gage_Skidmore%2C_005_%28cropped%29.jpg/330px-Kamal_Haasan_at_2023_San_Diego_Comic-Con_International_by_Gage_Skidmore%2C_005_%28cropped%29.jpg",
+  "Ram Charan": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Ram_Charan_at_Game_Changer_trailer_launch.jpg/330px-Ram_Charan_at_Game_Changer_trailer_launch.jpg",
+  "Allu Arjun": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Allu_Arjun_at_Pushpa_2_The_Rule_meet.jpg/330px-Allu_Arjun_at_Pushpa_2_The_Rule_meet.jpg",
+  "Prabhas": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Prabhas_by_Gage_Skidmore.jpg/330px-Prabhas_by_Gage_Skidmore.jpg",
+  "Shah Rukh Khan": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Shah_Rukh_Khan_graces_the_launch_of_the_new_Santro.jpg/330px-Shah_Rukh_Khan_graces_the_launch_of_the_new_Santro.jpg",
+  "Ranbir Kapoor": "https://upload.wikimedia.org/wikipedia/commons/a/a0/Ranbir_Kapoor_snapped_at_Kalina_airport.jpg",
+  "The Weeknd": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/The_Weeknd_Portrait_by_Brian_Ziff.jpg/330px-The_Weeknd_Portrait_by_Brian_Ziff.jpg",
+  "Taylor Swift": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Taylor_Swift_at_the_2023_MTV_Video_Music_Awards_%283%29.png/330px-Taylor_Swift_at_the_2023_MTV_Video_Music_Awards_%283%29.png",
+  "Ed Sheeran": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Ed_Sheeran-6886_%28cropped%29.jpg/330px-Ed_Sheeran-6886_%28cropped%29.jpg",
+  "Lofi Girl": "https://upload.wikimedia.org/wikipedia/en/f/f5/Lofi_Girl_logo_2024.jpg",
+  "Anirudh Ravichander": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Anirudh_Ravichander_at_Audi_Ritz_Style_Awards_2017_%28cropped%29.jpg/330px-Anirudh_Ravichander_at_Audi_Ritz_Style_Awards_2017_%28cropped%29.jpg",
+  "M. M. Keeravani": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/M._M._Keeravani_at_Inji_Iduppazhagi_Audio_Launch_%28cropped%29.jpg/330px-M._M._Keeravani_at_Inji_Iduppazhagi_Audio_Launch_%28cropped%29.jpg",
+  "Devi Sri Prasad": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Devi_sri_prasad.jpg/330px-Devi_sri_prasad.jpg",
+  "Thaman S": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/S._Thaman_at_Damaal_Dumeel_Audio_Launch.jpg/330px-S._Thaman_at_Damaal_Dumeel_Audio_Launch.jpg",
+  "Vishal-Shekhar": "https://upload.wikimedia.org/wikipedia/commons/8/87/Vishal_shekhar_live_hungama_concert.jpg",
+  "Pritam": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Pritam_Live_%28cropped%29.jpg/330px-Pritam_Live_%28cropped%29.jpg",
+  "Max Martin": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/MaxMartin.jpg/330px-MaxMartin.jpg",
+  "Daft Punk": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Daft_Punk_in_2013_2-_centered.jpg/330px-Daft_Punk_in_2013_2-_centered.jpg",
+  "Jack Antonoff": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Jack_Antonoff_at_Electric_Lady_Studios_2023_%28cropped%29.jpg/330px-Jack_Antonoff_at_Electric_Lady_Studios_2023_%28cropped%29.jpg",
+  "Johnny McDaid": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Snow_Patrol_-_2018153204415_2018-06-02_Rock_am_Ring_-_1D_X_MK_II_-_0578_-_B70I1885_%28cropped%29.jpg/330px-Snow_Patrol_-_2018153204415_2018-06-02_Rock_am_Ring_-_1D_X_MK_II_-_0578_-_B70I1885_%28cropped%29.jpg"
+};
+
 export const getCover = (name: string, type: 'hero' | 'director' | 'artist' | 'album', tracks?: Track[]) => {
   if (!name) return '/covers/hero-images.jpg';
 
+  // Use real portrait for artist/hero/director if available
+  if ((type === 'hero' || type === 'director' || type === 'artist') && ARTIST_IMAGES[name]) {
+    return ARTIST_IMAGES[name];
+  }
+
+  // Fallback to finding an associated track's cover URL
   if (tracks) {
     let match;
     if (type === 'hero') match = tracks.find(t => t.hero === name);
@@ -75,6 +106,7 @@ export const getCover = (name: string, type: 'hero' | 'director' | 'artist' | 'a
     }
   }
 
+  // Final fallback to generic covers
   const lower = name.toLowerCase();
   if (lower.includes('vijay')) return '/covers/Vijay.jpg';
   if (lower.includes('anirudh')) return '/covers/Anirudh.jpg';

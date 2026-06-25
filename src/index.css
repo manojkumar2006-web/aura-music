@@ -6,30 +6,30 @@
   --font-display: "Space Grotesk", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
-  /* Antigravity Color System */
-  --color-onyx: #02070a;
-  --color-onyx-2: #040D12;
-  --color-carbon-black: #040D12;
-  --color-shadow-grey: #0a1b26;
-  --color-shadow-grey-2: #0e2432;
-  --color-graphite: #133042;
-  --color-silver: #ABAAA5;
-  --color-crushed-berry: #5C8374;
+  /* Frosted Titanium (Monochrome) Color System */
+  --color-onyx: #050505;
+  --color-onyx-2: #0a0a0a;
+  --color-carbon-black: #121212;
+  --color-shadow-grey: #171717;
+  --color-shadow-grey-2: #262626;
+  --color-graphite: #404040;
+  --color-silver: #a1a1aa; /* Titanium silver */
+  --color-crushed-berry: #ffffff;
 
   /* Semantic Aliases mapped to new monochrome palette */
   --color-shadow: var(--color-onyx);
   --color-slate-default: var(--color-carbon-black);
   --color-slate-soft: var(--color-shadow-grey-2);
   
-  /* Restoring Accent Colors with User Green Palette */
-  --color-teal: #93B1A6; /* Light Sage Accent */
-  --color-ocean: #5C8374; /* Primary Sage */
-  --color-deepblue: #183D3D; /* Dark Forest Green */
+  /* Restoring Accent Colors with Monochrome Palette */
+  --color-teal: #ffffff; /* Pure white accent */
+  --color-ocean: #e4e4e7; /* Light titanium */
+  --color-deepblue: #27272a; /* Zinc gray */
 
   /* Neutrals for Text */
-  --color-ink-primary: #F4F2EE;
-  --color-ink-secondary: #ABAAA5;
-  --color-ink-tertiary: #5C8374;
+  --color-ink-primary: #ffffff;
+  --color-ink-secondary: #a1a1aa;
+  --color-ink-tertiary: #52525b;
 }
 
 body {

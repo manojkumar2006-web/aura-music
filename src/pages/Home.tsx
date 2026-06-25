@@ -3041,15 +3041,9 @@ export const Home: React.FC = () => {
                 </motion.div>
               ) : sidebarNav === 'albums' ? (
                 (() => {
-                  const regionTracks = tracks.filter(t => t.region === activeRegion || (activeRegion === 'Kollywood' && t.region === 'Tamil') || (activeRegion === 'Tollywood' && !t.region));
-                  
-                  const regionalAlbums = Array.from(new Set(regionTracks.map(t => t.album)));
-                  const regionalHeroes = Array.from(new Set(regionTracks.map(t => t.hero).filter(Boolean)));
-                  const regionalDirectors = Array.from(new Set(regionTracks.map(t => t.musicDirector).filter(Boolean)));
-                  const regionalArtists = Array.from(new Set(regionTracks.flatMap(t => t.artist.split(', '))));
-
-
-
+                  const globalAlbums = Array.from(new Set(tracks.map(t => t.album)));
+                  const globalHeroes = Array.from(new Set(tracks.map(t => t.hero).filter(Boolean)));
+                  const globalDirectors = Array.from(new Set(tracks.map(t => t.musicDirector).filter(Boolean)));
 
                   return (
                     /* ===== Dedicated Albums Page ===== */
@@ -3058,112 +3052,98 @@ export const Home: React.FC = () => {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.25 }}
-                  className="flex flex-col gap-8 pb-10"
+                  className="flex flex-col gap-10 pb-10"
                 >
-                  {/* Header & Region Selector */}
-                  <div className="flex flex-col gap-6 border-b border-white/5 pb-6">
-                    <div className="flex items-center justify-between">
-                      <h2 className="text-xl font-extrabold text-white tracking-widest uppercase font-display flex items-center gap-2">
-                        <Disc className="w-6 h-6 text-teal" /> Regional Albums
-                      </h2>
-                    </div>
-                    <div className="flex gap-3 overflow-x-auto custom-scroll pb-2">
-                      {['Tollywood', 'Bollywood', 'Kollywood', 'Hollywood'].map(region => (
-                        <button
-                          key={region}
-                          onClick={() => {
-                            setActiveRegion(region);
-                            setSelectedAlbum(null);
-                          }}
-                          className={`px-6 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap border ${
-                            activeRegion === region 
-                              ? 'bg-teal border-teal text-white shadow-[0_0_15px_rgba(24, 61, 61,0.4)]' 
-                              : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:text-white'
-                          }`}
-                        >
-                          {region}
-                        </button>
-                      ))}
+                  {/* Header */}
+                  <div className="flex items-center justify-between border-b border-white/5 pb-6">
+                    <h2 className="text-xl font-extrabold text-white tracking-widest uppercase font-display flex items-center gap-2">
+                      <Disc className="w-6 h-6 text-teal" /> Explore Albums
+                    </h2>
+                  </div>
+
+                  {/* Movies / Albums */}
+                  <div className="flex flex-col gap-6">
+                    <h3 className="font-display font-bold text-lg text-white tracking-wider flex items-center gap-2">
+                      <Play className="w-5 h-5 text-[#00d4ff]" /> Blockbuster Albums
+                    </h3>
+                    <div className="flex gap-5 overflow-x-auto custom-scroll pb-6 pt-2 px-2 -mx-2 snap-x">
+                      {globalAlbums.map((albumName) => {
+                        const albumTrack = tracks.find(t => t.album === albumName);
+                        return (
+                          <div 
+                            key={albumName} 
+                            onClick={() => setSelectedAlbum(albumName)}
+                            className="min-w-[160px] w-[160px] flex flex-col gap-3 cursor-pointer group snap-start premium-card-hover"
+                          >
+                            <div className="w-full aspect-square rounded-[20px] overflow-hidden relative shadow-lg bg-black/40 premium-image-hover">
+                              <img src={albumName.toLowerCase().includes('leo') ? '/covers/Leo.jpg' : albumTrack?.coverUrl} className="w-full h-full object-cover" alt={albumName} />
+                              <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
+                              <div className="absolute bottom-3 right-3 bg-teal text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-[0_4px_15px_rgba(24,61,61,0.5)] translate-y-2 group-hover:translate-y-0">
+                                <Play className="w-4 h-4 fill-white" />
+                              </div>
+                            </div>
+                            <div className="flex flex-col items-center text-center">
+                              <span className="text-sm font-bold text-white truncate w-full group-hover:text-teal transition-colors">{albumName}</span>
+                              <span className="text-[10px] text-slate-400 font-mono uppercase mt-1">{albumTrack?.region || 'Global'}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
 
-                  {/* Dynamic Region Content */}
-                  <div className="flex flex-col gap-10">
-                    {/* Movies */}
-                    <div className="flex flex-col gap-4">
-                      <h3 className="font-display font-bold text-base text-white tracking-wider flex items-center gap-2">
-                        <Play className="w-4 h-4 text-[#00d4ff]" /> Blockbuster Movies
+                  {/* Music Directors */}
+                  {globalDirectors.length > 0 && (
+                    <div className="flex flex-col gap-6">
+                      <h3 className="font-display font-bold text-lg text-white tracking-wider flex items-center gap-2">
+                        <Music className="w-5 h-5 text-emerald-400" /> Legendary Composers
                       </h3>
-                      <div className="flex gap-4 overflow-x-auto custom-scroll pb-4 snap-x">
-                        {regionalAlbums.map((albumName, i) => {
-                          const albumTrack = regionTracks.find(t => t.album === albumName);
-                          return (
-                            <div 
-                              key={albumName} 
-                              onClick={() => setSelectedAlbum(albumName)}
-                              className="min-w-[140px] w-[140px] flex flex-col gap-2 cursor-pointer group snap-start"
-                            >
-                              <div className="w-full aspect-[2/3] rounded-xl overflow-hidden relative shadow-lg bg-black/40">
-                                <img src={albumName.toLowerCase().includes('leo') ? '/covers/Leo.jpg' : albumTrack?.coverUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={albumName} />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
-                                <div className="absolute bottom-3 left-3 right-3 flex flex-col">
-                                  <span className="text-xs font-bold text-white truncate">{albumName}</span>
-                                  <span className="text-[9px] text-teal font-mono uppercase mt-0.5">{activeRegion}</span>
-                                </div>
-                              </div>
+                      <div className="flex gap-5 overflow-x-auto custom-scroll pb-6 pt-2 px-2 -mx-2 snap-x">
+                        {globalDirectors.map((director) => (
+                          <div 
+                            key={director} 
+                            onClick={() => setSelectedDirector(director)} 
+                            className="min-w-[220px] w-[220px] glass-panel rounded-[24px] p-5 flex flex-col items-center text-center gap-4 cursor-pointer group snap-start premium-card-hover"
+                          >
+                            <div className="w-24 h-24 rounded-full overflow-hidden flex-shrink-0 premium-image-hover border-4 border-white/5 group-hover:border-emerald-500/50 transition-colors">
+                              <img src={getCover(director, 'director')} className="w-full h-full object-cover" alt={director} />
                             </div>
-                          );
-                        })}
+                            <div className="flex flex-col w-full">
+                              <span className="text-sm font-bold text-white truncate w-full group-hover:text-emerald-400 transition-colors">{director}</span>
+                              <span className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Composer</span>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
+                  )}
 
-
-
-                    {/* Music Directors */}
-                    {regionalDirectors.length > 0 && (
-                      <div className="flex flex-col gap-4">
-                        <h3 className="font-display font-bold text-base text-white tracking-wider flex items-center gap-2">
-                          <Music className="w-4 h-4 text-emerald-400" /> Music Directors
-                        </h3>
-                        <div className="flex gap-5 overflow-x-auto custom-scroll pb-4 snap-x">
-                          {regionalDirectors.map((director, i) => (
-                            <div key={director} onClick={() => setSelectedDirector(director)} className="min-w-[200px] w-[200px] glass-panel rounded-2xl p-5 flex items-center gap-4 cursor-pointer group snap-start hover:border-emerald-500/30 transition-colors">
-                              <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
-                                <img src={getCover(director, 'director')} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={director} />
-                              </div>
-                              <div className="flex flex-col min-w-0">
-                                <span className="text-xs font-bold text-white truncate">{director}</span>
-                                <span className="text-[9px] text-slate-400 truncate">Composer</span>
-                              </div>
+                  {/* Trending Artists */}
+                  {globalHeroes.length > 0 && (
+                    <div className="flex flex-col gap-6">
+                      <h3 className="font-display font-bold text-lg text-white tracking-wider flex items-center gap-2">
+                        <Mic2 className="w-5 h-5 text-purple-400" /> Featured Icons
+                      </h3>
+                      <div className="flex gap-5 overflow-x-auto custom-scroll pb-6 pt-2 px-2 -mx-2 snap-x">
+                        {globalHeroes.map((hero) => (
+                          <div 
+                            key={hero} 
+                            onClick={() => setSelectedDirector(hero)} 
+                            className="min-w-[140px] max-w-[140px] flex flex-col items-center gap-4 snap-start group cursor-pointer text-center premium-card-hover"
+                          >
+                            <div className="w-full aspect-square rounded-full overflow-hidden relative shadow-lg border-4 border-transparent group-hover:border-purple-500/50 transition-all premium-image-hover">
+                              <img src={getCover(hero, 'hero')} className="w-full h-full object-cover" alt={hero} />
+                              <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
                             </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Particular Artists */}
-                    {regionalHeroes.length > 0 && (
-                      <div className="flex flex-col gap-4">
-                        <h3 className="font-display font-bold text-base text-white tracking-wider flex items-center gap-2">
-                          <Mic2 className="w-4 h-4 text-purple-400" /> Trending Artists
-                        </h3>
-                        <div className="flex gap-4 overflow-x-auto custom-scroll pb-6 pt-2 px-2 -mx-2 snap-x">
-                          {regionalHeroes.map((hero, i) => (
-                            <div key={hero} onClick={() => setSelectedDirector(hero)} className="min-w-[120px] max-w-[120px] flex flex-col items-center gap-3 snap-start group cursor-pointer text-center active:scale-95 transition-transform">
-                              <div className="w-full aspect-square rounded-full overflow-hidden relative shadow-lg border-2 border-transparent group-hover:border-teal transition-all">
-                                <img src={getCover(hero, 'hero')} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={hero} />
-                                <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
-                              </div>
-                              <div className="flex flex-col">
-                                <span className="text-xs font-bold text-white line-clamp-2 group-hover:text-teal transition-colors">{hero}</span>
-                                <span className="text-[10px] text-slate-400 truncate mt-0.5">Lead Actor</span>
-                              </div>
+                            <div className="flex flex-col w-full">
+                              <span className="text-sm font-bold text-white truncate w-full group-hover:text-purple-400 transition-colors">{hero}</span>
+                              <span className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Lead</span>
                             </div>
-                          ))}
-                        </div>
+                          </div>
+                        ))}
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </motion.div>
                 );
               })()

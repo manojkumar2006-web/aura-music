@@ -76,210 +76,169 @@ const getStoredSession = (): UserProfile | null => {
 
 // Seed Catalog with multi-bitrate simulation URLs (using SoundHelix direct streams)
 const PRESET_TRACKS: Track[] = [
+  // ================= KOLLYWOOD =================
   {
-  "id": "karuppu-1",
-  "title": "Aathi Raasathi",
-  "artist": "Sai Abhyankkar, Dhass Benjamin",
-  "album": "Karuppu",
-  "duration": "3:58",
-  "coverUrl": "/audio/Karuppu/Karuppu-Original-Motion-Picture-Soundtrack-Tamil-2026-20260525175054-500x500.jpg",
-  "audioUrl128k": "/audio/Karuppu/Aathi Raasathi.mp3",
-  "releaseDate": "2026",
-  "hero": "Suriya",
-  "musicDirector": "Sai Abhyankkar",
-  "region": "Tamil",
-  "isPremium": false,
-  "isPremiumPlus": false,
-  "weather": "Cloudy"
-},
-  {
-  "id": "karuppu-2",
-  "title": "Athu Thalore",
-  "artist": "Sai Abhyankkar, Ananya Chakraborty",
-  "album": "Karuppu",
-  "duration": "3:51",
-  "coverUrl": "/audio/Karuppu/Karuppu-Original-Motion-Picture-Soundtrack-Tamil-2026-20260525175054-500x500.jpg",
-  "audioUrl128k": "/audio/Karuppu/Athu Thalore.mp3",
-  "releaseDate": "2026",
-  "hero": "Suriya",
-  "musicDirector": "Sai Abhyankkar",
-  "region": "Tamil",
-  "isPremium": false,
-  "isPremiumPlus": false,
-  "weather": "Snowy"
-},
-  {
-  "id": "karuppu-3",
-  "title": "God Mode Begins",
-  "artist": "Sai Abhyankkar, Gana Muthu, Vishnu Edavan",
-  "album": "Karuppu",
-  "duration": "0:56",
-  "coverUrl": "/audio/Karuppu/Karuppu-Original-Motion-Picture-Soundtrack-Tamil-2026-20260525175054-500x500.jpg",
-  "audioUrl128k": "/audio/Karuppu/God Mode Begins.mp3",
-  "releaseDate": "2026",
-  "hero": "Suriya",
-  "musicDirector": "Sai Abhyankkar",
-  "region": "Tamil",
-  "isPremium": false,
-  "isPremiumPlus": false,
-  "weather": "Stormy"
-},
-  {
-  "id": "karuppu-4",
-  "title": "God Mode",
-  "artist": "Sai Abhyankkar, Gana Muthu",
-  "album": "Karuppu",
-  "duration": "4:00",
-  "coverUrl": "/audio/Karuppu/Karuppu-Original-Motion-Picture-Soundtrack-Tamil-2026-20260525175054-500x500.jpg",
-  "audioUrl128k": "/audio/Karuppu/God Mode.mp3",
-  "releaseDate": "2026",
-  "hero": "Suriya",
-  "musicDirector": "Sai Abhyankkar",
-  "region": "Tamil",
-  "isPremium": false,
-  "isPremiumPlus": false,
-  "weather": "Sunny"
-},
-  {
-  "id": "karuppu-5",
-  "title": "Karuppa Kooda Va",
-  "artist": "Sai Abhyankkar, V.M. Mahalingam",
-  "album": "Karuppu",
-  "duration": "4:10",
-  "coverUrl": "/audio/Karuppu/Karuppu-Original-Motion-Picture-Soundtrack-Tamil-2026-20260525175054-500x500.jpg",
-  "audioUrl128k": "/audio/Karuppu/Karuppa Kooda Va.mp3",
-  "releaseDate": "2026",
-  "hero": "Suriya",
-  "musicDirector": "Sai Abhyankkar",
-  "region": "Tamil",
-  "isPremium": false,
-  "isPremiumPlus": false,
-  "weather": "Cloudy"
-},
-  {
-  "id": "karuppu-6",
-  "title": "Naanga Naalu Peru",
-  "artist": "Sai Abhyankkar, Silambarasan Tr",
-  "album": "Karuppu",
-  "duration": "3:17",
-  "coverUrl": "/audio/Karuppu/Karuppu-Original-Motion-Picture-Soundtrack-Tamil-2026-20260525175054-500x500.jpg",
-  "audioUrl128k": "/audio/Karuppu/Naanga Naalu Peru.mp3",
-  "releaseDate": "2026",
-  "hero": "Suriya",
-  "musicDirector": "Sai Abhyankkar",
-  "region": "Tamil",
-  "isPremium": false,
-  "isPremiumPlus": false,
-  "weather": "Rainy"
-},
-  {
-  "id": "karuppu-7",
-  "title": "Raathu Raasan",
-  "artist": "Sai Abhyankkar, V.M. Mahalingam, Paal Dabba",
-  "album": "Karuppu",
-  "duration": "3:15",
-  "coverUrl": "/audio/Karuppu/Karuppu-Original-Motion-Picture-Soundtrack-Tamil-2026-20260525175054-500x500.jpg",
-  "audioUrl128k": "/audio/Karuppu/Raathu Raasan.mp3",
-  "releaseDate": "2026",
-  "hero": "Suriya",
-  "musicDirector": "Sai Abhyankkar",
-  "region": "Tamil",
-  "isPremium": false,
-  "isPremiumPlus": false,
-  "weather": "Sunny"
-},
-  {
-  "id": "karuppu-8",
-  "title": "Verappa - Extended",
-  "artist": "Sai Abhyankkar, Arivu",
-  "album": "Karuppu",
-  "duration": "4:21",
-  "coverUrl": "/audio/Karuppu/Karuppu-Original-Motion-Picture-Soundtrack-Tamil-2026-20260525175054-500x500.jpg",
-  "audioUrl128k": "/audio/Karuppu/Verappa - Extended.mp3",
-  "releaseDate": "2026",
-  "hero": "Suriya",
-  "musicDirector": "Sai Abhyankkar",
-  "region": "Tamil",
-  "isPremium": false,
-  "isPremiumPlus": false,
-  "weather": "Sunny"
-},
-  {
-  "id": "karuppu-9",
-  "title": "Verappa",
-  "artist": "Sai Abhyankkar, Arivu",
-  "album": "Karuppu",
-  "duration": "1:40",
-  "coverUrl": "/audio/Karuppu/Karuppu-Original-Motion-Picture-Soundtrack-Tamil-2026-20260525175054-500x500.jpg",
-  "audioUrl128k": "/audio/Karuppu/Verappa.mp3",
-  "releaseDate": "2026",
-  "hero": "Suriya",
-  "musicDirector": "Sai Abhyankkar",
-  "region": "Tamil",
-  "isPremium": false,
-  "isPremiumPlus": false,
-  "weather": "Snowy"
-},
-  {
-    id: 'track-1',
-    title: 'Helix Symphony I',
-    artist: 'Helix Band',
-    album: 'Helix World',
-    duration: '06:12',
-    coverUrl: 'https://picsum.photos/seed/music1/400/400',
-    audioUrl128k: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-    audioUrl320k: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-    audioUrlFlac: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
-    audioUrlAtmos: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
-    isPremium: false,
-    lyrics: "Welcome to AURA Music player.\nThis is Helix Symphony I.\nEnjoy the soothing electronic synth sounds...\n\n[Chorus]\nStreaming live from online servers\nNo local synths, just pure data\nLet the soundhelix play...\n\n[Bridge]\nRelax your mind, relax your eyes\nUnderneath the twilight skies...",
-    releaseDate: '2026-06-20'
+    "id": "k-leo-1", "title": "Badass", "artist": "Anirudh Ravichander", "album": "Leo", "duration": "3:45",
+    "coverUrl": "https://picsum.photos/seed/leo1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "releaseDate": "2023-10-19", "hero": "Thalapathy Vijay", "musicDirector": "Anirudh Ravichander", "region": "Kollywood", "isPremium": false, "weather": "Sunny"
   },
   {
-    id: 'track-2',
-    title: 'Nebula Mist Theme',
-    artist: 'Helios Sphere',
-    album: 'Cosmic Drift',
-    duration: '07:05',
-    coverUrl: 'https://picsum.photos/seed/music2/400/400',
-    audioUrl128k: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-    audioUrl320k: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
-    audioUrlFlac: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
-    audioUrlAtmos: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-    isPremium: false,
-    lyrics: "Walking through the nebula mist\nFloating in the cosmic drift\nCan you feel the gravity fade?\n\n[Chorus]\nOoh, we glide beyond the stars\nPast Jupiter and red-hot Mars\nStreaming audio night and day\nIn a Spotify-like way...\n\n[Outro]\nLost in the mist...",
-    releaseDate: '2026-06-21'
+    "id": "k-leo-2", "title": "Naa Ready", "artist": "Anirudh Ravichander, Thalapathy Vijay", "album": "Leo", "duration": "4:08",
+    "coverUrl": "https://picsum.photos/seed/leo2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    "releaseDate": "2023-10-19", "hero": "Thalapathy Vijay", "musicDirector": "Anirudh Ravichander", "region": "Kollywood", "isPremium": false, "weather": "Cloudy"
   },
   {
-    id: 'track-3',
-    title: 'Event Horizon (Premium)',
-    artist: 'Singularity',
-    album: 'Dark Horizons',
-    duration: '05:44',
-    coverUrl: 'https://picsum.photos/seed/music3/400/400',
-    audioUrl128k: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
-    audioUrl320k: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
-    audioUrlFlac: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-    audioUrlAtmos: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-    isPremium: true,
-    lyrics: "★ PREMIUM SUBSCRIBER EXCLUSIVE ★\n\nEntering the event horizon\nWhere even light cannot escape\n\n[Chorus]\nOnly premium accounts can hear\nThis deepest spatial audio vibe\nUnlocked and clear\nUpgrade today, bypass the fear...\n\n[Bridge]\nSingularity is near\nWe stream without any restrictions here.",
-    releaseDate: '2026-06-18'
+    "id": "k-leo-3", "title": "Ordinary Person", "artist": "Anirudh Ravichander, Nikhita Gandhi", "album": "Leo", "duration": "2:50",
+    "coverUrl": "https://picsum.photos/seed/leo3/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    "releaseDate": "2023-10-19", "hero": "Thalapathy Vijay", "musicDirector": "Anirudh Ravichander", "region": "Kollywood", "isPremium": false, "weather": "Rainy"
   },
   {
-    id: 'track-4',
-    title: 'Andromeda Pulse (Premium+)',
-    artist: 'Binary Pulsar',
-    album: 'Stellar Pulses',
-    duration: '05:02',
-    coverUrl: 'https://picsum.photos/seed/music4/400/400',
-    audioUrl128k: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
-    audioUrl320k: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-    audioUrlFlac: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-    audioUrlAtmos: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
-    isPremium: true,
-    isPremiumPlus: true, // Premium+ exclusive
-    lyrics: "★ PREMIUM+ EXCLUSIVE Atmos Stream ★\n\nBlinking lights of the pulsar star\nSignals sent from very far\n\n[Chorus]\nAndromeda is pulsing tonight\nA galaxy in neon blue and white\nStream the lossless soundwaves high\nUnderneath the digital sky...",
-    releaseDate: '2026-06-22'
+    "id": "k-jailer-1", "title": "Hukum", "artist": "Anirudh Ravichander", "album": "Jailer", "duration": "3:27",
+    "coverUrl": "https://picsum.photos/seed/jailer1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+    "releaseDate": "2023-08-10", "hero": "Rajinikanth", "musicDirector": "Anirudh Ravichander", "region": "Kollywood", "isPremium": false, "weather": "Stormy"
+  },
+  {
+    "id": "k-jailer-2", "title": "Kaavaalaa", "artist": "Anirudh Ravichander, Shilpa Rao", "album": "Jailer", "duration": "3:10",
+    "coverUrl": "https://picsum.photos/seed/jailer2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "releaseDate": "2023-08-10", "hero": "Rajinikanth", "musicDirector": "Anirudh Ravichander", "region": "Kollywood", "isPremium": false, "weather": "Sunny"
+  },
+  {
+    "id": "k-vikram-1", "title": "Pathala Pathala", "artist": "Anirudh Ravichander, Kamal Haasan", "album": "Vikram", "duration": "3:30",
+    "coverUrl": "https://picsum.photos/seed/vikram1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    "releaseDate": "2022-06-03", "hero": "Kamal Haasan", "musicDirector": "Anirudh Ravichander", "region": "Kollywood", "isPremium": false, "weather": "Sunny"
+  },
+  {
+    "id": "k-vikram-2", "title": "Vikram Title Track", "artist": "Anirudh Ravichander", "album": "Vikram", "duration": "3:15",
+    "coverUrl": "https://picsum.photos/seed/vikram2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    "releaseDate": "2022-06-03", "hero": "Kamal Haasan", "musicDirector": "Anirudh Ravichander", "region": "Kollywood", "isPremium": false, "weather": "Stormy"
+  },
+  {
+    "id": "k-master-1", "title": "Vaathi Coming", "artist": "Anirudh Ravichander, Gana Balachandar", "album": "Master", "duration": "3:50",
+    "coverUrl": "https://picsum.photos/seed/master1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+    "releaseDate": "2021-01-13", "hero": "Thalapathy Vijay", "musicDirector": "Anirudh Ravichander", "region": "Kollywood", "isPremium": false, "weather": "Sunny"
+  },
+
+  // ================= TOLLYWOOD =================
+  {
+    "id": "t-rrr-1", "title": "Naatu Naatu", "artist": "Rahul Sipligunj, Kaala Bhairava", "album": "RRR", "duration": "3:35",
+    "coverUrl": "https://picsum.photos/seed/rrr1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "releaseDate": "2022-03-24", "hero": "Ram Charan", "musicDirector": "M. M. Keeravani", "region": "Tollywood", "isPremium": false, "weather": "Sunny"
+  },
+  {
+    "id": "t-rrr-2", "title": "Dosti", "artist": "Hemachandra", "album": "RRR", "duration": "5:40",
+    "coverUrl": "https://picsum.photos/seed/rrr2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    "releaseDate": "2022-03-24", "hero": "Jr NTR", "musicDirector": "M. M. Keeravani", "region": "Tollywood", "isPremium": false, "weather": "Cloudy"
+  },
+  {
+    "id": "t-pushpa-1", "title": "Oo Antava", "artist": "Indravathi Chauhan", "album": "Pushpa", "duration": "3:44",
+    "coverUrl": "https://picsum.photos/seed/pushpa1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    "releaseDate": "2021-12-17", "hero": "Allu Arjun", "musicDirector": "Devi Sri Prasad", "region": "Tollywood", "isPremium": false, "weather": "Sunny"
+  },
+  {
+    "id": "t-pushpa-2", "title": "Srivalli", "artist": "Sid Sriram", "album": "Pushpa", "duration": "3:40",
+    "coverUrl": "https://picsum.photos/seed/pushpa2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+    "releaseDate": "2021-12-17", "hero": "Allu Arjun", "musicDirector": "Devi Sri Prasad", "region": "Tollywood", "isPremium": false, "weather": "Rainy"
+  },
+  {
+    "id": "t-ala-1", "title": "Butta Bomma", "artist": "Armaan Malik", "album": "Ala Vaikunthapurramuloo", "duration": "3:18",
+    "coverUrl": "https://picsum.photos/seed/ala1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "releaseDate": "2020-01-12", "hero": "Allu Arjun", "musicDirector": "Thaman S", "region": "Tollywood", "isPremium": false, "weather": "Sunny"
+  },
+  {
+    "id": "t-ala-2", "title": "Ramuloo Ramulaa", "artist": "Anurag Kulkarni, Mangli", "album": "Ala Vaikunthapurramuloo", "duration": "4:30",
+    "coverUrl": "https://picsum.photos/seed/ala2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    "releaseDate": "2020-01-12", "hero": "Allu Arjun", "musicDirector": "Thaman S", "region": "Tollywood", "isPremium": false, "weather": "Sunny"
+  },
+  {
+    "id": "t-baahu-1", "title": "Dheevara", "artist": "Ramya Behara, Deepu", "album": "Baahubali", "duration": "5:43",
+    "coverUrl": "https://picsum.photos/seed/baahu1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    "releaseDate": "2015-07-10", "hero": "Prabhas", "musicDirector": "M. M. Keeravani", "region": "Tollywood", "isPremium": false, "weather": "Cloudy"
+  },
+
+  // ================= BOLLYWOOD =================
+  {
+    "id": "b-jawan-1", "title": "Chaleya", "artist": "Arijit Singh, Shilpa Rao", "album": "Jawan", "duration": "3:20",
+    "coverUrl": "https://picsum.photos/seed/jawan1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+    "releaseDate": "2023-09-07", "hero": "Shah Rukh Khan", "musicDirector": "Anirudh Ravichander", "region": "Bollywood", "isPremium": false, "weather": "Rainy"
+  },
+  {
+    "id": "b-jawan-2", "title": "Zinda Banda", "artist": "Anirudh Ravichander", "album": "Jawan", "duration": "4:24",
+    "coverUrl": "https://picsum.photos/seed/jawan2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "releaseDate": "2023-09-07", "hero": "Shah Rukh Khan", "musicDirector": "Anirudh Ravichander", "region": "Bollywood", "isPremium": false, "weather": "Sunny"
+  },
+  {
+    "id": "b-pathaan-1", "title": "Jhoome Jo Pathaan", "artist": "Arijit Singh, Sukriti Kakar", "album": "Pathaan", "duration": "3:28",
+    "coverUrl": "https://picsum.photos/seed/pathaan1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    "releaseDate": "2023-01-25", "hero": "Shah Rukh Khan", "musicDirector": "Vishal-Shekhar", "region": "Bollywood", "isPremium": false, "weather": "Sunny"
+  },
+  {
+    "id": "b-pathaan-2", "title": "Besharam Rang", "artist": "Shilpa Rao, Caralisa Monteiro", "album": "Pathaan", "duration": "4:18",
+    "coverUrl": "https://picsum.photos/seed/pathaan2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    "releaseDate": "2023-01-25", "hero": "Shah Rukh Khan", "musicDirector": "Vishal-Shekhar", "region": "Bollywood", "isPremium": false, "weather": "Cloudy"
+  },
+  {
+    "id": "b-animal-1", "title": "Arjan Vailly", "artist": "Bhupinder Babbal", "album": "Animal", "duration": "3:02",
+    "coverUrl": "https://picsum.photos/seed/animal1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+    "releaseDate": "2023-12-01", "hero": "Ranbir Kapoor", "musicDirector": "Harshavardhan Rameshwar", "region": "Bollywood", "isPremium": false, "weather": "Stormy"
+  },
+  {
+    "id": "b-brahmastra-1", "title": "Kesariya", "artist": "Arijit Singh", "album": "Brahmastra", "duration": "4:28",
+    "coverUrl": "https://picsum.photos/seed/brah1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "releaseDate": "2022-09-09", "hero": "Ranbir Kapoor", "musicDirector": "Pritam", "region": "Bollywood", "isPremium": false, "weather": "Sunny"
+  },
+  {
+    "id": "b-brahmastra-2", "title": "Deva Deva", "artist": "Arijit Singh, Jonita Gandhi", "album": "Brahmastra", "duration": "4:39",
+    "coverUrl": "https://picsum.photos/seed/brah2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    "releaseDate": "2022-09-09", "hero": "Ranbir Kapoor", "musicDirector": "Pritam", "region": "Bollywood", "isPremium": false, "weather": "Cloudy"
+  },
+
+  // ================= HOLLYWOOD / GLOBAL =================
+  {
+    "id": "h-weeknd-1", "title": "Blinding Lights", "artist": "The Weeknd", "album": "After Hours", "duration": "3:20",
+    "coverUrl": "https://picsum.photos/seed/weeknd1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    "releaseDate": "2020-03-20", "hero": "The Weeknd", "musicDirector": "Max Martin", "region": "Hollywood", "isPremium": false, "weather": "Night"
+  },
+  {
+    "id": "h-weeknd-2", "title": "Starboy", "artist": "The Weeknd, Daft Punk", "album": "Starboy", "duration": "3:50",
+    "coverUrl": "https://picsum.photos/seed/weeknd2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+    "releaseDate": "2016-11-25", "hero": "The Weeknd", "musicDirector": "Daft Punk", "region": "Hollywood", "isPremium": false, "weather": "Night"
+  },
+  {
+    "id": "h-swift-1", "title": "Cruel Summer", "artist": "Taylor Swift", "album": "Lover", "duration": "2:58",
+    "coverUrl": "https://picsum.photos/seed/swift1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "releaseDate": "2019-08-23", "hero": "Taylor Swift", "musicDirector": "Jack Antonoff", "region": "Hollywood", "isPremium": false, "weather": "Sunny"
+  },
+  {
+    "id": "h-swift-2", "title": "Anti-Hero", "artist": "Taylor Swift", "album": "Midnights", "duration": "3:20",
+    "coverUrl": "https://picsum.photos/seed/swift2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    "releaseDate": "2022-10-21", "hero": "Taylor Swift", "musicDirector": "Jack Antonoff", "region": "Hollywood", "isPremium": false, "weather": "Cloudy"
+  },
+  {
+    "id": "h-ed-1", "title": "Shape of You", "artist": "Ed Sheeran", "album": "Divide", "duration": "3:53",
+    "coverUrl": "https://picsum.photos/seed/ed1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    "releaseDate": "2017-03-03", "hero": "Ed Sheeran", "musicDirector": "Steve Mac", "region": "Hollywood", "isPremium": false, "weather": "Sunny"
+  },
+  {
+    "id": "h-ed-2", "title": "Bad Habits", "artist": "Ed Sheeran", "album": "Equals", "duration": "3:51",
+    "coverUrl": "https://picsum.photos/seed/ed2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+    "releaseDate": "2021-10-29", "hero": "Ed Sheeran", "musicDirector": "Johnny McDaid", "region": "Hollywood", "isPremium": false, "weather": "Night"
+  },
+
+  // ================= LO-FI / VIBE =================
+  {
+    "id": "lofi-1", "title": "3 AM Study Session", "artist": "Lofi Girl", "album": "Lofi Vibes", "duration": "2:45",
+    "coverUrl": "https://picsum.photos/seed/lofi1/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "releaseDate": "2023-01-01", "hero": "Lofi Girl", "musicDirector": "ChilledCow", "region": "Lo-Fi", "isPremium": false, "weather": "Night"
+  },
+  {
+    "id": "lofi-2", "title": "Rainy Days", "artist": "Kudasai", "album": "Falling", "duration": "3:10",
+    "coverUrl": "https://picsum.photos/seed/lofi2/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    "releaseDate": "2022-04-15", "hero": "Lofi Girl", "musicDirector": "Kudasai", "region": "Lo-Fi", "isPremium": false, "weather": "Rainy"
+  },
+  {
+    "id": "lofi-3", "title": "Sunset Chill", "artist": "Idealism", "album": "Hiraeth", "duration": "2:30",
+    "coverUrl": "https://picsum.photos/seed/lofi3/400/400", "audioUrl128k": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    "releaseDate": "2021-08-20", "hero": "Lofi Girl", "musicDirector": "Idealism", "region": "Lo-Fi", "isPremium": false, "weather": "Cloudy"
   }
 ];
 

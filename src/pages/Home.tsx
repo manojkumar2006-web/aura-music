@@ -60,8 +60,21 @@ import { Track, SubscriptionTier } from '../types';
 import { getUserLocation, getWeather, getRegionIndustry } from '../services/locationService';
 import { OnboardingWizard } from '../components/OnboardingWizard';
 
-export const getCover = (name: string, type: 'hero' | 'director' | 'artist' | 'album') => {
+export const getCover = (name: string, type: 'hero' | 'director' | 'artist' | 'album', tracks?: Track[]) => {
   if (!name) return '/covers/hero-images.jpg';
+
+  if (tracks) {
+    let match;
+    if (type === 'hero') match = tracks.find(t => t.hero === name);
+    if (type === 'director') match = tracks.find(t => t.musicDirector === name);
+    if (type === 'artist') match = tracks.find(t => t.artist?.includes(name));
+    if (type === 'album') match = tracks.find(t => t.album === name);
+    
+    if (match && match.coverUrl) {
+      return match.coverUrl;
+    }
+  }
+
   const lower = name.toLowerCase();
   if (lower.includes('vijay')) return '/covers/Vijay.jpg';
   if (lower.includes('anirudh')) return '/covers/Anirudh.jpg';
@@ -1735,7 +1748,7 @@ export const Home: React.FC = () => {
                     <div className="flex flex-col items-center justify-center pt-4 pb-6 border-b border-white/5 relative">
                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-teal/20 blur-[100px] rounded-full opacity-50 pointer-events-none" />
                        <div className="w-64 h-64 rounded-full overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] z-10 relative border-4 border-white/10">
-                         <img src={getCover(selectedDirector, 'director')} alt={selectedDirector} className="w-full h-full object-cover" />
+                         <img src={getCover(selectedDirector, 'director', tracks)} alt={selectedDirector} className="w-full h-full object-cover" />
                        </div>
                     </div>
 
@@ -3112,7 +3125,7 @@ export const Home: React.FC = () => {
                             className="min-w-[220px] w-[220px] glass-panel rounded-[24px] p-5 flex flex-col items-center text-center gap-4 cursor-pointer group snap-start premium-card-hover"
                           >
                             <div className="w-24 h-24 rounded-full overflow-hidden flex-shrink-0 premium-image-hover border-4 border-white/5 group-hover:border-emerald-500/50 transition-colors">
-                              <img src={getCover(director, 'director')} className="w-full h-full object-cover" alt={director} />
+                              <img src={getCover(director, 'director', tracks)} className="w-full h-full object-cover" alt={director} />
                             </div>
                             <div className="flex flex-col w-full">
                               <span className="text-sm font-bold text-white truncate w-full group-hover:text-emerald-400 transition-colors">{director}</span>
@@ -3138,7 +3151,7 @@ export const Home: React.FC = () => {
                             className="min-w-[140px] max-w-[140px] flex flex-col items-center gap-4 snap-start group cursor-pointer text-center premium-card-hover"
                           >
                             <div className="w-full aspect-square rounded-full overflow-hidden relative shadow-lg border-4 border-transparent group-hover:border-purple-500/50 transition-all premium-image-hover">
-                              <img src={getCover(hero, 'hero')} className="w-full h-full object-cover" alt={hero} />
+                              <img src={getCover(hero, 'hero', tracks)} className="w-full h-full object-cover" alt={hero} />
                               <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
                             </div>
                             <div className="flex flex-col w-full">
@@ -3640,13 +3653,13 @@ export const Home: React.FC = () => {
                   const explicitlyLikedCreators = currentUser?.likedArtists || [];
                   const likedComposers = explicitlyLikedCreators.filter(name => tracks.some(t => t.musicDirector === name)).map(name => ({
                     name,
-                    cover: getCover(name, 'director'),
+                    cover: getCover(name, 'director', tracks),
                     role: 'Music Director'
                   }));
                   
                   const favoriteArtists = explicitlyLikedCreators.filter(name => !tracks.some(t => t.musicDirector === name)).map(name => ({
                     name,
-                    cover: getCover(name, 'hero'),
+                    cover: getCover(name, 'hero', tracks),
                     role: tracks.some(t => t.hero === name) ? 'Lead Actor' : 'Singer/Artist'
                   }));
 

@@ -2000,7 +2000,7 @@ export const Home: React.FC = () => {
                             onClick={() => handleSelectTrack(albumTracks[0], albumTracks)}
                             className="bg-white hover:bg-white/90 text-black font-bold py-2.5 px-8 rounded-full flex items-center gap-2 transition-all hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.2)]"
                           >
-                            <Play className="w-5 h-5 fill-current" /> Preview
+                            <Play className="w-5 h-5 fill-current" /> Play
                           </button>
                         </div>
                       </div>

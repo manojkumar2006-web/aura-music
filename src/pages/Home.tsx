@@ -2141,7 +2141,7 @@ export const Home: React.FC = () => {
                     <div className="xl:flex-1 flex flex-col gap-3 min-w-0">
                       <div className="flex items-center justify-between px-1">
                          <h2 className="text-xl font-extrabold text-white">Popular radio</h2>
-                         <span className="text-xs font-bold text-slate-300 hover:text-white cursor-pointer hover:underline">Show all</span>
+                         <span onClick={() => setSidebarNav('radio')} className="text-xs font-bold text-slate-300 hover:text-white cursor-pointer hover:underline">Show all</span>
                       </div>
                       <div className="flex gap-4 overflow-x-auto custom-scroll pb-4 snap-x">
                          {[

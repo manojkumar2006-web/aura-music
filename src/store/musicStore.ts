@@ -75,7 +75,7 @@ const getStoredSession = (): UserProfile | null => {
 };
 
 // Seed Catalog with multi-bitrate simulation URLs (using SoundHelix direct streams)
-const PRESET_TRACKS: Track[
+const PRESET_TRACKS: Track[] = [
   {
     "id": "track-1712662870-1712662873",
     "title": "Bloody Sweet",
@@ -2761,7 +2761,7 @@ const PRESET_TRACKS: Track[
     "isPremium": false,
     "weather": "Cloudy"
   }
-]];
+];
 
 export const useMusicStore = create<MusicStore>((set, get) => ({
   tracks: PRESET_TRACKS, // Initial fallback tracks

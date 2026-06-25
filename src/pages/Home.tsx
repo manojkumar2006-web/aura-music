@@ -135,6 +135,9 @@ export const Home: React.FC = () => {
   const [sidebarNav, setSidebarNav] = useState<string>('home');
   const [activeTrackMenu, setActiveTrackMenu] = useState<string | null>(null);
   const [showTipsModal, setShowTipsModal] = useState(false);
+  const [showSleepTimerModal, setShowSleepTimerModal] = useState(false);
+  const [sleepTimerRemaining, setSleepTimerRemaining] = useState<number | null>(null);
+  const [customSleepTimerInput, setCustomSleepTimerInput] = useState('');
   const [trackToAddPlaylist, setTrackToAddPlaylist] = useState<string | null>(null);
   
   // Auth Form Input States
@@ -206,6 +209,23 @@ export const Home: React.FC = () => {
       .slice(0, 10);
       
   }, [currentWeather, userRegion, tracks]);
+
+  // Sleep Timer logic
+  useEffect(() => {
+    let interval: number;
+    if (sleepTimerRemaining !== null && sleepTimerRemaining > 0) {
+      interval = window.setInterval(() => {
+        setSleepTimerRemaining(prev => {
+          if (prev && prev <= 1) {
+            setPlaybackState('paused');
+            return null;
+          }
+          return prev ? prev - 1 : null;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [sleepTimerRemaining, setPlaybackState]);
 
   // Edit Profile States
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -1250,6 +1270,12 @@ export const Home: React.FC = () => {
                           className="py-1.5 px-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 text-ink-primary font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer"
                         >
                           <Edit2 className="w-3.5 h-3.5 text-ink-secondary" /> Edit Profile
+                        </button>
+                        <button
+                          onClick={() => setShowSleepTimerModal(true)}
+                          className={`py-1.5 px-4 ${sleepTimerRemaining ? 'bg-teal/10 hover:bg-teal/20 border border-teal/20 hover:border-teal/30 text-teal' : 'bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 text-ink-primary'} font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer`}
+                        >
+                          <Clock className={`w-3.5 h-3.5 ${sleepTimerRemaining ? 'text-teal' : 'text-ink-secondary'}`} /> {sleepTimerRemaining ? `${Math.ceil(sleepTimerRemaining / 60)}m left` : 'Sleep Timer'}
                         </button>
                         <button
                           onClick={() => {
@@ -3821,6 +3847,92 @@ export const Home: React.FC = () => {
 
       {/* ================= LYRICS MODAL OVERLAY ================= */}
       <AnimatePresence>
+        {/* Sleep Timer Modal */}
+        <AnimatePresence>
+          {showSleepTimerModal && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                onClick={() => setShowSleepTimerModal(false)}
+              />
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                className="relative bg-graphite/95 backdrop-blur-xl border border-white/10 rounded-[32px] p-8 max-w-sm w-full shadow-2xl flex flex-col gap-6 text-center"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="mx-auto w-16 h-16 rounded-full bg-teal/10 flex items-center justify-center mb-2 shadow-[0_0_20px_rgba(24,61,61,0.2)]">
+                  <Clock className="w-8 h-8 text-teal" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-black text-white tracking-tight">Sleep Timer</h2>
+                  <p className="text-slate-400 text-sm mt-1">Stop audio automatically after a set amount of time.</p>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3 mt-2">
+                  {[15, 30, 45, 60].map(mins => (
+                    <button 
+                      key={mins}
+                      onClick={() => {
+                        setSleepTimerRemaining(mins * 60);
+                        setShowSleepTimerModal(false);
+                      }}
+                      className="py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white font-bold transition-all shadow-lg hover:border-teal/30 hover:bg-teal/5"
+                    >
+                      {mins} mins
+                    </button>
+                  ))}
+                </div>
+                
+                <div className="flex gap-2 mt-2">
+                  <input
+                    type="number"
+                    min="1"
+                    placeholder="Custom mins..."
+                    value={customSleepTimerInput}
+                    onChange={(e) => setCustomSleepTimerInput(e.target.value)}
+                    className="flex-1 bg-black/20 border border-white/10 rounded-xl px-4 text-white text-sm focus:outline-none focus:border-teal transition-colors text-center font-bold"
+                  />
+                  <button 
+                    onClick={() => {
+                      if (customSleepTimerInput && !isNaN(Number(customSleepTimerInput))) {
+                        setSleepTimerRemaining(Number(customSleepTimerInput) * 60);
+                        setShowSleepTimerModal(false);
+                      }
+                    }}
+                    className="px-6 bg-teal hover:bg-teal/90 text-white font-bold rounded-xl transition-all shadow-xl"
+                  >
+                    Set
+                  </button>
+                </div>
+                
+                {sleepTimerRemaining !== null && (
+                  <button 
+                    onClick={() => {
+                      setSleepTimerRemaining(null);
+                      setShowSleepTimerModal(false);
+                    }}
+                    className="mt-2 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold rounded-xl transition-all border border-red-500/20"
+                  >
+                    Turn off Timer
+                  </button>
+                )}
+
+                <button 
+                  onClick={() => setShowSleepTimerModal(false)}
+                  className="absolute top-6 right-6 p-2 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
         {/* Getting Started Tips Modal */}
         <AnimatePresence>
           {showTipsModal && (

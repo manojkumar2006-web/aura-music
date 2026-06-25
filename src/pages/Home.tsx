@@ -3278,12 +3278,16 @@ export const Home: React.FC = () => {
               ) : sidebarNav === 'new' ? (
                 /* ===== Dedicated New Releases Page ===== */
                 (() => {
+                  // Filter by release date, sort by newest, and keep only ONE track per album
                   const newTracks = tracks
                     .filter(t => t.releaseDate)
-                    .sort((a, b) => new Date(b.releaseDate!).getTime() - new Date(a.releaseDate!).getTime());
+                    .sort((a, b) => new Date(b.releaseDate!).getTime() - new Date(a.releaseDate!).getTime())
+                    .filter((track, index, self) => 
+                      index === self.findIndex((t) => t.album === track.album)
+                    );
                   
                   const heroTracks = newTracks.slice(0, 2);
-                  const listTracks = newTracks.slice(2);
+                  const listTracks = newTracks.slice(2, 10); // Limit list to 8 diverse new songs
 
                   return (
                     <motion.div
@@ -3320,7 +3324,7 @@ export const Home: React.FC = () => {
                                 {/* Top Badges */}
                                 <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
                                   <span className="text-[10px] font-bold uppercase tracking-widest text-teal bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-teal/20 shadow-lg">
-                                    {isNMD ? 'Updated Playlist' : 'New Release'}
+                                    {isNMD ? 'Hot Release' : 'New Release'}
                                   </span>
                                   {isSelected && playbackState === 'playing' ? (
                                     <div className="w-10 h-10 rounded-full bg-teal flex items-center justify-center text-black shadow-[0_0_20px_rgba(147, 177, 166,0.5)] animate-pulse">

@@ -389,12 +389,17 @@ export const Home: React.FC = () => {
     }
   }, [setAdminMode]);
 
-  // If user starts searching, return to library view
+  // If user starts searching, return to library view and switch to songs tab to show results
   React.useEffect(() => {
-    if (searchQuery.trim() && activeView !== 'library') {
-      setActiveView('library');
+    if (searchQuery.trim()) {
+      if (activeView !== 'library') {
+        setActiveView('library');
+      }
+      if (sidebarNav === 'search' || sidebarNav === 'home') {
+        setSidebarNav('songs');
+      }
     }
-  }, [searchQuery, activeView]);
+  }, [searchQuery, activeView, sidebarNav]);
 
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [searchQueryLocal, setSearchQueryLocal] = useState('');

@@ -3503,8 +3503,44 @@ export const Home: React.FC = () => {
                                     </p>
                                   </div>
 
-                                  <div className="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-slate-400 hover:text-white">
-                                    <MoreVertical className="w-4 h-4" />
+                                  <div className="relative flex-shrink-0">
+                                    <button 
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setActiveTrackMenu(activeTrackMenu === track.id ? null : track.id);
+                                      }}
+                                      className={`p-2 rounded-full transition-all text-slate-400 hover:text-white hover:bg-white/10 ${activeTrackMenu === track.id ? 'opacity-100 bg-white/10 text-white' : 'opacity-0 group-hover:opacity-100'}`}
+                                    >
+                                      <MoreVertical className="w-4 h-4" />
+                                    </button>
+                                    
+                                    <AnimatePresence>
+                                      {activeTrackMenu === track.id && (
+                                        <motion.div
+                                          initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                                          exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                          transition={{ duration: 0.15 }}
+                                          className="absolute right-0 top-full mt-1 w-48 rounded-xl bg-slate-900/95 backdrop-blur-md border border-white/10 shadow-2xl py-1.5 z-50 flex flex-col text-left"
+                                          onClick={(e) => e.stopPropagation()}
+                                        >
+                                          <button
+                                            onClick={(e) => handleAddToQueue(e, track)}
+                                            className="w-full px-3 py-2 text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 flex items-center gap-2 transition-colors text-left"
+                                          >
+                                            <PlusCircle className="w-3.5 h-3.5 text-teal" />
+                                            Add to Queue
+                                          </button>
+                                          <button
+                                            onClick={(e) => handleOpenPlaylistModal(e, track.id)}
+                                            className="w-full px-3 py-2 text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 flex items-center gap-2 transition-colors text-left"
+                                          >
+                                            <FolderPlus className="w-3.5 h-3.5 text-teal" />
+                                            Add to Playlist
+                                          </button>
+                                        </motion.div>
+                                      )}
+                                    </AnimatePresence>
                                   </div>
                                 </div>
                               );

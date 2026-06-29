@@ -644,6 +644,14 @@ export const Home: React.FC = () => {
 
   const activeThemeStyle = themeStyles[activeTheme] || themeStyles.slate;
 
+const handlePlayNext = (e: React.MouseEvent, track: Track) => {
+    e.stopPropagation();
+    const filteredQueue = queue.filter(t => t.id !== track.id);
+    setQueue([track, ...filteredQueue]);
+    showToastMessage(`"${track.title}" will play next`, "success");
+    setActiveTrackMenu(null);
+  };
+
   const handleAddToQueue = (e: React.MouseEvent, track: Track) => {
     e.stopPropagation();
     if (queue.some(t => t.id === track.id)) {
@@ -1900,7 +1908,7 @@ export const Home: React.FC = () => {
                               >
                                 <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 relative shadow-md">
                                   <img src={track.coverUrl} className="w-full h-full object-cover" alt={track.title} />
-                                  <div className={`absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity ${isPlaying ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                                  <div className={`absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity ${isPlaying ? 'opacity-100' : 'opacity-100 md:opacity-0 md:group-hover:opacity-100'}`}>
                                     {isPlaying ? (
                                       <div className="flex gap-0.5 items-end h-3">
                                         <motion.div animate={{ height: [3, 8, 3] }} transition={{ repeat: Infinity, duration: 0.8 }} className="w-1 bg-white rounded-full" />
@@ -1922,7 +1930,7 @@ export const Home: React.FC = () => {
                                       e.stopPropagation();
                                       setActiveTrackMenu(activeTrackMenu === track.id ? null : track.id);
                                     }}
-                                    className={`p-2 rounded-full transition-all text-slate-300 hover:bg-white/10 ${activeTrackMenu === track.id ? 'opacity-100 bg-white/10' : 'opacity-0 group-hover:opacity-100'}`}
+                                    className={`p-2 rounded-full transition-all text-slate-300 hover:bg-white/10 ${activeTrackMenu === track.id ? 'opacity-100 bg-white/10' : 'opacity-100 md:opacity-0 md:group-hover:opacity-100'}`}
                                   >
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
                                   </button>
@@ -1943,6 +1951,13 @@ export const Home: React.FC = () => {
                                         >
                                           <PlusCircle className="w-3.5 h-3.5 text-teal" />
                                           Add to Queue
+                                        </button>
+                                        <button
+                                          onClick={(e) => handlePlayNext(e, track)}
+                                          className="w-full px-3 py-2 text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 flex items-center gap-2 transition-colors text-left"
+                                        >
+                                          <Play className="w-3.5 h-3.5 text-teal" />
+                                          Play Next
                                         </button>
                                         <button
                                           onClick={(e) => handleOpenPlaylistModal(e, track.id)}
@@ -1985,7 +2000,7 @@ export const Home: React.FC = () => {
                               <div className="w-full aspect-square rounded-2xl overflow-hidden relative shadow-lg bg-black/40">
                                 <img src={albumTrack?.coverUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={albumName} />
                                 <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
-                                <div className="absolute bottom-2 right-2 bg-teal text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg translate-y-2 group-hover:translate-y-0">
+                                <div className="absolute bottom-2 right-2 bg-teal text-white p-2 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-lg translate-y-2 group-hover:translate-y-0">
                                   <Play className="w-5 h-5 fill-current ml-0.5" />
                                 </div>
                               </div>
@@ -2089,7 +2104,7 @@ export const Home: React.FC = () => {
                                   e.stopPropagation();
                                   setActiveTrackMenu(activeTrackMenu === track.id ? null : track.id);
                                 }}
-                                className={`p-2 rounded-full transition-all text-slate-300 hover:bg-white/10 ${activeTrackMenu === track.id ? 'opacity-100 bg-white/10' : 'opacity-0 group-hover:opacity-100'}`}
+                                className={`p-2 rounded-full transition-all text-slate-300 hover:bg-white/10 ${activeTrackMenu === track.id ? 'opacity-100 bg-white/10' : 'opacity-100 md:opacity-0 md:group-hover:opacity-100'}`}
                               >
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
                               </button>
@@ -2111,6 +2126,13 @@ export const Home: React.FC = () => {
                                       <PlusCircle className="w-3.5 h-3.5 text-teal" />
                                       Add to Queue
                                     </button>
+                                        <button
+                                          onClick={(e) => handlePlayNext(e, track)}
+                                          className="w-full px-3 py-2 text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 flex items-center gap-2 transition-colors text-left"
+                                        >
+                                          <Play className="w-3.5 h-3.5 text-teal" />
+                                          Play Next
+                                        </button>
                                     <button
                                       onClick={(e) => handleOpenPlaylistModal(e, track.id)}
                                       className="w-full px-3 py-2 text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 flex items-center gap-2 transition-colors text-left"
@@ -2220,7 +2242,7 @@ export const Home: React.FC = () => {
                                     e.stopPropagation();
                                     setActiveTrackMenu(activeTrackMenu === track.id ? null : track.id);
                                   }}
-                                  className="opacity-0 group-hover:opacity-100 p-2 hover:bg-white/10 rounded-full transition-all text-slate-400 hover:text-white cursor-pointer"
+                                  className="opacity-100 md:opacity-0 md:group-hover:opacity-100 p-2 hover:bg-white/10 rounded-full transition-all text-slate-400 hover:text-white cursor-pointer"
                                 >
                                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
                                 </button>
@@ -2242,6 +2264,13 @@ export const Home: React.FC = () => {
                                         <PlusCircle className="w-3.5 h-3.5 text-teal" />
                                         Add to Queue
                                       </button>
+                                        <button
+                                          onClick={(e) => handlePlayNext(e, track)}
+                                          className="w-full px-3 py-2 text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 flex items-center gap-2 transition-colors text-left"
+                                        >
+                                          <Play className="w-3.5 h-3.5 text-teal" />
+                                          Play Next
+                                        </button>
                                       <button
                                         onClick={(e) => handleOpenPlaylistModal(e, track.id)}
                                         className="w-full px-3 py-2 text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 flex items-center gap-2 transition-colors text-left"
@@ -2420,7 +2449,7 @@ export const Home: React.FC = () => {
                                   <div className="w-full aspect-square rounded-xl overflow-hidden relative shadow-lg premium-image-hover">
                                     <img src={track.coverUrl} className="w-full h-full object-cover" alt={track.title} />
                                     <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
-                                    <div className="absolute bottom-2 right-2 bg-teal text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg translate-y-2 group-hover:translate-y-0">
+                                    <div className="absolute bottom-2 right-2 bg-teal text-white p-2 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-lg translate-y-2 group-hover:translate-y-0">
                                       <Play className="w-3 h-3 fill-white" />
                                     </div>
                                   </div>
@@ -2534,7 +2563,7 @@ export const Home: React.FC = () => {
                                 ) : (
                                   <Disc className="w-10 h-10 text-white/50" />
                                 )}
-                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <div className="absolute inset-0 bg-black/40 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                   <Play className="w-8 h-8 text-white fill-white ml-1" />
                                 </div>
                               </div>
@@ -2564,7 +2593,7 @@ export const Home: React.FC = () => {
                             <span className="text-sm font-bold text-white truncate">{track.title}</span>
                             <span className="text-[10px] text-slate-400 truncate">{track.artist}</span>
                           </div>
-                          <button className="p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button className="p-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                             <Play className="w-4 h-4 text-teal fill-teal" />
                           </button>
                         </div>
@@ -2590,7 +2619,7 @@ export const Home: React.FC = () => {
                           <div className="w-full aspect-square rounded-xl overflow-hidden relative shadow-lg">
                             <img src={track.coverUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={album} />
                             <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
-                            <div className="absolute bottom-2 right-2 bg-teal text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg translate-y-2 group-hover:translate-y-0">
+                            <div className="absolute bottom-2 right-2 bg-teal text-white p-2 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-lg translate-y-2 group-hover:translate-y-0">
                               <Play className="w-3 h-3 fill-white" />
                             </div>
                           </div>
@@ -2922,7 +2951,7 @@ export const Home: React.FC = () => {
                             {/* Art */}
                             <div className="w-16 h-16 rounded-xl overflow-hidden bg-black/40 relative flex-shrink-0">
                               <img src={track.coverUrl} className="w-full h-full object-cover" alt="" />
-                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <div className="absolute inset-0 bg-black/40 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                 {isSelected && playbackState === 'playing' ? (
                                   <Pause className="w-4 h-4 fill-current text-white" />
                                 ) : (
@@ -2984,6 +3013,13 @@ export const Home: React.FC = () => {
                                         <PlusCircle className="w-3.5 h-3.5 text-teal" />
                                         Add to Queue
                                       </button>
+                                        <button
+                                          onClick={(e) => handlePlayNext(e, track)}
+                                          className="w-full px-3 py-2 text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 flex items-center gap-2 transition-colors text-left"
+                                        >
+                                          <Play className="w-3.5 h-3.5 text-teal" />
+                                          Play Next
+                                        </button>
                                       <button
                                         onClick={(e) => handleOpenPlaylistModal(e, track.id)}
                                         className="w-full px-3 py-1.5 text-[11px] font-semibold text-slate-200 hover:text-white hover:bg-white/10 flex items-center gap-2 transition-colors text-left"
@@ -3188,7 +3224,7 @@ export const Home: React.FC = () => {
                           </div>
 
                           {/* Hover shine */}
-                          <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.06] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                          <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.06] to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500" />
                         </div>
                       ))}
                     </div>
@@ -3233,7 +3269,7 @@ export const Home: React.FC = () => {
                             <div className="w-full aspect-square rounded-[20px] overflow-hidden relative shadow-lg bg-black/40 premium-image-hover">
                               <img src={albumName.toLowerCase().includes('leo') ? '/covers/Leo.jpg' : albumTrack?.coverUrl} className="w-full h-full object-cover" alt={albumName} />
                               <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
-                              <div className="absolute bottom-3 right-3 bg-teal text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-[0_4px_15px_rgba(24,61,61,0.5)] translate-y-2 group-hover:translate-y-0">
+                              <div className="absolute bottom-3 right-3 bg-teal text-white p-3 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 shadow-[0_4px_15px_rgba(24,61,61,0.5)] translate-y-2 group-hover:translate-y-0">
                                 <Play className="w-4 h-4 fill-white" />
                               </div>
                             </div>
@@ -3324,7 +3360,7 @@ export const Home: React.FC = () => {
                           <Disc className="w-24 h-24 text-white/50" />
                         </div>
                       )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500" />
                     </div>
                     <div className="flex flex-col gap-4 justify-end h-full pt-4 md:pt-16">
                       <span className="text-xs font-bold text-teal uppercase tracking-widest flex items-center gap-2">
@@ -3435,7 +3471,7 @@ export const Home: React.FC = () => {
                                       <Pause className="w-5 h-5 fill-current" />
                                     </div>
                                   ) : (
-                                    <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 border border-white/20">
+                                    <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 border border-white/20">
                                       <Play className="w-5 h-5 fill-current ml-0.5" />
                                     </div>
                                   )}
@@ -3485,7 +3521,7 @@ export const Home: React.FC = () => {
                                 >
                                   <div className="w-12 h-12 rounded-lg overflow-hidden relative flex-shrink-0 shadow-md">
                                     <img src={track.coverUrl} className="w-full h-full object-cover" alt={track.title} />
-                                    <div className={`absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                                    <div className={`absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity ${isSelected ? 'opacity-100' : 'opacity-100 md:opacity-0 md:group-hover:opacity-100'}`}>
                                       {isSelected && playbackState === 'playing' ? (
                                         <Pause className="w-4 h-4 fill-current text-white" />
                                       ) : (
@@ -3509,7 +3545,7 @@ export const Home: React.FC = () => {
                                         e.stopPropagation();
                                         setActiveTrackMenu(activeTrackMenu === track.id ? null : track.id);
                                       }}
-                                      className={`p-2 rounded-full transition-all text-slate-400 hover:text-white hover:bg-white/10 ${activeTrackMenu === track.id ? 'opacity-100 bg-white/10 text-white' : 'opacity-0 group-hover:opacity-100'}`}
+                                      className={`p-2 rounded-full transition-all text-slate-400 hover:text-white hover:bg-white/10 ${activeTrackMenu === track.id ? 'opacity-100 bg-white/10 text-white' : 'opacity-100 md:opacity-0 md:group-hover:opacity-100'}`}
                                     >
                                       <MoreVertical className="w-4 h-4" />
                                     </button>
@@ -3531,6 +3567,13 @@ export const Home: React.FC = () => {
                                             <PlusCircle className="w-3.5 h-3.5 text-teal" />
                                             Add to Queue
                                           </button>
+                                        <button
+                                          onClick={(e) => handlePlayNext(e, track)}
+                                          className="w-full px-3 py-2 text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 flex items-center gap-2 transition-colors text-left"
+                                        >
+                                          <Play className="w-3.5 h-3.5 text-teal" />
+                                          Play Next
+                                        </button>
                                           <button
                                             onClick={(e) => handleOpenPlaylistModal(e, track.id)}
                                             className="w-full px-3 py-2 text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 flex items-center gap-2 transition-colors text-left"
@@ -3599,7 +3642,7 @@ export const Home: React.FC = () => {
                           <div className="flex gap-4">
                             <div className="w-16 h-16 rounded-xl overflow-hidden bg-black/40 relative flex-shrink-0">
                               <img src={track.coverUrl} className="w-full h-full object-cover" alt="" />
-                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <div className="absolute inset-0 bg-black/40 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                 {isSelected && playbackState === 'playing' ? (
                                   <Pause className="w-4 h-4 fill-current text-white" />
                                 ) : (
@@ -3870,7 +3913,7 @@ export const Home: React.FC = () => {
                                 <div key={`song-${track.id}`} className="min-w-[140px] max-w-[140px] flex flex-col gap-2 snap-start group cursor-pointer active:scale-95 transition-transform" onClick={() => handleSelectTrack(track)}>
                                   <div className="w-full aspect-square rounded-2xl overflow-hidden relative shadow-lg">
                                     <img src={track.coverUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={track.title} />
-                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <div className="absolute inset-0 bg-black/40 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                       <Play className="w-8 h-8 text-white fill-white ml-1" />
                                     </div>
                                   </div>
@@ -3938,7 +3981,7 @@ export const Home: React.FC = () => {
                                   <div key={`rec-${track.id}`} className="min-w-[140px] max-w-[140px] flex flex-col gap-2 snap-start group cursor-pointer active:scale-95 transition-transform" onClick={() => handleSelectTrack(track, shuffledRecommendations)}>
                                     <div className="w-full aspect-square rounded-2xl overflow-hidden relative shadow-lg">
                                       <img src={track.coverUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={track.title} />
-                                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                      <div className="absolute inset-0 bg-black/40 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                         <Play className="w-8 h-8 text-white fill-white ml-1" />
                                       </div>
                                     </div>
@@ -4046,7 +4089,7 @@ export const Home: React.FC = () => {
                                 <h4 className="text-[15px] font-bold text-white truncate group-hover:text-teal transition-colors leading-tight mb-1">{episode.title}</h4>
                                 <p className="text-xs text-slate-400 line-clamp-2 leading-snug">{episode.desc}</p>
                               </div>
-                              <button className="ml-auto opacity-0 group-hover:opacity-100 p-2 hover:bg-white/10 rounded-full transition-all text-slate-400 hover:text-white" onClick={(e) => e.stopPropagation()}>
+                              <button className="ml-auto opacity-100 md:opacity-0 md:group-hover:opacity-100 p-2 hover:bg-white/10 rounded-full transition-all text-slate-400 hover:text-white" onClick={(e) => e.stopPropagation()}>
                                 <MoreVertical className="w-4 h-4" />
                               </button>
                             </div>

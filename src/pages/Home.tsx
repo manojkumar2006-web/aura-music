@@ -4293,7 +4293,7 @@ export const Home: React.FC = () => {
       </AnimatePresence>
 
       {/* ================= FIXED BOTTOM PLAYER BAR ================= */}
-      <footer className="fixed bottom-6 left-0 right-0 z-50 flex justify-center pointer-events-none px-4">
+      <footer className="fixed bottom-4 md:bottom-6 left-0 right-0 z-50 flex justify-center pointer-events-none px-4" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <div className="pointer-events-auto">
           <AudioPlayer 
             onLyricsToggle={() => setShowLyricsModal(true)} 

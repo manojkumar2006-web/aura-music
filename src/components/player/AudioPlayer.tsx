@@ -4,6 +4,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
+import YouTube from 'react-youtube';
 import { 
   Play, 
   Pause, 
@@ -26,7 +27,6 @@ import {
 import { useMusicStore } from '../../store/musicStore';
 import { Track } from '../../types';
 import { motion, AnimatePresence } from 'motion/react';
-import YouTube from 'react-youtube';
 
 interface AudioPlayerProps {
   onLyricsToggle?: () => void;
@@ -90,6 +90,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const ytPlayerRef = useRef<any>(null);
+  const [isMobile, setIsMobile] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isShuffle, setIsShuffle] = useState(false);
@@ -98,6 +99,14 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   // Quality settings
   const [quality, setQuality] = useState<AudioQuality>('128k');
   const [showQualityMenu, setShowQualityMenu] = useState(false);
+
+  // Mobile detection
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // YouTube Time Sync
   useEffect(() => {
@@ -117,6 +126,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
     return () => clearInterval(interval);
   }, [playbackState, currentTrack]);
 
+  
   // Initialize and sync audio source
   useEffect(() => {
     if (!audioRef.current) {
@@ -180,7 +190,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
         else ytPlayerRef.current.pauseVideo();
       }
     } else {
-      if (ytPlayerRef.current) ytPlayerRef.current.pauseVideo();
+      if (ytPlayerRef.current) try { ytPlayerRef.current.pauseVideo(); } catch(e) {}
       if (playbackState === 'playing') {
         audio.play().catch((err) => {
           console.warn('Playback failed, user interaction required:', err);
@@ -198,7 +208,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
       audioRef.current.volume = isMuted ? 0 : volume;
     }
     if (ytPlayerRef.current) {
-      ytPlayerRef.current.setVolume(isMuted ? 0 : volume * 100);
+      try { ytPlayerRef.current.setVolume(isMuted ? 0 : volume * 100); } catch(e) {}
     }
   }, [volume, isMuted]);
 
@@ -304,6 +314,9 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
     if (audioRef.current) {
       audioRef.current.currentTime = value;
     }
+    if (ytPlayerRef.current) {
+      ytPlayerRef.current.currentTime = value;
+    }
   };
 
   const handleQualitySelect = (targetQuality: AudioQuality) => {
@@ -370,6 +383,47 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
 
   return (
     <>
+    {/* Mobile Compact Player */}
+    {isMobile && (
+      <div className="flex items-center gap-3 px-4 py-3 bg-[#1c1c1e]/96 backdrop-blur-xl border border-white/10 shadow-[0_-4px_30px_rgba(0,0,0,0.6)] rounded-2xl w-[calc(100vw-2rem)] max-w-sm mx-auto">
+        {currentTrack ? (
+          <>
+            <img src={currentTrack.coverUrl} className="w-11 h-11 rounded-xl object-cover flex-shrink-0 shadow-md" alt={currentTrack.title} />
+            <div className="flex-1 min-w-0">
+              <p className="text-white text-[13px] font-bold truncate leading-tight">{currentTrack.title}</p>
+              <p className="text-slate-400 text-[11px] truncate">{currentTrack.artist}</p>
+              <div className="mt-1.5 h-[2px] bg-white/10 rounded-full overflow-hidden">
+                <div className="h-full bg-white rounded-full transition-all duration-100" style={{ width: `${(currentTime / (duration || 1)) * 100}%` }} />
+              </div>
+            </div>
+            <div className="flex items-center gap-2 text-white flex-shrink-0">
+              <button onClick={handlePrev} className="text-slate-300 hover:text-white transition-colors active:scale-90" title="Previous">
+                <SkipBack className="w-4 h-4 fill-current" />
+              </button>
+              <button 
+                onClick={handlePlayPause}
+                className="w-9 h-9 bg-white text-black rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform"
+                title={playbackState === 'playing' ? 'Pause' : 'Play'}
+              >
+                {playbackState === 'playing' ? (
+                  <Pause className="w-4 h-4 fill-current" />
+                ) : (
+                  <Play className="w-4 h-4 fill-current ml-0.5" />
+                )}
+              </button>
+              <button onClick={handleNext} className="text-slate-300 hover:text-white transition-colors active:scale-90" title="Next">
+                <SkipForward className="w-4 h-4 fill-current" />
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="text-slate-500 text-xs font-mono w-full text-center py-1">No Song Selected</div>
+        )}
+      </div>
+    )}
+
+    {/* Desktop Full Player */}
+    {!isMobile && (
     <div className="flex items-center gap-4 px-6 py-2.5 bg-[#2c2c2c]/95 backdrop-blur-xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-full relative z-40 mx-auto w-max max-w-[95vw] transition-all">
       
       {/* Left section: Playback Controls */}
@@ -582,8 +636,8 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
           </div>
         </div>
 
-        {/* Fullscreen Video Expand */}
-        {currentTrack?.youtubeId && (
+        {/* Fullscreen Video Expand — desktop only */}
+        {currentTrack?.youtubeId && !isMobile && (
           <button 
             onClick={() => setIsFullScreen(true)}
             className="hover:text-white transition-colors cursor-pointer ml-1"
@@ -596,10 +650,14 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
       </div>
 
     </div>
+    )}
       
-      {/* YouTube Player */}
+      {/* YouTube Player — hidden for audio; fullscreen on desktop */}
       {currentTrack?.youtubeId && (
-        <div className={isFullScreen ? "fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center animate-in fade-in" : "hidden"}>
+        <div
+          className={isFullScreen ? "fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center" : ""}
+          style={isFullScreen ? {} : { position: 'fixed', bottom: '-9999px', width: '1px', height: '1px', overflow: 'hidden', pointerEvents: 'none' }}
+        >
           {isFullScreen && (
             <button 
               onClick={() => setIsFullScreen(false)}
@@ -611,11 +669,11 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
           
           <YouTube
             videoId={currentTrack.youtubeId}
-            className={isFullScreen ? "w-full h-full pointer-events-none" : "hidden"}
-            iframeClassName={isFullScreen ? "w-full h-full" : "hidden"}
+            className={isFullScreen ? "w-full h-full pointer-events-none" : ""}
+            iframeClassName={isFullScreen ? "w-full h-full" : ""}
             opts={{
-              height: '100%',
-              width: '100%',
+              height: isFullScreen ? '100%' : '1',
+              width: isFullScreen ? '100%' : '1',
               playerVars: {
                 autoplay: playbackState === 'playing' ? 1 : 0,
                 controls: 0,
@@ -630,14 +688,11 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
               if (playbackState === 'playing') e.target.playVideo();
             }}
             onStateChange={(e) => {
-              if (e.data === 0) handleNext(); // ended
-              else if (e.data === 1 && playbackState !== 'playing') setPlaybackState('playing'); // playing
-              else if (e.data === 2 && playbackState !== 'paused') setPlaybackState('paused'); // paused
+              if (e.data === 0) handleNext();
+              else if (e.data === 1 && playbackState !== 'playing') setPlaybackState('playing');
+              else if (e.data === 2 && playbackState !== 'paused') setPlaybackState('paused');
             }}
-            onError={() => {
-               // Fallback to audio preview if YouTube fails
-               console.warn("YouTube playback failed");
-            }}
+            onError={() => console.warn('YouTube playback failed')}
           />
         </div>
       )}

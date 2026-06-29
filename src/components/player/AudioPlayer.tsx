@@ -24,7 +24,8 @@ import {
   Maximize2,
   Minimize2,
   ChevronDown,
-  MoreVertical
+  MoreVertical,
+  Mic2
 } from 'lucide-react';
 import { useMusicStore } from '../../store/musicStore';
 import { Track } from '../../types';

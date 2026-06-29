@@ -19,11 +19,14 @@ import {
   Settings,
   Download,
   Check,
-  ListMusic
+  ListMusic,
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 import { useMusicStore } from '../../store/musicStore';
 import { Track } from '../../types';
 import { motion, AnimatePresence } from 'motion/react';
+import YouTube from 'react-youtube';
 
 interface AudioPlayerProps {
   onLyricsToggle?: () => void;
@@ -60,6 +63,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   } = useMusicStore();
   
   const [showQueue, setShowQueue] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(false);
 
   const lastPlayedTrackRef = useRef<string | null>(null);
 
@@ -85,6 +89,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   }, [playbackState]);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const ytPlayerRef = useRef<any>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isShuffle, setIsShuffle] = useState(false);
@@ -93,6 +98,24 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   // Quality settings
   const [quality, setQuality] = useState<AudioQuality>('128k');
   const [showQualityMenu, setShowQualityMenu] = useState(false);
+
+  // YouTube Time Sync
+  useEffect(() => {
+    let interval: any;
+    if (playbackState === 'playing' && currentTrack?.youtubeId) {
+      interval = setInterval(async () => {
+        if (ytPlayerRef.current) {
+          try {
+            const time = await ytPlayerRef.current.getCurrentTime();
+            if (time !== undefined) setCurrentTime(time);
+            const dur = await ytPlayerRef.current.getDuration();
+            if (dur > 0) setDuration(dur);
+          } catch(e) {}
+        }
+      }, 500);
+    }
+    return () => clearInterval(interval);
+  }, [playbackState, currentTrack]);
 
   // Initialize and sync audio source
   useEffect(() => {
@@ -132,7 +155,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
 
     // audio.src returns absolute URL, so we check if the ends match to avoid unnecessary reloads
     const isSameSource = audio.src.endsWith(audioUrl);
-    if (!isSameSource) {
+    if (!isSameSource && !currentTrack.youtubeId) {
       const savedTime = audio.currentTime;
       const isBitrateSwitch = lastTrackIdRef.current === currentTrack.id;
       
@@ -150,13 +173,22 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
     
     lastTrackIdRef.current = currentTrack.id;
 
-    if (playbackState === 'playing') {
-      audio.play().catch((err) => {
-        console.warn('Playback failed, user interaction required:', err);
-        setPlaybackState('paused');
-      });
-    } else {
+    if (currentTrack.youtubeId) {
       audio.pause();
+      if (ytPlayerRef.current) {
+        if (playbackState === 'playing') ytPlayerRef.current.playVideo();
+        else ytPlayerRef.current.pauseVideo();
+      }
+    } else {
+      if (ytPlayerRef.current) ytPlayerRef.current.pauseVideo();
+      if (playbackState === 'playing') {
+        audio.play().catch((err) => {
+          console.warn('Playback failed, user interaction required:', err);
+          setPlaybackState('paused');
+        });
+      } else {
+        audio.pause();
+      }
     }
   }, [currentTrack, playbackState, userTier, quality]);
 
@@ -164,6 +196,9 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = isMuted ? 0 : volume;
+    }
+    if (ytPlayerRef.current) {
+      ytPlayerRef.current.setVolume(isMuted ? 0 : volume * 100);
     }
   }, [volume, isMuted]);
 
@@ -334,6 +369,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   const isDownloaded = currentTrack ? downloadedTracks.includes(currentTrack.id) : false;
 
   return (
+    <>
     <div className="flex items-center gap-4 px-6 py-2.5 bg-[#2c2c2c]/95 backdrop-blur-xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-full relative z-40 mx-auto w-max max-w-[95vw] transition-all">
       
       {/* Left section: Playback Controls */}
@@ -546,9 +582,66 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
           </div>
         </div>
 
+        {/* Fullscreen Video Expand */}
+        {currentTrack?.youtubeId && (
+          <button 
+            onClick={() => setIsFullScreen(true)}
+            className="hover:text-white transition-colors cursor-pointer ml-1"
+            title="Full Screen Video"
+          >
+            <Maximize2 className="w-4 h-4" />
+          </button>
+        )}
+
       </div>
 
     </div>
+      
+      {/* YouTube Player */}
+      {currentTrack?.youtubeId && (
+        <div className={isFullScreen ? "fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center animate-in fade-in" : "hidden"}>
+          {isFullScreen && (
+            <button 
+              onClick={() => setIsFullScreen(false)}
+              className="absolute top-6 right-6 z-[110] p-3 bg-white/10 hover:bg-white/20 rounded-full text-white cursor-pointer backdrop-blur-md transition-all"
+            >
+              <Minimize2 className="w-6 h-6" />
+            </button>
+          )}
+          
+          <YouTube
+            videoId={currentTrack.youtubeId}
+            className={isFullScreen ? "w-full h-full pointer-events-none" : "hidden"}
+            iframeClassName={isFullScreen ? "w-full h-full" : "hidden"}
+            opts={{
+              height: '100%',
+              width: '100%',
+              playerVars: {
+                autoplay: playbackState === 'playing' ? 1 : 0,
+                controls: 0,
+                disablekb: 1,
+                modestbranding: 1,
+                rel: 0
+              },
+            }}
+            onReady={(e) => {
+              ytPlayerRef.current = e.target;
+              e.target.setVolume(isMuted ? 0 : volume * 100);
+              if (playbackState === 'playing') e.target.playVideo();
+            }}
+            onStateChange={(e) => {
+              if (e.data === 0) handleNext(); // ended
+              else if (e.data === 1 && playbackState !== 'playing') setPlaybackState('playing'); // playing
+              else if (e.data === 2 && playbackState !== 'paused') setPlaybackState('paused'); // paused
+            }}
+            onError={() => {
+               // Fallback to audio preview if YouTube fails
+               console.warn("YouTube playback failed");
+            }}
+          />
+        </div>
+      )}
+    </>
   );
 };
 

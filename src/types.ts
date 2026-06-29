@@ -14,6 +14,7 @@ export interface Track {
   album: string;
   duration: string;
   coverUrl: string;
+  youtubeId?: string; // YouTube Video ID for full song playback
   audioUrl128k: string; // Free quality stream
   audioUrl320k?: string; // Premium quality stream
   audioUrlFlac?: string; // Premium+ Lossless studio quality

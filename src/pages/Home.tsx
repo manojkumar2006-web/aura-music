@@ -3023,16 +3023,37 @@ export const Home: React.FC = () => {
                   {(() => {
                     // Derive unique liked artists with their cover & like count
                     const likedArtistMap = new Map<string, { name: string; coverUrl: string; count: number }>();
+                    
+                    // Add explicitly liked artists first (baseline count 0)
+                    currentUser?.likedArtists?.forEach(artistName => {
+                      const trackWithArtist = tracks.find(t => t.musicDirector === artistName || t.artist.includes(artistName) || t.hero === artistName);
+                      const coverUrl = trackWithArtist ? trackWithArtist.coverUrl : 'https://picsum.photos/seed/music20/400/400';
+                      likedArtistMap.set(artistName, { name: artistName, coverUrl, count: 0 });
+                    });
+
+                    // Add from liked tracks
                     tracks.forEach((track) => {
                       if (currentUser?.likedTracks?.includes(track.id)) {
-                        const existing = likedArtistMap.get(track.artist);
-                        if (existing) {
-                          existing.count += 1;
-                        } else {
-                          likedArtistMap.set(track.artist, { name: track.artist, coverUrl: track.coverUrl, count: 1 });
+                        const artists = track.artist.split(', ');
+                        artists.forEach(a => {
+                          const existing = likedArtistMap.get(a);
+                          if (existing) {
+                            existing.count += 1;
+                          } else {
+                            likedArtistMap.set(a, { name: a, coverUrl: track.coverUrl, count: 1 });
+                          }
+                        });
+                        if (track.musicDirector) {
+                          const existingDir = likedArtistMap.get(track.musicDirector);
+                          if (existingDir) {
+                            existingDir.count += 1;
+                          } else {
+                            likedArtistMap.set(track.musicDirector, { name: track.musicDirector, coverUrl: track.coverUrl, count: 1 });
+                          }
                         }
                       }
                     });
+                    
                     const favArtists = Array.from(likedArtistMap.values()).sort((a, b) => b.count - a.count);
 
                     return (
@@ -3047,13 +3068,14 @@ export const Home: React.FC = () => {
                         {favArtists.length === 0 ? (
                           <div className="text-center py-6 text-slate-500 text-[10px] font-mono border border-dashed border-white/5 rounded-xl flex flex-col items-center justify-center gap-2 flex-grow">
                             <Heart className="w-5 h-5 text-slate-600" />
-                            Like songs to see your fav artists here!
+                            Like songs or artists to see them here!
                           </div>
                         ) : (
                           <div className="flex flex-col gap-2 overflow-y-auto pr-1 custom-scroll flex-grow min-h-0">
                             {favArtists.map((artist) => (
                               <div
                                 key={artist.name}
+                                onClick={() => setSelectedDirector(artist.name)}
                                 className="flex items-center gap-3 p-2 rounded-xl bg-white/[0.03] border border-white/5 hover:bg-teal/5 hover:border-teal/15 transition-all group cursor-pointer"
                               >
                                 {/* Artist Avatar */}
@@ -3070,7 +3092,7 @@ export const Home: React.FC = () => {
                                     {artist.name}
                                   </span>
                                   <span className="text-[9px] font-mono text-slate-500">
-                                    {artist.count} liked {artist.count === 1 ? 'song' : 'songs'}
+                                    {artist.count > 0 ? `${artist.count} liked ${artist.count === 1 ? 'song' : 'songs'}` : 'Liked Profile'}
                                   </span>
                                 </div>
                                 {/* Heart Icon */}

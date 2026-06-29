@@ -2858,6 +2858,40 @@ export const Home: React.FC = () => {
                     </h2>
                   </div>
 
+                  {(() => {
+                    if (!searchQuery.trim() || filteredTracks.length === 0) return null;
+                    const q = searchQuery.toLowerCase().trim();
+                    let matchedArtist: string | undefined;
+                    
+                    const topTrack = filteredTracks[0];
+                    const possibleNames = [...topTrack.artist.split(', '), topTrack.musicDirector].filter(Boolean) as string[];
+                    matchedArtist = possibleNames.find(n => n.toLowerCase() === q) || possibleNames.find(n => n.toLowerCase().includes(q));
+                    
+                    if (!matchedArtist) return null;
+                    
+                    const artistTracks = tracks.filter(t => t.artist.includes(matchedArtist!) || t.musicDirector === matchedArtist || t.hero === matchedArtist);
+                    const artistCover = artistTracks.length > 0 ? artistTracks[0].coverUrl : '';
+                    
+                    return (
+                      <div 
+                        data-scroll-reveal
+                        onClick={() => setSelectedDirector(matchedArtist!)}
+                        className="mb-2 glass-panel rounded-3xl p-6 border border-teal/20 bg-gradient-to-br from-teal/10 to-transparent flex flex-col sm:flex-row gap-6 items-center sm:items-start cursor-pointer hover:border-teal/40 hover:shadow-[0_0_30px_rgba(20,184,166,0.15)] transition-all group"
+                      >
+                        <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden shadow-2xl flex-shrink-0 group-hover:scale-105 transition-transform duration-500">
+                          <img src={artistCover} alt={matchedArtist} className="w-full h-full object-cover" />
+                        </div>
+                        <div className="flex flex-col items-center sm:items-start text-center sm:text-left pt-2">
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal/20 text-teal text-[10px] font-bold uppercase tracking-widest mb-3">
+                            <Star className="w-3 h-3" /> Top Result: Artist
+                          </div>
+                          <h1 className="text-3xl font-display font-bold text-white mb-2">{matchedArtist}</h1>
+                          <p className="text-slate-400 text-sm">{artistTracks.length} tracks in AURA Library</p>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
                   {filteredTracks.length === 0 ? (
                     <div className="glass-panel rounded-2xl p-12 text-center text-ink-tertiary text-xs font-mono border border-silver/8 flex flex-col gap-2 items-center justify-center">
                       <Search className="w-8 h-8 text-ink-tertiary animate-pulse" />

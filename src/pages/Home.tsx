@@ -1014,7 +1014,7 @@ export const Home: React.FC = () => {
       <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-12 w-full p-4 md:px-6 md:py-5 gap-6 md:gap-8 relative z-10">
         
         {/* ================= SIDEBAR AREA ================= */}
-        <aside className="md:col-span-3 flex flex-col gap-5 overflow-y-auto custom-scroll sticky top-0 self-start max-h-full pb-20">
+        <aside className="hidden md:flex md:flex-col md:col-span-3 gap-5 overflow-y-auto custom-scroll sticky top-0 self-start max-h-full pb-20">
           {/* Logo Branding */}
           <div className={`glass-panel rounded-2xl p-5 border border-silver/8 flex items-center gap-3 bg-gradient-to-tr ${activeThemeStyle.sidebarGlow}`}>
             <div className={`w-9 h-9 rounded-full bg-gradient-to-tr from-ocean to-teal flex items-center justify-center ${activeThemeStyle.glow}`}>
@@ -1201,7 +1201,7 @@ export const Home: React.FC = () => {
         </aside>
 
         {/* ================= MAIN CONTENT WINDOW ================= */}
-        <main ref={mainScrollRef} className="md:col-span-9 flex flex-col gap-6 overflow-y-auto custom-scroll pb-24 scroll-smooth">
+        <main ref={mainScrollRef} className="md:col-span-9 flex flex-col gap-6 overflow-y-auto custom-scroll pb-40 md:pb-24 scroll-smooth">
           
           {/* Top Bar with Search Input & Account Action */}
           <div data-scroll-reveal className="flex gap-4 items-center w-full">
@@ -4292,8 +4292,45 @@ export const Home: React.FC = () => {
         )}
       </AnimatePresence>
 
+      {/* Mobile Bottom Navigation Bar */}
+      <nav
+        className="fixed bottom-0 left-0 right-0 z-40 flex md:hidden items-center justify-around px-1 py-2 bg-[#0e0e10]/96 backdrop-blur-2xl border-t border-white/[0.06]"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      >
+        {([
+          { id: 'home',      label: 'Home',    icon: HomeIcon  },
+          { id: 'search',    label: 'Search',  icon: Search    },
+          { id: 'songs',     label: 'Songs',   icon: ListMusic  },
+          { id: 'albums',    label: 'Albums',  icon: Disc      },
+          { id: 'playlists', label: 'Library', icon: FolderHeart },
+        ] as const).map(({ id, label, icon: Icon }) => {
+          const isActive = sidebarNav === id && !selectedAlbum;
+          return (
+            <button
+              key={id}
+              onClick={() => { setSidebarNav(id); setSelectedAlbum(null); }}
+              className="flex flex-col items-center gap-[3px] flex-1 py-1.5 rounded-xl transition-all active:scale-90 relative"
+            >
+              <Icon
+                className={`w-[22px] h-[22px] transition-all duration-200 ${
+                  isActive ? 'text-white scale-110' : 'text-slate-500'
+                }`}
+              />
+              <span className={`text-[10px] font-medium leading-none transition-colors duration-200 ${
+                isActive ? 'text-white' : 'text-slate-500'
+              }`}>
+                {label}
+              </span>
+              {isActive && (
+                <span className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-6 h-[2px] rounded-full bg-white opacity-80" />
+              )}
+            </button>
+          );
+        })}
+      </nav>
+
       {/* ================= FIXED BOTTOM PLAYER BAR ================= */}
-      <footer className="fixed bottom-4 md:bottom-6 left-0 right-0 z-50 flex justify-center pointer-events-none px-4" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      <footer className="fixed bottom-[64px] md:bottom-6 left-0 right-0 z-50 flex justify-center pointer-events-none px-4" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <div className="pointer-events-auto">
           <AudioPlayer 
             onLyricsToggle={() => setShowLyricsModal(true)} 

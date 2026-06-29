@@ -522,16 +522,59 @@ export const Home: React.FC = () => {
     }
   };
 
-  const filteredTracks = useMemo(() => tracks.filter((track) => {
-    const query = searchQueryLocal.toLowerCase().trim();
-    if (!query) return true;
-    return (
-      track.title.toLowerCase().includes(query) ||
-      track.artist.toLowerCase().includes(query) ||
-      track.album?.toLowerCase().includes(query) ||
-      track.musicDirector?.toLowerCase().includes(query)
-    );
-  }), [tracks, searchQueryLocal]);
+  const filteredTracks = useMemo(() => {
+    const query = searchQuery.toLowerCase().trim();
+    if (!query) return tracks;
+
+    const terms = query.split(/\s+/);
+
+    return tracks
+      .map(track => {
+        let score = 0;
+        const title = track.title.toLowerCase();
+        const artist = track.artist.toLowerCase();
+        const album = track.album?.toLowerCase() || '';
+        const director = track.musicDirector?.toLowerCase() || '';
+        const hero = track.hero?.toLowerCase() || '';
+        const allText = `${title} ${artist} ${album} ${director} ${hero}`;
+
+        // Exact match boosts
+        if (title === query) score += 100;
+        if (artist === query) score += 80;
+        if (album === query) score += 70;
+
+        // Prefix match boosts
+        if (title.startsWith(query)) score += 50;
+        if (artist.startsWith(query)) score += 40;
+
+        // Substring match boosts
+        if (title.includes(query)) score += 30;
+        if (artist.includes(query)) score += 20;
+        if (album.includes(query)) score += 15;
+        if (director.includes(query)) score += 10;
+        if (hero.includes(query)) score += 10;
+
+        // Term-by-term matching (for partial queries like "anirudh leo")
+        let matchedTerms = 0;
+        terms.forEach(term => {
+          if (title.includes(term)) { score += 5; matchedTerms++; }
+          else if (artist.includes(term)) { score += 4; matchedTerms++; }
+          else if (album.includes(term)) { score += 3; matchedTerms++; }
+          else if (allText.includes(term)) { score += 1; matchedTerms++; }
+        });
+
+        // Require at least some terms to match if no direct substring match
+        if (matchedTerms === 0 && score === 0) return { track, score: 0 };
+
+        // Boost if all terms matched somewhere
+        if (matchedTerms === terms.length) score += 25;
+
+        return { track, score };
+      })
+      .filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map(item => item.track);
+  }, [tracks, searchQuery]);
 
   const handleCreatePlaylist = (e: React.FormEvent) => {
     e.preventDefault();

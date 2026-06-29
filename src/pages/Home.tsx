@@ -2799,7 +2799,7 @@ export const Home: React.FC = () => {
               </AnimatePresence>
 
               {/* Main Catalog View Grid */}
-              <div data-scroll-reveal className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
                 
                 {/* Catalog List (Colspan 2) */}
                 <div className="lg:col-span-2 flex flex-col gap-4">

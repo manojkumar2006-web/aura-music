@@ -22,7 +22,9 @@ import {
   Check,
   ListMusic,
   Maximize2,
-  Minimize2
+  Minimize2,
+  ChevronDown,
+  MoreVertical
 } from 'lucide-react';
 import { useMusicStore } from '../../store/musicStore';
 import { Track } from '../../types';
@@ -64,6 +66,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   
   const [showQueue, setShowQueue] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isMobileExpanded, setIsMobileExpanded] = useState(false);
 
   const lastPlayedTrackRef = useRef<string | null>(null);
 
@@ -385,7 +388,10 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
     <>
     {/* Mobile Compact Player */}
     {isMobile && (
-      <div className="flex items-center gap-3 px-4 py-3 bg-[#1c1c1e]/96 backdrop-blur-xl border border-white/10 shadow-[0_-4px_30px_rgba(0,0,0,0.6)] rounded-2xl w-[calc(100vw-2rem)] max-w-sm mx-auto">
+      <div 
+        onClick={() => setIsMobileExpanded(true)}
+        className="flex items-center gap-3 px-4 py-3 bg-[#1c1c1e]/96 backdrop-blur-xl border border-white/10 shadow-[0_-4px_30px_rgba(0,0,0,0.6)] rounded-2xl w-[calc(100vw-2rem)] max-w-sm mx-auto cursor-pointer active:scale-[0.98] transition-transform"
+      >
         {currentTrack ? (
           <>
             <img src={currentTrack.coverUrl} className="w-11 h-11 rounded-xl object-cover flex-shrink-0 shadow-md" alt={currentTrack.title} />
@@ -396,7 +402,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
                 <div className="h-full bg-white rounded-full transition-all duration-100" style={{ width: `${(currentTime / (duration || 1)) * 100}%` }} />
               </div>
             </div>
-            <div className="flex items-center gap-2 text-white flex-shrink-0">
+            <div className="flex items-center gap-2 text-white flex-shrink-0" onClick={(e) => e.stopPropagation()}>
               <button onClick={handlePrev} className="text-slate-300 hover:text-white transition-colors active:scale-90" title="Previous">
                 <SkipBack className="w-4 h-4 fill-current" />
               </button>
@@ -421,6 +427,212 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
         )}
       </div>
     )}
+
+    {/* Mobile Expanded Player */}
+    <AnimatePresence>
+      {isMobile && isMobileExpanded && currentTrack && (
+        <motion.div
+          initial={{ y: '100%' }}
+          animate={{ y: 0 }}
+          exit={{ y: '100%' }}
+          transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+          className="fixed inset-0 z-[120] bg-[#121212] text-white flex flex-col p-6 overflow-hidden"
+          style={{ paddingBottom: 'env(safe-area-inset-bottom)', paddingTop: 'env(safe-area-inset-top)' }}
+        >
+           {/* Background with blur */}
+           <div 
+             className="absolute inset-0 opacity-40 mix-blend-screen bg-cover bg-center blur-[80px]"
+             style={{ backgroundImage: `url(${currentTrack.coverUrl})` }}
+           />
+           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/60 to-black pointer-events-none" />
+
+           {/* Top Bar */}
+           <div className="relative z-10 flex justify-between items-center mb-6 pt-4">
+             <button onClick={() => setIsMobileExpanded(false)} className="p-2 -ml-2 text-slate-300 hover:text-white transition-colors active:scale-90">
+               <ChevronDown className="w-7 h-7" />
+             </button>
+             <div className="flex flex-col items-center">
+               <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-slate-400">Now Playing</span>
+               <span className="text-xs font-medium text-white max-w-[200px] truncate">{currentTrack.album || 'Single'}</span>
+             </div>
+             <button className="p-2 -mr-2 text-slate-300 hover:text-white transition-colors active:scale-90 relative" onClick={() => setShowQualityMenu(!showQualityMenu)}>
+               <MoreVertical className="w-6 h-6" />
+               {showQualityMenu && (
+                 <div className="absolute top-full right-0 mt-2 bg-[#2c2c2c] border border-white/10 rounded-xl p-2 w-48 shadow-2xl z-50">
+                  <div className="text-[10px] uppercase text-silver/50 font-bold tracking-wider px-3 pb-2 pt-1 border-b border-white/10 mb-2 text-left">Audio Quality</div>
+                  {(['128k', '320k', 'flac', 'atmos'] as AudioQuality[]).map((q) => (
+                    <button
+                      key={q}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (q === 'flac' || q === 'atmos') {
+                          if (userTier === 'Free') {
+                            if (onUpgradePrompt) onUpgradePrompt(`unlock ${q.toUpperCase()} quality`, 'Premium+');
+                            return;
+                          }
+                        }
+                        setQuality(q);
+                        setShowQualityMenu(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors ${quality === q ? 'bg-teal/20 text-teal font-bold' : 'text-silver hover:bg-white/10'}`}
+                    >
+                      <span className="flex items-center gap-2">
+                        {q === 'atmos' && <Crown className="w-3 h-3" />}
+                        {q.toUpperCase()}
+                      </span>
+                      {quality === q && <Check className="w-4 h-4" />}
+                    </button>
+                  ))}
+                </div>
+               )}
+             </button>
+           </div>
+
+           {/* Artwork */}
+           <div className="relative z-10 w-full aspect-square max-w-[340px] mx-auto mb-8 mt-2">
+             <img src={currentTrack.coverUrl} className="w-full h-full object-cover rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.5)]" alt={currentTrack.title} />
+           </div>
+
+           {/* Info */}
+           <div className="relative z-10 flex justify-between items-end mb-6 px-2">
+             <div className="flex flex-col min-w-0 pr-4">
+               <h2 className="text-[22px] font-bold truncate text-white mb-1 leading-tight">{currentTrack.title}</h2>
+               <p className="text-base text-slate-300 truncate">{currentTrack.artist}</p>
+             </div>
+             <button 
+                onClick={() => {
+                  if (currentUser) {
+                    toggleLike(currentUser.id, currentTrack.id);
+                  }
+                }}
+                className="p-2 -mr-2 active:scale-90 transition-transform"
+              >
+               <Heart className={`w-7 h-7 ${currentUser?.likedTracks?.includes(currentTrack.id) ? 'fill-current text-teal' : 'text-slate-300 hover:text-white'}`} />
+             </button>
+           </div>
+
+           {/* Progress */}
+           <div className="relative z-10 flex flex-col mb-8 px-2">
+             <div className="h-1.5 w-full bg-white/20 rounded-full overflow-hidden cursor-pointer relative" onClick={handleProgressClick}>
+               <div className="h-full bg-white rounded-full transition-all duration-100" style={{ width: `${(currentTime / (duration || 1)) * 100}%` }} />
+               {/* Progress handle thumb */}
+               <div 
+                 className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-md transition-all duration-100" 
+                 style={{ left: `max(0%, calc(${(currentTime / (duration || 1)) * 100}% - 6px))` }} 
+               />
+             </div>
+             <div className="flex justify-between mt-3 text-[11px] text-slate-400 font-mono tracking-wide">
+               <span>{formatTime(currentTime)}</span>
+               <span>{formatTime(duration)}</span>
+             </div>
+           </div>
+
+           {/* Main Controls */}
+           <div className="relative z-10 flex justify-between items-center px-2 mb-8">
+             <button onClick={() => setIsShuffle(!isShuffle)} className={`p-2 transition-colors active:scale-90 ${isShuffle ? 'text-teal' : 'text-slate-300 hover:text-white'}`}>
+               <Shuffle className="w-6 h-6" />
+             </button>
+             
+             <button onClick={handlePrev} className="p-2 text-white active:scale-90 transition-transform">
+               <SkipBack className="w-10 h-10 fill-current" />
+             </button>
+             
+             <button 
+               onClick={handlePlayPause}
+               className="w-20 h-20 bg-white text-black rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+             >
+               {playbackState === 'playing' ? (
+                 <Pause className="w-8 h-8 fill-current" />
+               ) : (
+                 <Play className="w-8 h-8 fill-current ml-1" />
+               )}
+             </button>
+             
+             <button onClick={handleNext} className="p-2 text-white active:scale-90 transition-transform">
+               <SkipForward className="w-10 h-10 fill-current" />
+             </button>
+
+             <button onClick={() => setIsRepeat(!isRepeat)} className={`p-2 transition-colors active:scale-90 ${isRepeat ? 'text-teal' : 'text-slate-300 hover:text-white'}`}>
+               <Repeat className="w-6 h-6" />
+             </button>
+           </div>
+
+           {/* Bottom secondary controls */}
+           <div className="relative z-10 flex justify-between items-center px-2 mt-auto pb-6 text-slate-300">
+             <button onClick={() => setShowQueue(!showQueue)} className="p-2 hover:text-white transition-colors active:scale-90">
+               <ListMusic className={`w-6 h-6 ${showQueue ? 'text-teal' : ''}`} />
+             </button>
+             <button onClick={handleDownload} className="p-2 hover:text-white transition-colors active:scale-90 relative">
+               <Download className="w-6 h-6" />
+               {isDownloaded && (
+                 <div className="absolute -top-1 -right-1 w-4 h-4 bg-teal rounded-full flex items-center justify-center border-2 border-[#1c1c1e]">
+                   <Check className="w-2 h-2 text-black" />
+                 </div>
+               )}
+             </button>
+             {onLyricsToggle && (
+               <button onClick={onLyricsToggle} className="p-2 hover:text-white transition-colors active:scale-90">
+                 <AlignLeft className="w-6 h-6" />
+               </button>
+             )}
+             {currentTrack?.youtubeId && (
+               <button onClick={() => setIsFullScreen(true)} className="p-2 hover:text-white transition-colors active:scale-90" title="Full Screen Video">
+                 <Maximize2 className="w-6 h-6" />
+               </button>
+             )}
+           </div>
+
+           {/* Queue View Overlay */}
+           <AnimatePresence>
+             {showQueue && (
+               <motion.div 
+                 initial={{ y: '100%' }}
+                 animate={{ y: 0 }}
+                 exit={{ y: '100%' }}
+                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                 className="absolute inset-0 z-20 bg-black/95 backdrop-blur-3xl p-6 flex flex-col"
+                 style={{ paddingTop: 'env(safe-area-inset-top)' }}
+               >
+                 <div className="flex justify-between items-center mb-8 pt-4">
+                   <button onClick={() => setShowQueue(false)} className="p-2 -ml-2 text-slate-300 hover:text-white transition-colors active:scale-90">
+                     <ChevronDown className="w-7 h-7" />
+                   </button>
+                   <h3 className="font-bold text-lg text-white">Queue</h3>
+                   <div className="w-11" /> {/* spacer */}
+                 </div>
+                 
+                 <div className="flex-1 overflow-y-auto custom-scroll flex flex-col gap-2">
+                   <div className="text-xs uppercase text-slate-400 font-bold mb-2">Now Playing</div>
+                   <div className="flex items-center gap-3 p-3 bg-white/10 rounded-xl mb-4">
+                     <img src={currentTrack.coverUrl} className="w-12 h-12 rounded-lg object-cover" />
+                     <div className="flex-1 min-w-0">
+                       <div className="text-teal font-bold truncate text-sm">{currentTrack.title}</div>
+                       <div className="text-slate-300 text-xs truncate">{currentTrack.artist}</div>
+                     </div>
+                   </div>
+                   
+                   {queue.length > 0 && (
+                     <>
+                       <div className="text-xs uppercase text-slate-400 font-bold mb-2 mt-4">Next in Queue</div>
+                       {queue.map((track, i) => (
+                         <div key={`${track.id}-${i}`} className="flex items-center gap-3 p-3 hover:bg-white/5 rounded-xl transition-colors">
+                           <img src={track.coverUrl} className="w-12 h-12 rounded-lg object-cover" />
+                           <div className="flex-1 min-w-0">
+                             <div className="text-white font-medium truncate text-sm">{track.title}</div>
+                             <div className="text-slate-400 text-xs truncate">{track.artist}</div>
+                           </div>
+                         </div>
+                       ))}
+                     </>
+                   )}
+                 </div>
+               </motion.div>
+             )}
+           </AnimatePresence>
+
+        </motion.div>
+      )}
+    </AnimatePresence>
 
     {/* Desktop Full Player */}
     {!isMobile && (

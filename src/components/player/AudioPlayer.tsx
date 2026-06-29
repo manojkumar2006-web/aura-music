@@ -444,6 +444,13 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
               <button onClick={handleNext} className="text-slate-300 hover:text-white transition-colors active:scale-90" title="Next">
                 <SkipForward className="w-4 h-4 fill-current" />
               </button>
+              <button 
+                onClick={() => setShowSyncedLyrics(true)} 
+                className="text-slate-300 hover:text-teal transition-colors active:scale-90 ml-1" 
+                title="Lyrics"
+              >
+                <Mic2 className="w-4 h-4" />
+              </button>
             </div>
           </>
         ) : (

@@ -318,7 +318,30 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
       audioRef.current.currentTime = value;
     }
     if (ytPlayerRef.current) {
-      ytPlayerRef.current.currentTime = value;
+      if (typeof ytPlayerRef.current.seekTo === 'function') {
+        ytPlayerRef.current.seekTo(value, true);
+      } else {
+        ytPlayerRef.current.currentTime = value;
+      }
+    }
+  };
+
+  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percentage = Math.max(0, Math.min(1, x / rect.width));
+    const newTime = percentage * (duration || 0);
+    
+    setCurrentTime(newTime);
+    if (audioRef.current) {
+      audioRef.current.currentTime = newTime;
+    }
+    if (ytPlayerRef.current) {
+      if (typeof ytPlayerRef.current.seekTo === 'function') {
+        ytPlayerRef.current.seekTo(newTime, true);
+      } else {
+        ytPlayerRef.current.currentTime = newTime;
+      }
     }
   };
 

@@ -176,7 +176,7 @@ export const Home: React.FC = () => {
   }, [fetchTracks]);
 
   // Local UI States
-  const [showLyricsModal, setShowLyricsModal] = useState(false);
+
   const [activeView, setActiveView] = useState<'library' | 'profile'>('library');
   const [sidebarNav, setSidebarNav] = useState<string>('home');
   const [activeTrackMenu, setActiveTrackMenu] = useState<string | null>(null);
@@ -4213,50 +4213,7 @@ export const Home: React.FC = () => {
           )}
         </AnimatePresence>
 
-        {showLyricsModal && currentTrack?.lyrics && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
-          >
-            <motion.div
-              initial={{ scale: 0.9, y: 30 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 30 }}
-              className="relative w-full max-w-lg rounded-3xl border border-white/10 glass-panel p-6 shadow-2xl flex flex-col max-h-[80vh] overflow-hidden"
-            >
-              {/* Header */}
-              <div className="flex justify-between items-center border-b border-white/5 pb-4">
-                <div className="flex items-center gap-3">
-                  <img src={currentTrack.coverUrl} className="w-10 h-10 rounded-lg object-cover" alt="" />
-                  <div>
-                    <h3 className="text-sm font-bold text-white leading-tight">{currentTrack.title}</h3>
-                    <p className="text-[11px] text-slate-400">{currentTrack.artist} • Lyrics</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setShowLyricsModal(false)}
-                  className="p-1 px-1.5 rounded-full hover:bg-white/10 text-slate-450 hover:text-white cursor-pointer transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
 
-              {/* Text display */}
-              <div className="flex-1 overflow-y-auto py-5 pr-2 custom-scroll mt-2 text-center">
-                <pre className="whitespace-pre-wrap font-display text-sm leading-relaxed text-slate-200 tracking-wide font-medium">
-                  {currentTrack.lyrics}
-                </pre>
-              </div>
-
-              {/* Footer */}
-              <div className="text-center pt-4 border-t border-white/5 text-[9px] font-mono text-slate-500 uppercase tracking-widest">
-                AURA Karaoke Module
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
       </AnimatePresence>
 
       {/* ================= DUAL TIER PREMIUM UPGRADE MODAL ================= */}
@@ -4415,7 +4372,7 @@ export const Home: React.FC = () => {
       <footer className="fixed bottom-[64px] md:bottom-6 left-0 right-0 z-50 flex justify-center pointer-events-none px-4" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <div className="pointer-events-auto">
           <AudioPlayer 
-            onLyricsToggle={() => setShowLyricsModal(true)} 
+
             onUpgradePrompt={(msg, target) => triggerUpgradePrompt(msg, target)} 
           />
         </div>

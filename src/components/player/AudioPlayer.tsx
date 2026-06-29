@@ -29,16 +29,15 @@ import {
 import { useMusicStore } from '../../store/musicStore';
 import { Track } from '../../types';
 import { motion, AnimatePresence } from 'motion/react';
+import { SyncedLyrics } from './SyncedLyrics';
 
 interface AudioPlayerProps {
-  onLyricsToggle?: () => void;
   onUpgradePrompt?: (feature: string, tier: 'Premium' | 'Premium+') => void;
 }
 
 type AudioQuality = '128k' | '320k' | 'flac' | 'atmos';
 
 export const AudioPlayer: React.FC<AudioPlayerProps> = ({ 
-  onLyricsToggle,
   onUpgradePrompt 
 }) => {
   const {
@@ -102,6 +101,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   // Quality settings
   const [quality, setQuality] = useState<AudioQuality>('128k');
   const [showQualityMenu, setShowQualityMenu] = useState(false);
+  const [showSyncedLyrics, setShowSyncedLyrics] = useState(false);
 
   // Mobile detection
   useEffect(() => {
@@ -593,11 +593,11 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
                  </div>
                )}
              </button>
-             {onLyricsToggle && (
-               <button onClick={onLyricsToggle} className="p-2 hover:text-white transition-colors active:scale-90">
-                 <AlignLeft className="w-6 h-6" />
-               </button>
-             )}
+             {/* Lyrics Button */}
+             <button onClick={() => setShowSyncedLyrics(true)} className="p-2 hover:text-white transition-colors active:scale-90" title="Lyrics">
+               <Mic2 className="w-5 h-5" />
+             </button>
+
              {currentTrack?.youtubeId && (
                <button onClick={() => setIsFullScreen(true)} className="p-2 hover:text-white transition-colors active:scale-90" title="Full Screen Video">
                  <Maximize2 className="w-6 h-6" />
@@ -790,12 +790,12 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
           >
             <Heart className={`w-4 h-4 ${currentUser?.likedTracks?.includes(currentTrack?.id || '') ? 'fill-white text-white' : ''}`} />
           </button>
+          {/* Lyrics Button */}
+          <button onClick={() => setShowSyncedLyrics(true)} className="hover:text-white transition-colors cursor-pointer" title="Lyrics">
+            <Mic2 className="w-4 h-4" />
+          </button>
 
-          {onLyricsToggle && currentTrack?.lyrics && (
-            <button onClick={onLyricsToggle} className="hover:text-white transition-colors cursor-pointer" title="Lyrics">
-              <AlignLeft className="w-4 h-4" />
-            </button>
-          )}
+
 
           <button onClick={handleDownload} className={`hover:text-white transition-colors cursor-pointer ${isDownloaded ? 'text-white' : ''}`} title="Download">
             {isDownloaded ? <Check className="w-4 h-4" /> : <Download className="w-4 h-4" />}
@@ -931,6 +931,20 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
           />
         </div>
       )}
+
+      {/* Synced Lyrics Overlay */}
+      <AnimatePresence>
+        {showSyncedLyrics && currentTrack && (
+          <SyncedLyrics
+            trackTitle={currentTrack.title}
+            trackArtist={currentTrack.artist}
+            currentTime={currentTime}
+            albumCover={currentTrack.coverUrl}
+            fallbackPlainLyrics={currentTrack.lyrics}
+            onClose={() => setShowSyncedLyrics(false)}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 };

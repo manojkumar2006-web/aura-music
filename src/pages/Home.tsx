@@ -3210,26 +3210,26 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                       {[
-                        { name: 'Bollywood',    bg: 'from-[#c850c0] to-[#4158d0]', emoji: '🎬' },
-                        { name: 'Pop',           bg: 'from-[#f857a6] to-[#ff5858]', emoji: '🎤' },
-                        { name: 'Hip-Hop/Rap',   bg: 'from-[#667eea] to-[#764ba2]', emoji: '🎧' },
-                        { name: 'Charts',        bg: 'from-[#b8cc1e] to-[#5b8c00]', emoji: '📊' },
-                        { name: 'Live Music',    bg: 'from-[#2193b0] to-[#6dd5ed]', emoji: '🎸' },
-                        { name: 'Concerts',      bg: 'from-[#e44d26] to-[#f16529]', emoji: '🎪' },
-                        { name: 'Punjabi',       bg: 'from-[#8e2de2] to-[#4a00e0]', emoji: '🥁' },
-                        { name: 'Tamil',         bg: 'from-[#b721ff] to-[#21d4fd]', emoji: '🎵' },
-                        { name: 'Classical',     bg: 'from-[#c79081] to-[#dfa579]', emoji: '🎻' },
-                        { name: 'Rock',          bg: 'from-[#434343] to-[#000000]', emoji: '🤘' },
-                        { name: 'R&B/Soul',      bg: 'from-[#fc4a1a] to-[#f7b733]', emoji: '💿' },
-                        { name: 'Electronic',    bg: 'from-[#00d2ff] to-[#3a7bd5]', emoji: '⚡' },
-                        { name: 'Indie',         bg: 'from-[#ee9ca7] to-[#ffdde1]', emoji: '🌿' },
-                        { name: 'K-Pop',         bg: 'from-[#ff6a88] to-[#ff99ac]', emoji: '💖' },
-                        { name: 'Devotional',    bg: 'from-[#f2994a] to-[#f2c94c]', emoji: '🙏' },
-                        { name: 'Chill',         bg: 'from-[#0f2027] via-[#203a43] to-[#2c5364]', emoji: '🌙' },
-                        { name: 'Workout',       bg: 'from-[#f12711] to-[#f5af19]', emoji: '💪' },
-                        { name: 'Romance',       bg: 'from-[#eb3349] to-[#f45c43]', emoji: '❤️' },
-                        { name: 'Party',         bg: 'from-[#fc466b] to-[#3f5efb]', emoji: '🎉' },
-                        { name: 'Lo-Fi',         bg: 'from-[#2c3e50] to-[#4ca1af]', emoji: '☕' },
+                        { name: 'Bollywood',    bg: 'from-[#c850c0] to-[#4158d0]', emoji: '🎬', img: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=400&auto=format&fit=crop' },
+                        { name: 'Pop',          bg: 'from-[#f857a6] to-[#ff5858]', emoji: '🎤', img: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=400&auto=format&fit=crop' },
+                        { name: 'Hip-Hop/Rap',  bg: 'from-[#667eea] to-[#764ba2]', emoji: '🎧', img: 'https://images.unsplash.com/photo-1601643157091-ce5c665179ab?q=80&w=400&auto=format&fit=crop' },
+                        { name: 'Charts',       bg: 'from-[#b8cc1e] to-[#5b8c00]', emoji: '📊', img: 'https://images.unsplash.com/photo-1619983081563-430f63602796?q=80&w=400&auto=format&fit=crop' },
+                        { name: 'Live Music',   bg: 'from-[#2193b0] to-[#6dd5ed]', emoji: '🎸', img: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?q=80&w=400&auto=format&fit=crop' },
+                        { name: 'Concerts',     bg: 'from-[#e44d26] to-[#f16529]', emoji: '🎪', img: 'https://images.unsplash.com/photo-1540039155732-61ee14e153a6?q=80&w=400&auto=format&fit=crop' },
+                        { name: 'Punjabi',      bg: 'from-[#8e2de2] to-[#4a00e0]', emoji: '🥁', img: 'https://images.unsplash.com/photo-1621532408375-385ee9ee5582?q=80&w=400&auto=format&fit=crop' },
+                        { name: 'Tamil',        bg: 'from-[#b721ff] to-[#21d4fd]', emoji: '🎵', img: 'https://images.unsplash.com/photo-1588611116212-070bfecbcdd6?q=80&w=400&auto=format&fit=crop' },
+                        { name: 'Classical',    bg: 'from-[#c79081] to-[#dfa579]', emoji: '🎻', img: 'https://images.unsplash.com/photo-1507838153428-9d983cbc9f40?q=80&w=400&auto=format&fit=crop' },
+                        { name: 'Rock',         bg: 'from-[#434343] to-[#000000]', emoji: '🤘', img: 'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?q=80&w=400&auto=format&fit=crop' },
+                        { name: 'R&B/Soul',     bg: 'from-[#fc4a1a] to-[#f7b733]', emoji: '💿', img: 'https://images.unsplash.com/photo-1493225457124-a1a2a5f5f9af?q=80&w=400&auto=format&fit=crop' },
+                        { name: 'Electronic',   bg: 'from-[#00d2ff] to-[#3a7bd5]', emoji: '⚡', img: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop' },
+                        { name: 'Indie',        bg: 'from-[#ee9ca7] to-[#ffdde1]', emoji: '🌿', img: 'https://images.unsplash.com/photo-1483821832962-f7033580da28?q=80&w=400&auto=format&fit=crop' },
+                        { name: 'K-Pop',        bg: 'from-[#ff6a88] to-[#ff99ac]', emoji: '💖', img: 'https://images.unsplash.com/photo-1627914876274-123497e2dbf3?q=80&w=400&auto=format&fit=crop' },
+                        { name: 'Devotional',   bg: 'from-[#f2994a] to-[#f2c94c]', emoji: '🙏', img: 'https://images.unsplash.com/photo-1582883391219-918903c7a36b?q=80&w=400&auto=format&fit=crop' },
+                        { name: 'Chill',        bg: 'from-[#0f2027] via-[#203a43] to-[#2c5364]', emoji: '🌙', img: 'https://images.unsplash.com/photo-1499548455829-23f46f5db1d4?q=80&w=400&auto=format&fit=crop' },
+                        { name: 'Workout',      bg: 'from-[#f12711] to-[#f5af19]', emoji: '💪', img: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=400&auto=format&fit=crop' },
+                        { name: 'Romance',      bg: 'from-[#eb3349] to-[#f45c43]', emoji: '❤️', img: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=400&auto=format&fit=crop' },
+                        { name: 'Party',        bg: 'from-[#fc466b] to-[#3f5efb]', emoji: '🎉', img: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=400&auto=format&fit=crop' },
+                        { name: 'Lo-Fi',        bg: 'from-[#2c3e50] to-[#4ca1af]', emoji: '☕', img: 'https://images.unsplash.com/photo-1516280440502-65f5a8946700?q=80&w=400&auto=format&fit=crop' },
                       ].map((cat, idx) => (
                         <div
                           key={cat.name}
@@ -3255,9 +3255,9 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
                           {/* Angled Image */}
                           <div className="absolute -right-4 -bottom-2 w-20 h-20 sm:w-24 sm:h-24 rotate-[25deg] shadow-[0_8px_30px_rgba(0,0,0,0.5)] rounded-lg overflow-hidden group-hover:rotate-[15deg] group-hover:scale-110 transition-all duration-500 z-10">
                             <img 
-                              src={`https://picsum.photos/seed/${cat.name.replace(/[^a-zA-Z]/g,'')}/150/150`} 
+                              src={cat.img} 
                               className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" 
-                              alt="" 
+                              alt={cat.name} 
                               loading="lazy"
                             />
                           </div>

@@ -724,7 +724,16 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
       <div className="flex items-center gap-3 relative min-w-[250px] max-w-[350px] mx-4">
         {currentTrack ? (
           <>
-            <img src={currentTrack.coverUrl} className="w-9 h-9 rounded object-cover shadow-md" alt="" />
+            
+            {/* Spinning Vinyl Record */}
+            <div className={`relative w-11 h-11 rounded-full border border-slate-800 shadow-[0_0_15px_rgba(0,0,0,0.8)] overflow-hidden flex-shrink-0 ${playbackState === 'playing' ? 'animate-[spin_4s_linear_infinite]' : ''}`}>
+              <img src={currentTrack.coverUrl} className="w-full h-full object-cover opacity-90" alt="" />
+              <div className="absolute inset-0 bg-black/20 rounded-full" style={{ boxShadow: 'inset 0 0 10px rgba(0,0,0,0.9)' }} />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-black rounded-full border border-slate-700/50 flex items-center justify-center">
+                <div className="w-1 h-1 bg-white/20 rounded-full" />
+              </div>
+            </div>
+
             <div className="flex flex-col justify-center min-w-0 w-full relative pb-1">
               <div className="flex items-center gap-1.5">
                 <h4 className="text-[12px] font-bold text-white truncate">{currentTrack.title}</h4>
@@ -732,7 +741,22 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
                   <span className="text-[8px] bg-white/20 text-white px-1 py-0.5 rounded-sm font-bold uppercase leading-none">E</span>
                 )}
               </div>
-              <p className="text-[10px] text-slate-400 truncate">{currentTrack.artist} — {currentTrack.album}</p>
+              <p className="text-[10px] text-slate-400 truncate flex items-center gap-2">
+                 <span>{currentTrack.artist} — {currentTrack.album}</span>
+                 {/* Mini CSS Visualizer */}
+                 {playbackState === 'playing' && (
+                   <div className="flex items-end gap-[1.5px] h-3 ml-2">
+                     {[1, 2, 3, 4].map((i) => (
+                       <motion.div 
+                         key={i}
+                         className="w-[2px] bg-teal rounded-full"
+                         animate={{ height: ['3px', '12px', '5px', '10px', '4px'] }}
+                         transition={{ duration: 0.5 + (i * 0.1), repeat: Infinity, repeatType: "mirror", ease: "easeInOut" }}
+                       />
+                     ))}
+                   </div>
+                 )}
+               </p>
               
               {/* Integrated ultra-thin progress bar below text */}
               <div className="absolute -bottom-1 left-0 right-0 h-[2px] bg-white/10 rounded-full overflow-hidden pointer-events-none">

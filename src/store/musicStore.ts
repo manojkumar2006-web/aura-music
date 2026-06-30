@@ -151,14 +151,64 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
   fetchTracks: async () => {
     // Bootstrap the global library from multiple curated queries in parallel
     const queries = [
+      // Kollywood / Tollywood
       'Anirudh Ravichander',
-      'Arijit Singh',
       'A. R. Rahman',
-      'Taylor Swift',
       'Yuvan Shankar Raja',
       'Harris Jayaraj',
       'Devi Sri Prasad',
-      'Ilayaraja',
+      'Thaman S',
+      'Santhosh Narayanan',
+      'G.V. Prakash Kumar',
+      // Bollywood
+      'Arijit Singh',
+      'Pritam',
+      'Shreya Ghoshal',
+      'Amit Trivedi',
+      'Vishal-Shekhar',
+      'Sachin-Jigar',
+      // Global Pop & R&B
+      'The Weeknd',
+      'Taylor Swift',
+      'Dua Lipa',
+      'Ed Sheeran',
+      'Ariana Grande',
+      'Billie Eilish',
+      'Bruno Mars',
+      'SZA',
+      'Frank Ocean',
+      // Hip Hop & Rap
+      'Drake',
+      'Kendrick Lamar',
+      'Travis Scott',
+      'Eminem',
+      'Post Malone',
+      'J. Cole',
+      // Latin & Reggaeton
+      'Bad Bunny',
+      'J Balvin',
+      'Shakira',
+      'Karol G',
+      // K-Pop
+      'BTS',
+      'BLACKPINK',
+      'Stray Kids',
+      'NewJeans',
+      // Rock, Indie & Alternative
+      'Coldplay',
+      'Arctic Monkeys',
+      'The Neighbourhood',
+      'Imagine Dragons',
+      'Linkin Park',
+      // EDM & Electronic
+      'David Guetta',
+      'Calvin Harris',
+      'Martin Garrix',
+      'Avicii',
+      // Classics
+      'Michael Jackson',
+      'Queen',
+      'The Beatles',
     ];
     try {
       const results = await Promise.all(

@@ -56,6 +56,7 @@ import {
 } from 'lucide-react';
 import { useMusicStore } from '../store/musicStore';
 import { Section } from '../components/Section';
+import { CoupleCompatibility } from '../components/CoupleCompatibility';
 import { AudioPlayer } from '../components/player/AudioPlayer';
 import { Track, SubscriptionTier } from '../types';
 import { getUserLocation, getWeather, getRegionIndustry } from '../services/locationService';
@@ -304,6 +305,9 @@ export const Home: React.FC = () => {
   }, [sleepTimerRemaining, setPlaybackState]);
 
   // Edit Profile States
+  // Couple Compatibility
+  const [showCoupleModal, setShowCoupleModal] = useState(false);
+
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [editDisplayName, setEditDisplayName] = useState('');
   const [editBio, setEditBio] = useState('');
@@ -4181,6 +4185,24 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
 
         </main>
       </div>
+
+      {/* ================= COUPLE COMPATIBILITY MODAL ================= */}
+      <AnimatePresence>
+        {showCoupleModal && currentUser && (
+          <CoupleCompatibility
+            currentUser={{
+              id: currentUser.id,
+              displayName: currentUser.displayName,
+              avatarUrl: currentUser.avatarUrl,
+              likedTracks: currentUser.likedTracks || [],
+              likedArtists: currentUser.likedArtists || [],
+              stats: currentUser.stats,
+            }}
+            allTracks={tracks.map(t => ({ id: t.id, title: t.title, artist: t.artist }))}
+            onClose={() => setShowCoupleModal(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* ================= LYRICS MODAL OVERLAY ================= */}
       <AnimatePresence>

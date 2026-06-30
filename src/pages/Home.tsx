@@ -4196,6 +4196,8 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
               avatarUrl: currentUser.avatarUrl,
               likedTracks: currentUser.likedTracks || [],
               likedArtists: currentUser.likedArtists || [],
+              emailVerified: currentUser.emailVerified,
+              createdAt: currentUser.createdAt,
               stats: currentUser.stats,
             }}
             allTracks={tracks.map(t => ({ id: t.id, title: t.title, artist: t.artist }))}

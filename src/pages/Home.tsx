@@ -2447,7 +2447,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
                             {vibeTracks.length > 0 ? (
                               vibeTracks.map((track) => (
                                 <div key={track.id} onClick={() => handleSelectTrack(track)} className="min-w-[140px] w-[140px] flex flex-col gap-2 cursor-pointer group snap-start premium-card-hover">
-                                  <div className="w-full aspect-square rounded-xl overflow-hidden relative shadow-lg premium-image-hover">
+                                  <div className="w-full aspect-square rounded-xl overflow-hidden relative shadow-lg hover-glow-teal hover-3d-tilt">
                                     <img src={track.coverUrl} className="w-full h-full object-cover" alt={track.title} />
                                     <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
                                     <div className="absolute bottom-2 right-2 bg-teal text-white p-2 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-lg translate-y-2 group-hover:translate-y-0">
@@ -2953,7 +2953,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
                             data-delay={String((idx % 6) + 1)}
                             key={track.id}
                             onClick={() => handleSelectTrack(track)}
-                            className={`group relative rounded-2xl glass-panel p-3 cursor-pointer transition-all duration-300 flex gap-3.5 border ${
+                            className={`group relative rounded-2xl glass-panel p-3 cursor-pointer hover-3d-tilt hover-glow-teal flex gap-3.5 border ${
                               activeTrackMenu === track.id ? 'overflow-visible z-30' : 'overflow-hidden'
                             } ${
                               isSelected 

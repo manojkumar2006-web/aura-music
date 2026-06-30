@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Play, MoreVertical } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Play as IgnoreMe } from 'lucide-react';
 import { Track } from '../types';
 import { useMusicStore } from '../store/musicStore';
 
@@ -61,7 +63,13 @@ export function Section({ title, query }: SectionProps) {
   if (tracks.length === 0) return null;
 
   return (
-    <div className="mb-10">
+    <motion.div 
+    initial={{ opacity: 0, y: 50, rotateX: -10 }}
+    whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+    viewport={{ once: true, margin: "-50px" }}
+    transition={{ duration: 0.6, type: "spring", bounce: 0.3 }}
+    className="mb-10 perspective-wrapper"
+  >
       <h2 className="text-2xl font-bold text-white mb-4 px-6 font-space">{title}</h2>
       
       <div 
@@ -75,7 +83,7 @@ export function Section({ title, query }: SectionProps) {
             className="flex-none w-36 group relative snap-start"
           >
             <div 
-              className="relative aspect-square rounded-lg overflow-hidden mb-3 shadow-lg group-hover:shadow-teal/20 transition-all cursor-pointer"
+              className="relative aspect-square rounded-lg overflow-hidden mb-3 shadow-lg hover-glow-teal hover-3d-tilt cursor-pointer"
               onClick={() => handlePlay(track)}
             >
               <img 
@@ -95,7 +103,7 @@ export function Section({ title, query }: SectionProps) {
             <div className="flex justify-between items-start gap-2">
               <div className="min-w-0 flex-1">
                 <h3 
-                  className={`font-medium truncate text-sm cursor-pointer ${currentTrack?.id === track.id ? 'text-teal' : 'text-slate-200 hover:text-white'}`}
+                  className={`font-medium truncate text-sm cursor-pointer text-hover-fade ${currentTrack?.id === track.id ? 'text-teal' : 'text-slate-200 hover:text-white'}`}
                   onClick={() => handlePlay(track)}
                   title={track.title}
                 >
@@ -118,6 +126,6 @@ export function Section({ title, query }: SectionProps) {
           </div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }

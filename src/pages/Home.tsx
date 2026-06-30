@@ -3279,8 +3279,9 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
               ) : sidebarNav === 'albums' ? (
                 (() => {
                   const globalAlbums = Array.from(new Set(tracks.map(t => t.album)));
-                  const globalHeroes = Array.from(new Set(tracks.map(t => t.hero).filter(Boolean)));
-                  const globalDirectors = Array.from(new Set(tracks.map(t => t.musicDirector).filter(Boolean)));
+                  const globalArtistsList = tracks.flatMap(t => t.artist.split(', '));
+                  const globalArtists = Array.from(new Set(globalArtistsList));
+                  const newReleases = [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15);
 
                   return (
                     /* ===== Dedicated Albums Page ===== */
@@ -3329,52 +3330,63 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
                     </div>
                   </div>
 
-                  {/* Music Directors */}
-                  {globalDirectors.length > 0 && (
-                    <div className="flex flex-col gap-6">
-                      <h3 className="font-display font-bold text-lg text-white tracking-wider flex items-center gap-2">
-                        <Music className="w-5 h-5 text-emerald-400" /> Legendary Composers
-                      </h3>
-                      <div className="flex gap-5 overflow-x-auto custom-scroll pb-6 pt-2 px-2 -mx-2 snap-x">
-                        {globalDirectors.map((director) => (
-                          <div 
-                            key={director} 
-                            onClick={() => setSelectedDirector(director)} 
-                            className="min-w-[220px] w-[220px] glass-panel rounded-[24px] p-5 flex flex-col items-center text-center gap-4 cursor-pointer group snap-start premium-card-hover"
-                          >
-                            <div className="w-24 h-24 rounded-full overflow-hidden flex-shrink-0 premium-image-hover border-4 border-white/5 group-hover:border-emerald-500/50 transition-colors">
-                              <img src={getCover(director, 'director', tracks)} className="w-full h-full object-cover" alt={director} />
-                            </div>
-                            <div className="flex flex-col w-full">
-                              <span className="text-sm font-bold text-white truncate w-full group-hover:text-emerald-400 transition-colors">{director}</span>
-                              <span className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Composer</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Trending Artists */}
-                  {globalHeroes.length > 0 && (
+                  {/* Featured Artists */}
+                  {globalArtists.length > 0 && (
                     <div className="flex flex-col gap-6">
                       <h3 className="font-display font-bold text-lg text-white tracking-wider flex items-center gap-2">
                         <Mic2 className="w-5 h-5 text-purple-400" /> Featured Icons
                       </h3>
                       <div className="flex gap-5 overflow-x-auto custom-scroll pb-6 pt-2 px-2 -mx-2 snap-x">
-                        {globalHeroes.map((hero) => (
-                          <div 
-                            key={hero} 
-                            onClick={() => setSelectedDirector(hero)} 
-                            className="min-w-[140px] max-w-[140px] flex flex-col items-center gap-4 snap-start group cursor-pointer text-center premium-card-hover"
-                          >
-                            <div className="w-full aspect-square rounded-full overflow-hidden relative shadow-lg border-4 border-transparent group-hover:border-purple-500/50 transition-all premium-image-hover">
-                              <img src={getCover(hero, 'hero', tracks)} className="w-full h-full object-cover" alt={hero} />
-                              <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
+                        {globalArtists.slice(0, 20).map((artist) => {
+                          const artistTrack = tracks.find(t => t.artist.includes(artist));
+                          return (
+                            <div 
+                              key={artist} 
+                              onClick={() => setSelectedDirector(artist)} 
+                              className="min-w-[160px] max-w-[160px] flex flex-col items-center gap-4 snap-start group cursor-pointer text-center premium-card-hover"
+                            >
+                              <div className="w-full aspect-square rounded-full overflow-hidden relative shadow-lg border-4 border-transparent group-hover:border-purple-500/50 transition-all premium-image-hover">
+                                <img src={artistTrack?.coverUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(artist)}&background=random`} className="w-full h-full object-cover" alt={artist} />
+                                <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
+                              </div>
+                              <div className="flex flex-col w-full">
+                                <span className="text-sm font-bold text-white truncate w-full group-hover:text-purple-400 transition-colors">{artist}</span>
+                                <span className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Artist</span>
+                              </div>
                             </div>
-                            <div className="flex flex-col w-full">
-                              <span className="text-sm font-bold text-white truncate w-full group-hover:text-purple-400 transition-colors">{hero}</span>
-                              <span className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Lead</span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* New Releases / Top Tracks */}
+                  {newReleases.length > 0 && (
+                    <div className="flex flex-col gap-6">
+                      <h3 className="font-display font-bold text-lg text-white tracking-wider flex items-center gap-2">
+                        <Sparkles className="w-5 h-5 text-pink-400" /> Fresh Arrivals
+                      </h3>
+                      <div className="flex gap-5 overflow-x-auto custom-scroll pb-6 pt-2 px-2 -mx-2 snap-x">
+                        {newReleases.map((track) => (
+                          <div 
+                            key={`fresh-${track.id}`} 
+                            onClick={() => {
+                              setCurrentTrack(track);
+                              setPlaybackState('playing');
+                              setQueue(newReleases);
+                            }}
+                            className="min-w-[160px] max-w-[160px] flex flex-col gap-3 snap-start group cursor-pointer premium-card-hover"
+                          >
+                            <div className="w-full aspect-square rounded-xl overflow-hidden relative shadow-md bg-black/40 premium-image-hover">
+                              <img src={track.coverUrl} className="w-full h-full object-cover" alt={track.title} />
+                              <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
+                              <div className="absolute bottom-2 right-2 bg-pink-500 text-white p-2.5 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 shadow-[0_4px_15px_rgba(236,72,153,0.5)] translate-y-2 group-hover:translate-y-0">
+                                <Play className="w-3 h-3 fill-white" />
+                              </div>
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-sm font-bold text-white truncate w-full group-hover:text-pink-400 transition-colors">{track.title}</span>
+                              <span className="text-xs text-slate-400 truncate w-full mt-0.5">{track.artist}</span>
                             </div>
                           </div>
                         ))}

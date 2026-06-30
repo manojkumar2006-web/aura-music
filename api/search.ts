@@ -12,10 +12,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     
     // If the query is asking for new releases, fetch iTunes Top Songs RSS Feed for India/Tamil
     if (query === 'new_releases') {
-       url = 'https://itunes.apple.com/in/rss/topsongs/limit=30/json';
+       url = 'https://itunes.apple.com/in/rss/topsongs/limit=100/json';
        isRss = true;
     } else {
-       url = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=30`;
+       // Request maximum allowed (200) to ensure we get deep cuts like "Aravindh"
+       url = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=200`;
     }
 
     const response = await fetch(url);

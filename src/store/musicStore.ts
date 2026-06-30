@@ -64,6 +64,7 @@ interface MusicStore {
   completeOnboarding: (languages: string[], favoriteDirectors: string[]) => Promise<{ success: boolean; error?: string }>;
   incrementStats: (stat: 'play' | 'minute') => void;
   fetchTracks: () => Promise<void>;
+  searchAndAppendTracks: (query: string) => Promise<void>;
   addTracksToLibrary: (newTracks: Track[]) => void;
   toggleLike: (trackId: string) => Promise<{ success: boolean; error?: string }>;
   toggleArtistLike: (artistName: string) => Promise<{ success: boolean; error?: string }>;
@@ -231,6 +232,31 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
       }
     } catch (e) {
       console.error('Failed to bootstrap tracks:', e);
+    }
+  },
+  searchAndAppendTracks: async (query: string) => {
+    if (!query.trim()) return;
+    try {
+      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+      if (!response.ok) return;
+      const data = await response.json();
+      if (Array.isArray(data) && data.length > 0) {
+        set(state => {
+          const currentTracks = [...state.tracks];
+          const seen = new Set(currentTracks.map(t => t.id));
+          let added = false;
+          data.forEach((t: any) => {
+            if (t.id && !seen.has(t.id)) {
+              seen.add(t.id);
+              currentTracks.push(t);
+              added = true;
+            }
+          });
+          return added ? { tracks: currentTracks } : state;
+        });
+      }
+    } catch (error) {
+      console.error('Failed to fetch and append tracks:', error);
     }
   },
   toggleLike: async (trackId: string) => {

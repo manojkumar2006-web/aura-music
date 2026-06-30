@@ -198,6 +198,7 @@ export const Home: React.FC = () => {
     userRegion,
     setUserRegion,
     fetchTracks,
+    searchAndAppendTracks,
     toggleLike,
     toggleArtistLike
   } = useMusicStore();
@@ -205,6 +206,18 @@ export const Home: React.FC = () => {
   useEffect(() => {
     fetchTracks();
   }, [fetchTracks]);
+
+  // Dynamic Search API Fetcher
+  useEffect(() => {
+    if (!searchQuery.trim() || searchQuery.length < 3) return;
+    
+    const delayDebounceFn = setTimeout(() => {
+      searchAndAppendTracks(searchQuery);
+    }, 1000);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery, searchAndAppendTracks]);
+
 
   // Local UI States
 

@@ -47,7 +47,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           isPremium: false
        }));
     }
-
+    res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=86400');
     res.status(200).json(tracks);
   } catch (error) {
     console.error('Error fetching search results:', error);

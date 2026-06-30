@@ -126,20 +126,18 @@ const COMMUNITY_PLAYLISTS = [
 
 
 const CATEGORIES = [
-  { title: "Trending Kollywood", query: "latest tamil hits" },
-  { title: "Global Top 50", query: "global top hits" },
-  { title: "Anirudh Essentials", query: "anirudh ravichander top songs" },
-  { title: "A.R. Rahman Classics", query: "ar rahman hits" },
-  { title: "Workout Mix", query: "gym workout music" },
-  { title: "Late Night Lo-Fi", query: "lofi hip hop beats" },
-  { title: "Trending Bollywood", query: "latest hindi songs" },
-  { title: "Top Telugu", query: "latest telugu hits" },
-  { title: "Party Anthems", query: "dance party mix" },
-  { title: "Soulful Melodies", query: "relaxing acoustic songs" },
-  { title: "Epic Soundtracks", query: "epic movie scores" },
-  { title: "Yuvan Magic", query: "yuvan shankar raja hits" },
-  { title: "Ilayaraja Classics", query: "ilayaraja tamil hits" },
-  { title: "Harris Jayaraj Hits", query: "harris jayaraj melodies" }
+  { title: "Trending Kollywood", query: "Anirudh Ravichander" },
+  { title: "Global Top 50", query: "Taylor Swift" },
+  { title: "A.R. Rahman Classics", query: "A. R. Rahman" },
+  { title: "The Weeknd Top Hits", query: "The Weeknd" },
+  { title: "Late Night Lo-Fi", query: "Lofi Beats" },
+  { title: "Trending Bollywood", query: "Arijit Singh" },
+  { title: "Top Telugu", query: "Devi Sri Prasad" },
+  { title: "Yuvan Magic", query: "Yuvan Shankar Raja" },
+  { title: "Ilayaraja Classics", query: "Ilayaraja" },
+  { title: "Harris Jayaraj Hits", query: "Harris Jayaraj" },
+  { title: "Epic Soundtracks", query: "Hans Zimmer" },
+  { title: "Workout Mix", query: "Eminem" }
 ];
 
 export const Home: React.FC = () => {

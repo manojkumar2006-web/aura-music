@@ -19,6 +19,8 @@ export function Section({ title, query }: SectionProps) {
   const setQueue = useMusicStore((state) => state.setQueue);
   const currentTrack = useMusicStore((state) => state.currentTrack);
   const isPlaying = useMusicStore((state) => state.playbackState === 'playing');
+  const setPlaybackState = useMusicStore((state) => state.setPlaybackState);
+  const addTracksToLibrary = useMusicStore((state) => state.addTracksToLibrary);
 
   useEffect(() => {
     let isMounted = true;
@@ -28,8 +30,11 @@ export function Section({ title, query }: SectionProps) {
         const data = await res.json();
         if (isMounted && Array.isArray(data)) {
           // Shuffle slightly so it's not identical every time
-          const shuffled = data.sort(() => 0.5 - Math.random());
-          setTracks(shuffled.slice(0, 15)); // 15 tracks per section
+          const shuffled = [...data].sort(() => 0.5 - Math.random());
+          const sectionTracks = shuffled.slice(0, 15);
+          setTracks(sectionTracks);
+          // Also inject into the global store so Songs library / Albums / Liked Songs work
+          addTracksToLibrary(sectionTracks);
         }
       } catch (e) {
         console.error('Failed to load section:', title, e);
@@ -44,6 +49,7 @@ export function Section({ title, query }: SectionProps) {
 
   const handlePlay = (track: Track) => {
     setCurrentTrack(track);
+    setPlaybackState('playing');
     setQueue(tracks);
   };
 

@@ -64,6 +64,7 @@ interface MusicStore {
   completeOnboarding: (languages: string[], favoriteDirectors: string[]) => Promise<{ success: boolean; error?: string }>;
   incrementStats: (stat: 'play' | 'minute') => void;
   fetchTracks: () => Promise<void>;
+  addTracksToLibrary: (newTracks: Track[]) => void;
   toggleLike: (trackId: string) => Promise<{ success: boolean; error?: string }>;
   toggleArtistLike: (artistName: string) => Promise<{ success: boolean; error?: string }>;
 
@@ -141,9 +142,46 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
   setCurrentWeather: (weather) => set({ currentWeather: weather }),
   setUserRegion: (region) => set({ userRegion: region }),
   
+  addTracksToLibrary: (newTracks: Track[]) => {
+    const existing = get().tracks;
+    const seen = new Set(existing.map((t: Track) => t.id));
+    const merged = [...existing, ...newTracks.filter((t: Track) => !seen.has(t.id))];
+    set({ tracks: merged });
+  },
   fetchTracks: async () => {
-    // Disabled MongoDB API fetch to use the dynamic iTunes API
-    console.log('Using dynamic search API.');
+    // Bootstrap the global library from multiple curated queries in parallel
+    const queries = [
+      'Anirudh Ravichander',
+      'Arijit Singh',
+      'A. R. Rahman',
+      'Taylor Swift',
+      'Yuvan Shankar Raja',
+      'Harris Jayaraj',
+      'Devi Sri Prasad',
+      'Ilayaraja',
+    ];
+    try {
+      const results = await Promise.all(
+        queries.map(q => fetch(`/api/search?q=${encodeURIComponent(q)}`).then(r => r.json()).catch(() => []))
+      );
+      const allTracks: any[] = [];
+      const seen = new Set<string>();
+      results.forEach(data => {
+        if (Array.isArray(data)) {
+          data.forEach((t: any) => {
+            if (t.id && !seen.has(t.id)) {
+              seen.add(t.id);
+              allTracks.push(t);
+            }
+          });
+        }
+      });
+      if (allTracks.length > 0) {
+        set({ tracks: allTracks });
+      }
+    } catch (e) {
+      console.error('Failed to bootstrap tracks:', e);
+    }
   },
   toggleLike: async (trackId: string) => {
     const currentUser = get().currentUser;

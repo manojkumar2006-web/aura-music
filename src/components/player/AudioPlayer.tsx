@@ -225,8 +225,19 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
     }
   }, [userTier]);
 
-  const handlePlayPause = () => {
+
+  const handlePlayPause = async () => {
     if (!currentTrack) return;
+    
+    // Check if we need to resolve the youtube ID first
+    if (!currentTrack.youtubeId) {
+      setPlaybackState('paused'); // or loading state if we had one
+      const resolvedId = await useMusicStore.getState().resolveYoutubeId(currentTrack.id);
+      if(!resolvedId) {
+         console.error("Could not resolve Youtube ID");
+         return;
+      }
+    }
     
     if (playbackState === 'playing') {
       setPlaybackState('paused');
@@ -234,6 +245,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
       setPlaybackState('playing');
     }
   };
+
 
   const handleNext = () => {
     if (tracks.length === 0) return;

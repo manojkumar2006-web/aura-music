@@ -25,6 +25,11 @@ interface MusicStore {
   setTier: (tier: SubscriptionTier) => void;
   isAdminMode: boolean;
   setAdminMode: (active: boolean) => void;
+  
+  searchTracks: (query: string) => Promise<void>;
+  fetchTopTracks: () => Promise<void>;
+  resolveYoutubeId: (trackId: string) => Promise<string | null>;
+  isSearching: boolean;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   isMuted: boolean;

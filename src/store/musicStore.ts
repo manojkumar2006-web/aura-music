@@ -157,6 +157,7 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
       'Devi Sri Prasad', 'Thaman S', 'Santhosh Narayanan', 'G.V. Prakash Kumar', 
       'Ilayaraja', 'Vidyasagar', 'Hiphop Tamizha', 'Vijay Antony', 'Sam C.S.', 
       'Ravi Basrur', 'D. Imman', 'Mani Sharma', 'M. M. Keeravani', 'Mickey J. Meyer',
+      'Sai Abhyankar',
       
       // Top Indian Singers
       'Arijit Singh', 'Shreya Ghoshal', 'Sid Sriram', 'S. P. Balasubrahmanyam', 
@@ -196,7 +197,10 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
 
       // Classics & Legends
       'Michael Jackson', 'Queen', 'The Beatles', 'Kishore Kumar', 'Lata Mangeshkar', 
-      'Asha Bhosle', 'Mohammed Rafi', 'Mukesh', 'Elton John', 'Elvis Presley'
+      'Asha Bhosle', 'Mohammed Rafi', 'Mukesh', 'Elton John', 'Elvis Presley',
+
+      // Trending & Actors
+      'Sadie Sink'
     ];
     try {
       // Chunk requests into batches of 10 to avoid iTunes API rate limits (403/429)

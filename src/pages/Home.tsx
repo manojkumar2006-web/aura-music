@@ -55,6 +55,7 @@ import {
   Share2
 } from 'lucide-react';
 import { useMusicStore } from '../store/musicStore';
+import { Section } from '../components/Section';
 import { AudioPlayer } from '../components/player/AudioPlayer';
 import { Track, SubscriptionTier } from '../types';
 import { getUserLocation, getWeather, getRegionIndustry } from '../services/locationService';
@@ -2467,6 +2468,18 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
                       )}
                     </AnimatePresence>
                   </div>
+
+                  
+                  {/* Dynamic Infinite Sections */
+                   !searchQuery.trim() && (
+                     <div className="flex flex-col mt-8 w-full">
+                       {CATEGORIES.slice(0, visibleCount).map(cat => (
+                         <Section key={cat.title} title={cat.title} query={cat.query} />
+                       ))}
+                       <div ref={observerTarget} className="h-10 w-full" />
+                     </div>
+                   )
+                  }
 
                   {/* Hero / Mixes */}
                   <div className="flex flex-col gap-4">

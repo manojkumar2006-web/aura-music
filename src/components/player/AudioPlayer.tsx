@@ -1072,7 +1072,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  </h3>
  <div className="flex flex-col gap-2">
  {queue.slice(0, 8).map((track, i) => (
- <div key={i} onClick={() => { setCurrentTrack(track); setPlaybackState('playing'); }} className="flex items-center gap-3 p-3 bg-[#181818] hover:bg-[#242424] rounded-xl cursor-pointer transition-colors group">
+ <div key={i} onClick={() => handlePlayFromQueue(i)} className="flex items-center gap-3 p-3 bg-[#181818] hover:bg-[#242424] rounded-xl cursor-pointer transition-colors group">
  <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 relative">
  <img loading="lazy" src={track.coverUrl} className="w-full h-full object-cover" alt="" />
  <div className="absolute inset-0 bg-[#121212] opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">

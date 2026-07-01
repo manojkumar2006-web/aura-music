@@ -169,7 +169,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  let interval: any;
  if (playbackState === 'playing' && currentTrack?.youtubeId) {
   interval = setInterval(async () => {
-  if (ytPlayerRef.current && ytReadyIdRef.current === currentTrack.youtubeId) {
+  if (ytPlayerRef.current) {
   try {
   const time = await ytPlayerRef.current.getCurrentTime();
  if (time !== undefined) setCurrentTime(time);
@@ -241,7 +241,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
 
   if (currentTrack.youtubeId) {
   audio.pause();
-  if (ytPlayerRef.current && ytReadyIdRef.current === currentTrack.youtubeId) {
+  if (ytPlayerRef.current) {
   try {
   if (playbackState === 'playing') ytPlayerRef.current.playVideo();
   else ytPlayerRef.current.pauseVideo();

@@ -37,8 +37,9 @@ const ARTISTS_TO_SYNC = [
       'Karthik Raja', 'Bhavatharini', 'Deva', 'S. A. Rajkumar', 'Sirpy', 'Bharadwaj',
       'Joshua Sridhar', 'Srikanth Deva', 'C. Sathya', 'K', 'Simon K. King', 
       'Girishh G', 'Vishal Chandrashekhar', 'Javed Riaz', 'Gopi Sundar',
+      'Khatija Rahman', 'Jen Martin', 'OfRo', 'Tenma', 'Bindu Malini', 'Adithya RK',
 
-      // Singers
+      // Singers & New Gen Indie/Rappers
       'Sid Sriram', 'Shreya Ghoshal', 'S. P. Balasubrahmanyam', 'K. S. Chithra', 
       'Karthik', 'Hariharan', 'Shweta Mohan', 'Jonita Gandhi', 'Haricharan', 
       'Tippu', 'Benny Dayal', 'Naresh Iyer', 'Chinmayi', 'Andrea Jeremiah', 
@@ -48,6 +49,7 @@ const ARTISTS_TO_SYNC = [
       'Mano', 'Malaysia Vasudevan', 'P. Susheela', 'S. Janaki', 'L. R. Eswari',
       'Pradeep Kumar', 'Anthony Daasan', 'Arivu', 'Dhee', 'Muthu Sirpi',
       'Vaikom Vijayalakshmi', 'Sathyaprakash', 'Ranjith', 'Rahul Nambiar',
+      'Paal Dabba', 'Asal Kolaar', 'Aaryan Dinesh Kanagaratnam', 'Yogi B',
 
       // Actors / Star Search Terms (iTunes often tags songs with actor names)
       'Thalapathy Vijay', 'Rajinikanth', 'Kamal Haasan', 'Ajith Kumar', 'Suriya',

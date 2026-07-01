@@ -968,28 +968,27 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  )}
  
  {/* YouTube Player — ALWAYS hidden */}
- {currentTrack?.youtubeId && (
  <div style={{ position: 'fixed', bottom: '-9999px', width: '1px', height: '1px', overflow: 'hidden', pointerEvents: 'none' }}>
  <YouTube
- videoId={currentTrack.youtubeId}
+ videoId={currentTrack?.youtubeId || 'dQw4w9WgXcQ'}
  opts={{
  height: '1',
  width: '1',
- playerVars: { autoplay: playbackState === 'playing' ? 1 : 0, controls: 0, disablekb: 1, modestbranding: 1, rel: 0 },
+ playerVars: { autoplay: 0, controls: 0, disablekb: 1, modestbranding: 1, rel: 0 },
  }}
  onReady={(e) => {
  ytPlayerRef.current = e.target;
  e.target.setVolume(isMuted ? 0 : volume * 100);
- if (playbackState === 'playing') e.target.playVideo();
+ if (playbackState === 'playing' && currentTrack?.youtubeId) e.target.playVideo();
  }}
  onStateChange={(e) => {
+ if (!currentTrack?.youtubeId) return; // ignore events if not a YT track
  if (e.data === 0) handleNext();
  else if (e.data === 1 && playbackState !== 'playing') setPlaybackState('playing');
  else if (e.data === 2 && playbackState !== 'paused') setPlaybackState('paused');
  }}
  />
  </div>
- )}
 
  {/* NEW Fullscreen Audio Player */}
  <AnimatePresence>

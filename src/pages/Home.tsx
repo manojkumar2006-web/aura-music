@@ -2448,6 +2448,106 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
                       </div>
                     </div>
                   </div>
+
+                  {/* ===== NEW RELEASES — Date-driven section ===== */}
+                  {(() => {
+                    const now = new Date();
+                    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                    const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+
+                    const freshTracks = tracks
+                      .filter(t => t.releaseDate)
+                      .map(t => ({ ...t, _relDate: new Date(t.releaseDate!) }))
+                      .sort((a, b) => b._relDate.getTime() - a._relDate.getTime())
+                      .filter((t, i, arr) => arr.findIndex(x => x.album === t.album) === i) // one per album
+                      .slice(0, 20);
+
+                    const thisWeek = freshTracks.filter(t => t._relDate >= thirtyDaysAgo);
+                    const recentThree = freshTracks.filter(t => t._relDate >= ninetyDaysAgo && t._relDate < thirtyDaysAgo);
+                    const olderFresh = freshTracks.filter(t => t._relDate < ninetyDaysAgo).slice(0, 6);
+
+                    const getRelLabel = (d: Date) => {
+                      const days = Math.floor((now.getTime() - d.getTime()) / 86400000);
+                      if (days === 0) return '🔥 Today';
+                      if (days === 1) return '🔥 Yesterday';
+                      if (days <= 7) return `🔥 ${days} days ago`;
+                      if (days <= 30) return `✨ ${Math.floor(days / 7)}w ago`;
+                      if (days <= 90) return `${Math.floor(days / 30)}mo ago`;
+                      return `${d.getFullYear()}`;
+                    };
+
+                    const TrackCard = ({ t }: { t: any }) => (
+                      <div
+                        key={t.id}
+                        onClick={() => handleSelectTrack(t)}
+                        className="min-w-[150px] w-[150px] flex flex-col gap-2 cursor-pointer group snap-start"
+                      >
+                        <div className="w-full aspect-square rounded-2xl overflow-hidden relative shadow-lg">
+                          <img src={t.coverUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={t.title} />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                          <div className="absolute bottom-2 left-2">
+                            <span className="text-[9px] font-black uppercase tracking-widest bg-teal/90 text-black px-2 py-0.5 rounded-full shadow">
+                              {getRelLabel(t._relDate)}
+                            </span>
+                          </div>
+                          <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-all translate-y-1 group-hover:translate-y-0 shadow-lg">
+                            <Play className="w-3.5 h-3.5 text-white fill-white" />
+                          </div>
+                        </div>
+                        <div className="flex flex-col px-1">
+                          <span className="text-sm font-bold text-white truncate group-hover:text-teal transition-colors">{t.title}</span>
+                          <span className="text-[10px] text-slate-400 truncate mt-0.5">{t.artist}</span>
+                        </div>
+                      </div>
+                    );
+
+                    return (
+                      <div className="flex flex-col gap-8">
+                        {/* This Month */}
+                        {thisWeek.length > 0 && (
+                          <div className="flex flex-col gap-4">
+                            <div className="flex justify-between items-end pr-2">
+                              <h2 className="font-display font-bold text-xl text-white tracking-wider flex items-center gap-2">
+                                <Flame className="w-5 h-5 text-orange-400 animate-pulse" /> Fresh This Month
+                                <span className="text-[10px] font-mono bg-orange-500/20 text-orange-300 px-2 py-0.5 rounded-full border border-orange-500/20 ml-1">NEW</span>
+                              </h2>
+                              <span onClick={() => setSidebarNav('new')} className="text-xs text-teal cursor-pointer hover:underline font-mono">See all</span>
+                            </div>
+                            <div className="flex gap-4 overflow-x-auto custom-scroll pb-4 snap-x">
+                              {thisWeek.slice(0, 12).map(t => <TrackCard key={t.id} t={t} />)}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Last 3 Months */}
+                        {recentThree.length > 0 && (
+                          <div className="flex flex-col gap-4">
+                            <div className="flex justify-between items-end pr-2">
+                              <h2 className="font-display font-bold text-xl text-white tracking-wider flex items-center gap-2">
+                                <Sparkles className="w-5 h-5 text-purple-400" /> Recent Releases
+                              </h2>
+                            </div>
+                            <div className="flex gap-4 overflow-x-auto custom-scroll pb-4 snap-x">
+                              {recentThree.slice(0, 12).map(t => <TrackCard key={t.id} t={t} />)}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Trending Older */}
+                        {olderFresh.length > 0 && (
+                          <div className="flex flex-col gap-4">
+                            <h2 className="font-display font-bold text-xl text-white tracking-wider flex items-center gap-2">
+                              <TrendingUp className="w-5 h-5 text-blue-400" /> Trending Picks
+                            </h2>
+                            <div className="flex gap-4 overflow-x-auto custom-scroll pb-4 snap-x">
+                              {olderFresh.map(t => <TrackCard key={t.id} t={t} />)}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
+
                   {/* Weather & Region Vibe Banner */}
                   <div className="flex flex-col gap-4 relative overflow-hidden rounded-3xl glass-panel p-8 border border-white/10 bg-gradient-to-br from-indigo-950/40 via-black/40 to-ocean/20">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-teal/20 rounded-full filter blur-[80px] pointer-events-none" />

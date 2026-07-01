@@ -38,6 +38,7 @@ const ARTISTS_TO_SYNC = [
       'Joshua Sridhar', 'Srikanth Deva', 'C. Sathya', 'K', 'Simon K. King', 
       'Girishh G', 'Vishal Chandrashekhar', 'Javed Riaz', 'Gopi Sundar',
       'Khatija Rahman', 'Jen Martin', 'OfRo', 'Tenma', 'Bindu Malini', 'Adithya RK',
+      'B. Ajaneesh Loknath', 'Sricharan Pakala', 'Ashwath', 'Aruldev', 'Sushin Shyam',
 
       // Singers & New Gen Indie/Rappers
       'Sid Sriram', 'Shreya Ghoshal', 'S. P. Balasubrahmanyam', 'K. S. Chithra', 

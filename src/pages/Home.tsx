@@ -170,7 +170,7 @@ const ARTIST_IMAGES: Record<string, string> = {
  "The Beatles": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/The_Beatles_in_America.JPG/330px-The_Beatles_in_America.JPG",
  "Elton John": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Elton_John_in_2015_%28Elton_John_AIDS_Foundation%29.jpg/330px-Elton_John_in_2015_%28Elton_John_AIDS_Foundation%29.jpg",
  "Elvis Presley": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Elvis_Presley_promoting_Jailhouse_Rock.jpg/330px-Elvis_Presley_promoting_Jailhouse_Rock.jpg",
- // ===== ACTORS =====
+  // ===== ACTORS =====
  "Thalapathy Vijay": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/C._Joseph_Vijay_%28cropped%29.jpg/330px-C._Joseph_Vijay_%28cropped%29.jpg",
  "Rajinikanth": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Rajinikanth_in_2019.jpg/330px-Rajinikanth_in_2019.jpg",
  "Kamal Haasan": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Kamal_Haasan_at_2023_San_Diego_Comic-Con_International_by_Gage_Skidmore%2C_005_%28cropped%29.jpg/330px-Kamal_Haasan_at_2023_San_Diego_Comic-Con_International_by_Gage_Skidmore%2C_005_%28cropped%29.jpg",
@@ -1999,19 +1999,34 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  className="mt-2 py-2 px-5 bg-gradient-to-r from-ocean to-teal text-black font-bold text-xs uppercase rounded-xl hover:scale-102 transition-transform cursor-pointer shadow-[0_0_15px_rgba(255,255,255,0.1)]"
  >
  Authenticate
- </button>
- </div>
- )
- ) : (
- <>
- {selectedDirector ? (() => {
+  </button>
+  </div>
+  )
+  ) : (
+  <>
+  {selectedDirector ? (() => {
  const directorTracks = tracks.filter(t => t.musicDirector === selectedDirector || t.artist?.includes(selectedDirector) || t.hero?.includes(selectedDirector));
  const isHero = directorTracks.some(t => t.hero === selectedDirector);
- const directorAlbums = Array.from(new Set(directorTracks.map(t => t.album).filter(Boolean)));
- const latestAlbumName = directorAlbums[0];
- const latestAlbumTracks = directorTracks.filter(t => t.album === latestAlbumName);
- const topSongs = directorTracks.slice(0, 6);
+ 
+ // Sort tracks by releaseDate (newest first)
+ const sortedTracks = [...directorTracks].sort((a, b) => {
+ const dateA = a.releaseDate ? new Date(a.releaseDate).getTime() : 0;
+ const dateB = b.releaseDate ? new Date(b.releaseDate).getTime() : 0;
+ return dateB - dateA;
+ });
+
+ // Get the most recent album
+ const latestAlbumName = sortedTracks.find(t => t.album && t.album !== 'Single')?.album || sortedTracks[0]?.album;
+ const latestAlbumTracks = latestAlbumName ? sortedTracks.filter(t => t.album === latestAlbumName) : [];
+ 
+ // Top Songs: Get recent hits (excluding the latest album to show variety)
+ let topSongs = sortedTracks.filter(t => t.album !== latestAlbumName).slice(0, 6);
+ if (topSongs.length < 3) {
+ topSongs = sortedTracks.slice(0, 6); // Fallback if they only have 1 album
+ }
+ 
  const isArtistLiked = currentUser?.likedArtists?.includes(selectedDirector);
+ const directorAlbums = Array.from(new Set(sortedTracks.map(t => t.album).filter(Boolean)));
 
 
  return (

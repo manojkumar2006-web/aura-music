@@ -2877,14 +2877,24 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
                     </div>
                   </div>
 
-                  {/* Top Albums */}
+                                    {/* Top Albums (Recently Released) */}
                   <div className="flex flex-col gap-4">
                     <h2 className="font-display font-bold text-xl text-white tracking-wider flex items-center gap-2">
                       <Disc className="w-5 h-5 text-[#00d4ff]" /> Top Albums
                     </h2>
                     <div className="flex gap-4 overflow-x-auto custom-scroll pb-4 snap-x">
-                      {Array.from(new Set(tracks.map(t => t.album || t.title))).slice(0, 8).map((album, i) => {
-                        const track = tracks.find(t => (t.album || t.title) === album)!;
+                      {Array.from(
+                        new Set(
+                          tracks
+                            .filter(t => t.album && t.releaseDate)
+                            .map(t => ({ ...t, _relDate: new Date(t.releaseDate) }))
+                            .sort((a, b) => b._relDate.getTime() - a._relDate.getTime())
+                            .map(t => t.album)
+                        )
+                      )
+                      .slice(0, 8)
+                      .map((album, i) => {
+                        const track = tracks.find(t => t.album === album)!;
                         return (
                         <div key={i} onClick={() => track.album ? setSelectedAlbum(track.album) : handleSelectTrack(track)} className="min-w-[140px] w-[140px] flex flex-col gap-2 cursor-pointer group snap-start">
                           <div className="w-full aspect-square rounded-xl overflow-hidden relative shadow-lg">
@@ -2902,32 +2912,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
                       )})}
                     </div>
                   </div>
-
-                  {/* Playlists made by other users */}
-                  <div className="flex flex-col gap-4">
-                    <h2 className="font-display font-bold text-xl text-white tracking-wider flex items-center gap-2">
-                      <Users className="w-5 h-5 text-emerald-400" /> Community Playlists
-                    </h2>
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                      {COMMUNITY_PLAYLISTS.map((pl, i) => (
-                        <div key={i} onClick={() => setSelectedPlaylist(pl.name)} className="glass-panel p-4 rounded-2xl flex flex-col gap-4 cursor-pointer hover:bg-white/5 hover:border-white/10 transition-all border border-transparent group shadow-md active:scale-[0.98] premium-card-hover">
-                          <div className="w-full aspect-square rounded-xl bg-gradient-to-br from-slate-800 to-[#121212] relative flex items-center justify-center overflow-hidden premium-image-hover">
-                            {pl.coverUrl ? (
-                              <img loading="lazy" src={pl.coverUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={pl.name} />
-                            ) : (
-                              <ListMusic className="w-8 h-8 text-slate-600 group-hover:scale-110 group-hover:text-emerald-500/50 transition-all duration-300" />
-                            )}
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="text-sm font-bold text-white truncate group-hover:text-teal transition-colors">{pl.name}</span>
-                            <span className="text-[10px] text-slate-400 truncate mt-0.5">By {pl.author} • {pl.trackIds.length} tracks</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ) : sidebarNav === 'songs' ? (
+sidebarNav === 'songs' ? (
               <>
               {/* ADMIN: ADD SONG PANEL */}
               <AnimatePresence>

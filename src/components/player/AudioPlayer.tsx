@@ -144,6 +144,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
 
  const audioRef = useRef<HTMLAudioElement | null>(null);
  const ytPlayerRef = useRef<any>(null);
+ const ytReadyIdRef = useRef<string | null>(null);
  const [isMobile, setIsMobile] = useState(false);
  const [currentTime, setCurrentTime] = useState(0);
  const [duration, setDuration] = useState(0);
@@ -167,10 +168,10 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  useEffect(() => {
  let interval: any;
  if (playbackState === 'playing' && currentTrack?.youtubeId) {
- interval = setInterval(async () => {
- if (ytPlayerRef.current) {
- try {
- const time = await ytPlayerRef.current.getCurrentTime();
+  interval = setInterval(async () => {
+  if (ytPlayerRef.current && ytReadyIdRef.current === currentTrack.youtubeId) {
+  try {
+  const time = await ytPlayerRef.current.getCurrentTime();
  if (time !== undefined) setCurrentTime(time);
  const dur = await ytPlayerRef.current.getDuration();
  if (dur > 0) setDuration(dur);
@@ -238,14 +239,16 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  
  lastTrackIdRef.current = currentTrack.id;
 
- if (currentTrack.youtubeId) {
- audio.pause();
- if (ytPlayerRef.current) {
- if (playbackState === 'playing') ytPlayerRef.current.playVideo();
- else ytPlayerRef.current.pauseVideo();
- }
- } else {
- if (ytPlayerRef.current) try { ytPlayerRef.current.pauseVideo(); } catch(e) {}
+  if (currentTrack.youtubeId) {
+  audio.pause();
+  if (ytPlayerRef.current && ytReadyIdRef.current === currentTrack.youtubeId) {
+  try {
+  if (playbackState === 'playing') ytPlayerRef.current.playVideo();
+  else ytPlayerRef.current.pauseVideo();
+  } catch(e) {}
+  }
+  } else {
+  if (ytPlayerRef.current) try { ytPlayerRef.current.pauseVideo(); } catch(e) {}
  if (playbackState === 'playing') {
  audio.play().catch((err) => {
  console.warn('Playback failed, user interaction required:', err);
@@ -978,6 +981,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  }}
  onReady={(e) => {
  ytPlayerRef.current = e.target;
+ ytReadyIdRef.current = currentTrack?.youtubeId || null;
  e.target.setVolume(isMuted ? 0 : volume * 100);
  if (playbackState === 'playing' && currentTrack?.youtubeId) e.target.playVideo();
  }}

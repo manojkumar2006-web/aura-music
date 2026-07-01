@@ -618,11 +618,9 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
                <Mic2 className="w-5 h-5" />
              </button>
 
-             {currentTrack?.youtubeId && (
-               <button onClick={() => setIsFullScreen(true)} className="p-2 hover:text-white transition-colors active:scale-90" title="Full Screen Video">
+             <button onClick={() => setIsFullScreen(true)} className="p-2 hover:text-white transition-colors active:scale-90" title="Full Screen Player">
                  <Maximize2 className="w-6 h-6" />
                </button>
-             )}
            </div>
 
            {/* Queue View Overlay */}
@@ -916,11 +914,11 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
         </div>
 
         {/* Fullscreen Video Expand — desktop only */}
-        {currentTrack?.youtubeId && !isMobile && (
+        {!isMobile && (
           <button 
             onClick={() => setIsFullScreen(true)}
             className="hover:text-white transition-colors cursor-pointer ml-1"
-            title="Full Screen Video"
+            title="Full Screen Player"
           >
             <Maximize2 className="w-4 h-4" />
           </button>
@@ -931,35 +929,15 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
     </div>
     )}
       
-      {/* YouTube Player — hidden for audio; fullscreen on desktop */}
+      {/* YouTube Player — ALWAYS hidden */}
       {currentTrack?.youtubeId && (
-        <div
-          className={isFullScreen ? "fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center" : ""}
-          style={isFullScreen ? {} : { position: 'fixed', bottom: '-9999px', width: '1px', height: '1px', overflow: 'hidden', pointerEvents: 'none' }}
-        >
-          {isFullScreen && (
-            <button 
-              onClick={() => setIsFullScreen(false)}
-              className="absolute top-6 right-6 z-[110] p-3 bg-white/10 hover:bg-white/20 rounded-full text-white cursor-pointer backdrop-blur-md transition-all"
-            >
-              <Minimize2 className="w-6 h-6" />
-            </button>
-          )}
-          
+        <div style={{ position: 'fixed', bottom: '-9999px', width: '1px', height: '1px', overflow: 'hidden', pointerEvents: 'none' }}>
           <YouTube
             videoId={currentTrack.youtubeId}
-            className={isFullScreen ? "w-full h-full pointer-events-none" : ""}
-            iframeClassName={isFullScreen ? "w-full h-full" : ""}
             opts={{
-              height: isFullScreen ? '100%' : '1',
-              width: isFullScreen ? '100%' : '1',
-              playerVars: {
-                autoplay: playbackState === 'playing' ? 1 : 0,
-                controls: 0,
-                disablekb: 1,
-                modestbranding: 1,
-                rel: 0
-              },
+              height: '1',
+              width: '1',
+              playerVars: { autoplay: playbackState === 'playing' ? 1 : 0, controls: 0, disablekb: 1, modestbranding: 1, rel: 0 },
             }}
             onReady={(e) => {
               ytPlayerRef.current = e.target;
@@ -971,10 +949,131 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
               else if (e.data === 1 && playbackState !== 'playing') setPlaybackState('playing');
               else if (e.data === 2 && playbackState !== 'paused') setPlaybackState('paused');
             }}
-            onError={() => console.warn('YouTube playback failed')}
           />
         </div>
       )}
+
+      {/* NEW Fullscreen Audio Player */}
+      <AnimatePresence>
+        {isFullScreen && currentTrack && (
+          <motion.div
+            initial={{ opacity: 0, y: '100%' }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: '100%' }}
+            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            className="fixed inset-0 z-[150] bg-black/95 backdrop-blur-3xl flex flex-col md:flex-row overflow-hidden"
+          >
+            <button 
+              onClick={() => setIsFullScreen(false)}
+              className="absolute top-6 right-6 z-[160] p-3 bg-white/10 hover:bg-white/20 rounded-full text-white cursor-pointer backdrop-blur-md transition-all"
+            >
+              <Minimize2 className="w-6 h-6" />
+            </button>
+
+            {/* Left Pane: Player Controls */}
+            <div className="flex-1 flex flex-col items-center justify-center p-8 md:p-16 border-r border-white/10 relative">
+              {/* Background Glow */}
+              <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: `url(${currentTrack.coverUrl})`, backgroundSize: 'cover', backgroundPosition: 'center', filter: 'blur(100px)' }} />
+              
+              <div className="relative z-10 w-full max-w-lg flex flex-col items-center">
+                <img loading="lazy" src={currentTrack.coverUrl} className="w-64 h-64 md:w-[28rem] md:h-[28rem] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] object-cover mb-8" alt={currentTrack.title} />
+                
+                <h2 className="text-3xl md:text-4xl font-extrabold text-white text-center mb-2 truncate w-full">{currentTrack.title}</h2>
+                <p className="text-lg text-slate-400 text-center mb-10 truncate w-full">{currentTrack.artist}</p>
+                
+                {/* Progress */}
+                <div className="w-full flex items-center gap-4 mb-8">
+                  <span className="text-xs text-slate-400 font-mono">{formatTime(currentTime)}</span>
+                  <div 
+                    className="flex-1 h-1.5 bg-white/20 rounded-full overflow-hidden cursor-pointer relative group"
+                    onClick={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const x = e.clientX - rect.left;
+                      const ratio = x / rect.width;
+                      const newTime = ratio * duration;
+                      if (audioRef.current && !currentTrack.youtubeId) audioRef.current.currentTime = newTime;
+                      if (ytPlayerRef.current && currentTrack.youtubeId) ytPlayerRef.current.seekTo(newTime, true);
+                      setCurrentTime(newTime);
+                    }}
+                  >
+                    <div className="h-full bg-teal transition-all ease-linear" style={{ width: `${(currentTime / duration) * 100}%` }} />
+                  </div>
+                  <span className="text-xs text-slate-400 font-mono">{formatTime(duration)}</span>
+                </div>
+
+                {/* Main Controls */}
+                <div className="flex items-center gap-8 md:gap-12">
+                  <button onClick={() => setIsShuffle(!isShuffle)} className={`p-3 transition-colors ${isShuffle ? 'text-teal' : 'text-slate-400 hover:text-white'}`}>
+                    <Shuffle className="w-6 h-6" />
+                  </button>
+                  <button onClick={handlePrev} className="p-3 text-white hover:text-teal transition-colors active:scale-90">
+                    <SkipBack className="w-8 h-8 fill-current" />
+                  </button>
+                  <button onClick={handlePlayPause} className="w-20 h-20 bg-teal hover:bg-teal/80 text-black rounded-full flex items-center justify-center transition-all active:scale-95 shadow-[0_0_30px_rgba(20,184,166,0.3)]">
+                    {playbackState === 'playing' ? <Pause className="w-10 h-10 fill-current" /> : <Play className="w-10 h-10 fill-current ml-1" />}
+                  </button>
+                  <button onClick={handleNext} className="p-3 text-white hover:text-teal transition-colors active:scale-90">
+                    <SkipForward className="w-8 h-8 fill-current" />
+                  </button>
+                  <button onClick={() => setIsRepeat(!isRepeat)} className={`p-3 transition-colors ${isRepeat ? 'text-teal' : 'text-slate-400 hover:text-white'}`}>
+                    <Repeat className="w-6 h-6" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Pane: Queue & Suggestions */}
+            <div className="w-full md:w-[450px] bg-black/50 p-6 md:p-8 overflow-y-auto custom-scroll flex flex-col gap-8">
+              {/* Up Next Queue */}
+              <div className="flex flex-col gap-4">
+                <h3 className="font-display font-bold text-xl text-white tracking-wider flex items-center gap-2">
+                  <ListMusic className="w-5 h-5 text-teal" /> Up Next
+                </h3>
+                <div className="flex flex-col gap-2">
+                  {queue.slice(0, 8).map((track, i) => (
+                    <div key={i} onClick={() => { setCurrentTrack(track); setPlaybackState('playing'); }} className="flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-xl cursor-pointer transition-colors group">
+                      <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 relative">
+                        <img loading="lazy" src={track.coverUrl} className="w-full h-full object-cover" alt="" />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                          <Play className="w-4 h-4 text-white fill-white ml-0.5" />
+                        </div>
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-sm font-bold text-white truncate group-hover:text-teal transition-colors">{track.title}</span>
+                        <span className="text-xs text-slate-400 truncate">{track.artist}</span>
+                      </div>
+                    </div>
+                  ))}
+                  {queue.length === 0 && <span className="text-xs text-slate-500 italic">Queue is empty</span>}
+                </div>
+              </div>
+
+              {/* Suggested Tracks */}
+              <div className="flex flex-col gap-4">
+                <h3 className="font-display font-bold text-xl text-white tracking-wider flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-[#00d4ff]" /> Suggested for you
+                </h3>
+                <div className="flex flex-col gap-2">
+                  {tracks.filter(t => t.artist === currentTrack.artist && t.id !== currentTrack.id).slice(0, 8).map((track, i) => (
+                    <div key={i} onClick={() => { setCurrentTrack(track); setPlaybackState('playing'); }} className="flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-xl cursor-pointer transition-colors group">
+                      <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 relative">
+                        <img loading="lazy" src={track.coverUrl} className="w-full h-full object-cover" alt="" />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                          <Play className="w-4 h-4 text-white fill-white ml-0.5" />
+                        </div>
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-sm font-bold text-white truncate group-hover:text-[#00d4ff] transition-colors">{track.title}</span>
+                        <span className="text-xs text-slate-400 truncate">{track.artist}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Synced Lyrics Overlay */}
       <AnimatePresence>

@@ -2042,7 +2042,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  <div className="flex items-center justify-center md:justify-start gap-4 border-b border-white/5 pb-8">
  <button 
  onClick={() => topSongs[0] && handleSelectTrack(topSongs[0], topSongs)}
- className="bg-teal hover:bg-teal/90 text-white p-4 rounded-full flex items-center justify-center transition-all hover:scale-105 shadow-lg flex-shrink-0"
+ className="bg-teal hover:bg-teal/90 text-black p-4 rounded-full flex items-center justify-center transition-all hover:scale-105 shadow-lg flex-shrink-0"
  >
  <Play className="w-6 h-6 fill-current" />
  </button>
@@ -2198,7 +2198,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  <div className="w-full aspect-square rounded-2xl overflow-hidden relative shadow-lg bg-[#121212]">
  <img loading="lazy" src={albumTrack?.coverUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={albumName} />
  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
- <div className="absolute bottom-2 right-2 bg-teal text-white p-2 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-lg translate-y-2 group-hover:translate-y-0">
+ <div className="absolute bottom-2 right-2 bg-teal text-black p-2 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-lg translate-y-2 group-hover:translate-y-0">
  <Play className="w-5 h-5 fill-current ml-0.5" />
  </div>
  </div>
@@ -2584,7 +2584,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  }}
  className="absolute bottom-2 right-[25%] w-10 h-10 bg-teal rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(147,177,166,0.4)] opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 z-50 hover:scale-110 hover:bg-teal/90 active:scale-95"
  >
- <Play className="w-5 h-5 text-white fill-white ml-1" />
+ <Play className="w-5 h-5 text-black fill-black ml-1" />
  </div>
  </div>
  
@@ -2718,7 +2718,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  <div className="w-full aspect-square rounded-xl overflow-hidden relative shadow-lg hover-glow-teal hover-3d-tilt">
  <img loading="lazy" src={track.coverUrl} className="w-full h-full object-cover" alt={track.title} />
  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
- <div className="absolute bottom-2 right-2 bg-teal text-white p-2 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-lg translate-y-2 group-hover:translate-y-0">
+ <div className="absolute bottom-2 right-2 bg-teal text-black p-2 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-lg translate-y-2 group-hover:translate-y-0">
  <Play className="w-3 h-3 fill-white" />
  </div>
  </div>
@@ -2910,7 +2910,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  <div className="w-full aspect-square rounded-xl overflow-hidden relative shadow-lg">
  <img loading="lazy" src={track.coverUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={album} />
  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
- <div className="absolute bottom-2 right-2 bg-teal text-white p-2 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-lg translate-y-2 group-hover:translate-y-0">
+ <div className="absolute bottom-2 right-2 bg-teal text-black p-2 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-lg translate-y-2 group-hover:translate-y-0">
  <Play className="w-3 h-3 fill-white" />
  </div>
  </div>
@@ -3537,7 +3537,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  <div className="w-full aspect-square rounded-[20px] overflow-hidden relative shadow-lg bg-[#121212] premium-image-hover">
  <img loading="lazy" src={albumName.toLowerCase().includes('leo') ? '/covers/Leo.jpg' : albumTrack?.coverUrl} className="w-full h-full object-cover" alt={albumName} />
  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
- <div className="absolute bottom-3 right-3 bg-teal text-white p-3 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 shadow-[0_4px_15px_rgba(24,61,61,0.5)] translate-y-2 group-hover:translate-y-0">
+ <div className="absolute bottom-3 right-3 bg-teal text-black p-3 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 shadow-[0_4px_15px_rgba(24,61,61,0.5)] translate-y-2 group-hover:translate-y-0">
  <Play className="w-4 h-4 fill-white" />
  </div>
  </div>
@@ -3652,7 +3652,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  onClick={() => handleSelectTrack(selectedMix.tracks[0], selectedMix.tracks)}
  className="w-14 h-14 rounded-full bg-teal hover:bg-teal/90 hover:scale-105 flex items-center justify-center shadow-[0_0_30px_rgba(24,61,61,0.5)] transition-all cursor-pointer"
  >
- <Play className="w-6 h-6 text-white fill-white ml-1" />
+ <Play className="w-6 h-6 text-black fill-black ml-1" />
  </button>
  <button className="w-12 h-12 rounded-full border border-white/10 hover:border-white/30 hover:bg-[#181818] flex items-center justify-center transition-all">
  <Heart className="w-5 h-5 text-white" />

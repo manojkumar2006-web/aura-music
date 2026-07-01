@@ -150,6 +150,46 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
     set({ tracks: merged });
   },
   fetchTracks: async () => {
+    // Language → known artist/keyword sets for filtering
+    const LANGUAGE_ARTISTS: Record<string, string[]> = {
+      Tamil: [
+        'anirudh', 'a. r. rahman', 'ar rahman', 'yuvan', 'harris jayaraj', 'devi sri prasad',
+        'thaman', 'santhosh narayanan', 'g.v. prakash', 'ilayaraja', 'hiphop tamizha',
+        'vijay antony', 'sam c.s', 'ravi basrur', 'd. imman', 'sai abhyankar',
+        'sid sriram', 'k. s. chithra', 'karthik', 'hariharan', 'shweta mohan',
+        'jonita gandhi', 'haricharan', 'tippu', 'benny dayal', 'naresh iyer',
+        'chinmayi', 'andrea jeremiah', 'nakul abhyankar'
+      ],
+      Telugu: [
+        'devi sri prasad', 'thaman', 'm. m. keeravani', 'mickey j. meyer', 'mani sharma',
+        'ravi basrur', 'a. r. rahman', 'anirudh', 'santhosh narayanan',
+        'sid sriram', 'shreya ghoshal', 'chinmayi', 'karthik', 'hemachandra',
+        'sunitha', 'anup rubens', 'chakri', 'ss thaman'
+      ],
+      Hindi: [
+        'arijit singh', 'shreya ghoshal', 'sonu nigam', 'kk', 'mohit chauhan',
+        'atif aslam', 'rahat fateh ali khan', 'neha kakkar', 'jubin nautiyal',
+        'armaan malik', 'darshan raval', 'pritam', 'amit trivedi', 'vishal-shekhar',
+        'sachin-jigar', 'shankar-ehsaan-loy', 'anu malik', 'himesh reshammiya',
+        'mithoon', 'tanishk bagchi', 'badshah', 'yo yo honey singh', 'udit narayan',
+        'lata mangeshkar', 'asha bhosle', 'mohammed rafi', 'mukesh', 'kishore kumar',
+        'amaal mallik', 'meet bros', 'nadeem-shravan', 'jatin-lalit'
+      ],
+      English: [
+        'taylor swift', 'the weeknd', 'ed sheeran', 'ariana grande', 'billie eilish',
+        'bruno mars', 'sza', 'frank ocean', 'rihanna', 'katy perry', 'justin bieber',
+        'selena gomez', 'lady gaga', 'adele', 'harry styles', 'shawn mendes',
+        'charlie puth', 'miley cyrus', 'lana del rey', 'dua lipa', 'drake',
+        'kendrick lamar', 'travis scott', 'eminem', 'post malone', 'j. cole',
+        'kanye west', 'jay-z', 'lil wayne', 'nicki minaj', 'cardi b', 'doja cat',
+        'bad bunny', 'j balvin', 'shakira', 'karol g', 'bts', 'blackpink',
+        'coldplay', 'arctic monkeys', 'imagine dragons', 'linkin park', 'nirvana',
+        'david guetta', 'calvin harris', 'alan walker', 'avicii', 'marshmello',
+        'michael jackson', 'queen', 'the beatles', 'elton john', 'elvis presley',
+        'sadie sink', 'stray kids', 'newjeans', 'twice', 'seventeen'
+      ]
+    };
+
     try {
       // Fetch tracks directly from our MongoDB database (populated by the daily sync script)
       const response = await fetch('/api/tracks');
@@ -158,15 +198,29 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
       }
       const data = await response.json();
       
+      // Get the logged-in user's language preferences
+      const currentUser = get().currentUser;
+      const userLanguages: string[] = currentUser?.languages || [];
+
       const allTracks: any[] = [];
       const seen = new Set<string>();
       
       if (Array.isArray(data)) {
         data.forEach((t: any) => {
-          if (t.id && !seen.has(t.id)) {
-            seen.add(t.id);
-            allTracks.push(t);
+          if (!t.id || seen.has(t.id)) return;
+
+          // If user has language preferences, filter tracks by matching artists
+          if (userLanguages.length > 0) {
+            const artistLower = (t.artist || '').toLowerCase();
+            const matchesLanguage = userLanguages.some(lang => {
+              const keywords = LANGUAGE_ARTISTS[lang] || [];
+              return keywords.some(kw => artistLower.includes(kw));
+            });
+            if (!matchesLanguage) return; // skip tracks not in user's languages
           }
+
+          seen.add(t.id);
+          allTracks.push(t);
         });
       }
       

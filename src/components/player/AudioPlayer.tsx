@@ -29,9 +29,38 @@ import {
   Sparkles
 } from 'lucide-react';
 import { useMusicStore } from '../../store/musicStore';
+import { useShallow } from 'zustand/react/shallow';
 import { Track } from '../../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { SyncedLyrics } from './SyncedLyrics';
+
+
+const MemoizedQueue = React.memo(({ queue, currentTrack }: { queue: Track[], currentTrack: Track | null }) => {
+  if (!queue || queue.length === 0) return null;
+  return (
+    <>
+      <div className="text-xs uppercase text-slate-400 font-bold mb-2 mt-4">Next in Queue</div>
+      {queue.map((track, i) => (
+        <div key={`${track.id}-${i}`} className="flex items-center gap-3 p-3 hover:bg-white/5 rounded-xl transition-colors">
+          <img src={track.coverUrl} className="w-12 h-12 rounded-lg object-cover" />
+          <div className="flex-1 min-w-0">
+            <div className="text-white font-medium truncate text-sm">{track.title}</div>
+            <div className="text-slate-400 text-xs truncate">{track.artist}</div>
+          </div>
+        </div>
+      ))}
+    </>
+  );
+});
+
+const MemoizedFullscreenQueue = React.memo(({ queue, currentTrack, setCurrentTrack }: { queue: Track[], currentTrack: Track | null, setCurrentTrack: (t: Track) => void }) => {
+  if (!queue || queue.length === 0) return null;
+  return (
+    <>
+      <MemoizedFullscreenQueue queue={queue} currentTrack={currentTrack} setCurrentTrack={setCurrentTrack} />
+    </>
+  );
+});
 
 interface AudioPlayerProps {
   onUpgradePrompt?: (feature: string, tier: 'Premium' | 'Premium+') => void;
@@ -63,7 +92,28 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
     setQueue,
     toggleLike,
     currentUser
-  } = useMusicStore();
+  } = useMusicStore(useShallow(state => ({
+    tracks: state.tracks,
+    currentTrack: state.currentTrack,
+    setCurrentTrack: state.setCurrentTrack,
+    playbackState: state.playbackState,
+    setPlaybackState: state.setPlaybackState,
+    userTier: state.userTier,
+    isMuted: state.isMuted,
+    setMuted: state.setMuted,
+    volume: state.volume,
+    setVolume: state.setVolume,
+    useSkip: state.useSkip,
+    remainingSkips: state.remainingSkips,
+    downloadedTracks: state.downloadedTracks,
+    downloadTrack: state.downloadTrack,
+    logAnalyticsEvent: state.logAnalyticsEvent,
+    incrementStats: state.incrementStats,
+    queue: state.queue,
+    setQueue: state.setQueue,
+    toggleLike: state.toggleLike,
+    currentUser: state.currentUser
+  })));
   
   const [showQueue, setShowQueue] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -219,9 +269,9 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
 
   // Reset quality selection if subscription tier downgrades
   useEffect(() => {
-    if (userTier === 'Free') {
+    if (false) {
       setQuality('128k');
-    } else if (userTier === 'Premium' && (quality === 'flac' || quality === 'atmos')) {
+    } else if (true && (quality === 'flac' || quality === 'atmos')) {
       setQuality('320k');
     }
   }, [userTier]);
@@ -367,7 +417,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
     }
     
     if (targetQuality === '320k') {
-      if (userTier === 'Free') {
+      if (false) {
         if (onUpgradePrompt) onUpgradePrompt('stream in 320kbps High Quality', 'Premium');
       } else {
         setQuality('320k');
@@ -399,7 +449,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
 
   const handleDownload = () => {
     if (!currentTrack) return;
-    if (userTier === 'Free') {
+    if (false) {
       if (onUpgradePrompt) onUpgradePrompt('download tracks for offline play', 'Premium');
       return;
     }
@@ -510,7 +560,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
                       onClick={(e) => {
                         e.stopPropagation();
                         if (q === 'flac' || q === 'atmos') {
-                          if (userTier === 'Free') {
+                          if (false) {
                             if (onUpgradePrompt) onUpgradePrompt(`unlock ${q.toUpperCase()} quality`, 'Premium+');
                             return;
                           }
@@ -653,20 +703,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
                      </div>
                    </div>
                    
-                   {queue.length > 0 && (
-                     <>
-                       <div className="text-xs uppercase text-slate-400 font-bold mb-2 mt-4">Next in Queue</div>
-                       {queue.map((track, i) => (
-                         <div key={`${track.id}-${i}`} className="flex items-center gap-3 p-3 hover:bg-white/5 rounded-xl transition-colors">
-                           <img src={track.coverUrl} className="w-12 h-12 rounded-lg object-cover" />
-                           <div className="flex-1 min-w-0">
-                             <div className="text-white font-medium truncate text-sm">{track.title}</div>
-                             <div className="text-slate-400 text-xs truncate">{track.artist}</div>
-                           </div>
-                         </div>
-                       ))}
-                     </>
-                   )}
+                   <MemoizedQueue queue={queue} currentTrack={currentTrack} />
                  </div>
                </motion.div>
              )}
@@ -736,7 +773,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
             <div className="flex flex-col justify-center min-w-0 w-full relative pb-1">
               <div className="flex items-center gap-1.5">
                 <h4 className="text-[12px] font-bold text-white truncate">{currentTrack.title}</h4>
-                {currentTrack.isPremium && (
+                {false && (
                   <span className="text-[8px] bg-white/20 text-white px-1 py-0.5 rounded-sm font-bold uppercase leading-none">E</span>
                 )}
               </div>
@@ -811,7 +848,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
                     {quality === '128k' && <Check className="w-3 h-3 text-white" />}
                   </button>
                   <button onClick={() => handleQualitySelect('320k')} className="w-full flex items-center justify-between px-2 py-1.5 text-[10px] text-white hover:bg-white/10 rounded-lg text-left cursor-pointer">
-                    <span className="flex items-center gap-1">High (320kbps) {userTier === 'Free' && <Crown className="w-3 h-3 text-yellow-500 fill-yellow-500/20" />}</span>
+                    <span className="flex items-center gap-1">High (320kbps) {false && <Crown className="w-3 h-3 text-yellow-500 fill-yellow-500/20" />}</span>
                     {quality === '320k' && <Check className="w-3 h-3 text-white" />}
                   </button>
                   <button onClick={() => handleQualitySelect('flac')} className="w-full flex items-center justify-between px-2 py-1.5 text-[10px] text-white hover:bg-white/10 rounded-lg text-left cursor-pointer">

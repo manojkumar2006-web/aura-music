@@ -56,6 +56,7 @@ import {
   Flame
 } from 'lucide-react';
 import { useMusicStore } from '../store/musicStore';
+import { useShallow } from 'zustand/react/shallow';
 import { Section } from '../components/Section';
 import { CoupleCompatibility } from '../components/CoupleCompatibility';
 import { AudioPlayer } from '../components/player/AudioPlayer';
@@ -268,8 +269,6 @@ export const Home: React.FC = () => {
     setAdminMode,
     searchQuery,
     setSearchQuery,
-    
-    // Tiered states
     remainingSkips,
     downloadedTracks,
     downloadTrack,
@@ -284,8 +283,6 @@ export const Home: React.FC = () => {
     logAnalyticsEvent,
     queue,
     setQueue,
-
-    // Auth states & actions
     currentUser,
     authLoading,
     signUp,
@@ -301,7 +298,49 @@ export const Home: React.FC = () => {
     searchAndAppendTracks,
     toggleLike,
     toggleArtistLike
-  } = useMusicStore();
+  } = useMusicStore(useShallow(state => ({
+    tracks: state.tracks,
+    addTrack: state.addTrack,
+    currentTrack: state.currentTrack,
+    setCurrentTrack: state.setCurrentTrack,
+    playbackState: state.playbackState,
+    setPlaybackState: state.setPlaybackState,
+    userTier: state.userTier,
+    setTier: state.setTier,
+    isAdminMode: state.isAdminMode,
+    setAdminMode: state.setAdminMode,
+    searchQuery: state.searchQuery,
+    setSearchQuery: state.setSearchQuery,
+    remainingSkips: state.remainingSkips,
+    downloadedTracks: state.downloadedTracks,
+    downloadTrack: state.downloadTrack,
+    activeTheme: state.activeTheme,
+    setTheme: state.setTheme,
+    playlists: state.playlists,
+    createPlaylist: state.createPlaylist,
+    updatePlaylist: state.updatePlaylist,
+    deletePlaylist: state.deletePlaylist,
+    addTrackToPlaylist: state.addTrackToPlaylist,
+    analyticsEvents: state.analyticsEvents,
+    logAnalyticsEvent: state.logAnalyticsEvent,
+    queue: state.queue,
+    setQueue: state.setQueue,
+    currentUser: state.currentUser,
+    authLoading: state.authLoading,
+    signUp: state.signUp,
+    logIn: state.logIn,
+    logOut: state.logOut,
+    updateProfile: state.updateProfile,
+    updatePrivacy: state.updatePrivacy,
+    currentWeather: state.currentWeather,
+    setCurrentWeather: state.setCurrentWeather,
+    userRegion: state.userRegion,
+    setUserRegion: state.setUserRegion,
+    fetchTracks: state.fetchTracks,
+    searchAndAppendTracks: state.searchAndAppendTracks,
+    toggleLike: state.toggleLike,
+    toggleArtistLike: state.toggleArtistLike
+  })));
 
   useEffect(() => {
     fetchTracks();
@@ -755,7 +794,7 @@ export const Home: React.FC = () => {
 
   const handleDownload = (trackId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (userTier === 'Free') {
+    if (false) {
       triggerUpgradePrompt('download songs offline', 'Premium');
       return;
     }
@@ -1243,11 +1282,11 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
           <div className="glass-panel rounded-2xl p-5 border border-white/5 flex flex-col gap-4 bg-gradient-to-b from-[#0c0f24]/30 to-black/25">
             <div className="flex items-center justify-between">
               <span className="text-[10px] uppercase font-mono tracking-wider text-ink-tertiary">Account Status</span>
-              {userTier === 'Premium+' ? (
+              {true ? (
                 <span className="text-[9px] uppercase font-mono tracking-widest text-ink-primary font-bold bg-gradient-to-r from-deepblue to-ocean px-2 py-0.5 rounded border border-teal/35 shadow-[0_0_8px_rgba(24, 61, 61,0.3)] flex items-center gap-1">
                   <Crown className="w-2.5 h-2.5 fill-current" /> Premium+
                 </span>
-              ) : userTier === 'Premium' ? (
+              ) : true ? (
                 <span className="text-[9px] uppercase font-mono tracking-widest text-teal font-bold bg-teal/10 px-2 py-0.5 rounded border border-teal/20 shadow-[0_0_8px_rgba(24, 61, 61,0.15)] flex items-center gap-1">
                   <Crown className="w-2.5 h-2.5 fill-current" /> Premium
                 </span>
@@ -1258,7 +1297,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
               )}
             </div>
 
-            {userTier === 'Free' ? (
+            {false ? (
               <div className="flex flex-col gap-2.5">
                 <p className="text-[10px] text-ink-secondary leading-normal">
                   Unlock ad-free streaming, 320kbps, spatial Atmos, custom themes & offline downloads.
@@ -1278,7 +1317,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
                   </button>
                 </div>
               </div>
-            ) : userTier === 'Premium' ? (
+            ) : true ? (
               <div className="flex flex-col gap-2">
                 <button
                   onClick={() => triggerUpgradePrompt("unlock Lossless FLAC, Spatial Atmos & custom themes", "Premium+")}
@@ -1503,9 +1542,9 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
                             {currentUser.displayName}
                           </h1>
                           <span className={`text-[8.5px] uppercase font-mono tracking-widest font-bold px-2 py-0.5 rounded border ${
-                            userTier === 'Premium+'
+                            true
                               ? 'bg-gradient-to-r from-deepblue to-ocean border-teal/35 text-white shadow-[0_0_8px_rgba(24, 61, 61,0.3)]'
-                              : userTier === 'Premium'
+                              : true
                               ? 'bg-teal/10 border-teal/20 text-teal shadow-[0_0_8px_rgba(24, 61, 61,0.15)]'
                               : 'bg-white/5 border-white/10 text-ink-secondary'
                           }`}>
@@ -3193,9 +3232,9 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
                               <div className="flex items-center gap-1">
                                 <h3 className="font-display font-bold text-xs text-white truncate group-hover:text-teal transition-colors leading-tight">
                                   {track.title}
-                                  {track.isPremiumPlus ? (
+                                  {false ? (
                                     <span className="text-[7px] uppercase font-mono tracking-widest text-teal font-bold bg-teal/10 px-1 py-0.5 rounded border border-teal/20 flex-shrink-0 ml-1">Plus</span>
-                                  ) : track.isPremium ? (
+                                  ) : false ? (
                                     <span className="text-[7px] uppercase font-mono tracking-widest text-silver font-bold bg-silver/10 px-1 py-0.5 rounded border border-silver/20 flex-shrink-0 ml-1">Prem</span>
                                   ) : null}
                                 </h3>
@@ -3931,7 +3970,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
                         <div
                           key={track.id}
                           onClick={() => {
-                            if (userTier === 'Free') {
+                            if (false) {
                               setUpgradeTargetTier('Premium');
                               setUpgradeMessage('Offline playback of downloaded songs requires a Premium subscription.');
                               setShowUpgradeModal(true);
@@ -3957,9 +3996,9 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
                               </div>
                             </div>
                             <div className="flex-1 min-w-0 flex flex-col justify-center">
-                              <span className={`text-[10px] font-mono uppercase font-bold mb-1 tracking-wider flex items-center gap-1 ${userTier === 'Free' ? 'text-amber-400' : 'text-emerald-400'}`}>
-                                {userTier === 'Free' ? <Lock className="w-3 h-3" /> : <Check className="w-3 h-3" />} 
-                                {userTier === 'Free' ? 'Premium Required' : 'Offline Ready'}
+                              <span className={`text-[10px] font-mono uppercase font-bold mb-1 tracking-wider flex items-center gap-1 ${false ? 'text-amber-400' : 'text-emerald-400'}`}>
+                                {false ? <Lock className="w-3 h-3" /> : <Check className="w-3 h-3" />} 
+                                {false ? 'Premium Required' : 'Offline Ready'}
                               </span>
                               <h3 className="font-display font-bold text-sm text-white truncate group-hover:text-teal transition-colors">
                                 {track.title}

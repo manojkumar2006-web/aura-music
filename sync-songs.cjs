@@ -97,7 +97,15 @@ const ARTISTS_TO_SYNC = [
       'Asha Bhosle', 'Mohammed Rafi', 'Mukesh', 'Elton John', 'Elvis Presley',
 
       // Trending
+      // Trending
       'Sadie Sink'
+];
+
+// Specific recent blockbuster Tamil albums to guarantee the newest works are fetched
+const LATEST_ALBUMS_TO_SYNC = [
+  'Amaran', 'The Greatest of All Time', 'Vettaiyan', 'Kanguva', 'Kalki 2898 AD', 
+  'Indian 2', 'Raayan', 'Thangalaan', 'Good Bad Ugly', 'Vidaamuyarchi', 
+  'Leo', 'Jailer', 'Viduthalai Part 2', 'Lover', 'Premalu', 'Manjummel Boys'
 ];
 
 async function syncSongs() {
@@ -157,8 +165,38 @@ async function syncSongs() {
         // Increased delay to 1500ms between artists to avoid rate limiting
         await new Promise(r => setTimeout(r, 1500));
         
+        console.log(`Synced ${tracks.length} tracks for ${artist}`);
       } catch (err) {
-        console.error(`Error fetching data for ${artist}:`, err.message);
+        console.error(`Failed to sync artist ${artist}:`, err.message);
+      }
+    }
+
+    for (const album of LATEST_ALBUMS_TO_SYNC) {
+      console.log(`\nFetching latest album/movie: ${album}`);
+      try {
+        const url = `https://itunes.apple.com/search?term=${encodeURIComponent(album + ' tamil')}&entity=song&limit=50`;
+        const data = await fetchWithRetry(url);
+        const tracks = data.results || [];
+        for (const track of tracks) {
+          const trackData = {
+            id: track.trackId.toString(),
+            title: track.trackName,
+            artist: track.artistName,
+            album: track.collectionName || 'Single',
+            coverUrl: track.artworkUrl100 ? track.artworkUrl100.replace('100x100bb.jpg', '600x600bb.jpg') : '',
+            previewUrl: track.previewUrl,
+            duration: track.trackTimeMillis ? Math.floor(track.trackTimeMillis / 1000) : 180,
+            releaseDate: track.releaseDate ? track.releaseDate.substring(0, 10) : new Date().toISOString().substring(0, 10),
+            updatedAt: new Date()
+          };
+          await tracksCol.updateOne(
+            { id: trackData.id },
+            { $set: trackData },
+            { upsert: true }
+          );
+        }
+      } catch (err) {
+        console.error(`Failed to sync album ${album}:`, err.message);
       }
     }
     

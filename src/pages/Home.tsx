@@ -548,6 +548,15 @@ export const Home: React.FC = () => {
 
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [searchQueryLocal, setSearchQueryLocal] = useState('');
+  
+  // Debounce local search input to global search state
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchQuery(searchQueryLocal);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [searchQueryLocal, setSearchQuery]);
+
   const [upgradeModalFeature, setUpgradeModalFeature] = useState('');
   const [upgradeTargetTier, setUpgradeTargetTier] = useState<SubscriptionTier>('Premium');
   const [isLocating, setIsLocating] = useState(false);
@@ -1408,17 +1417,20 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
           <div data-scroll-reveal className="flex gap-4 items-center w-full">
             <div className="flex-grow glass-panel rounded-2xl p-3 border border-silver/8 bg-graphite/45 flex items-center gap-3 transition-all duration-300 focus-within:border-teal/35 focus-within:shadow-[0_0_15px_rgba(24, 61, 61,0.1)]">
               <Search className="w-5 h-5 text-ink-secondary flex-shrink-0" />
-              <input
+                 <input
                 type="text"
                 id="aura-search-field"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={searchQueryLocal}
+                onChange={(e) => setSearchQueryLocal(e.target.value)}
                 placeholder="Search for songs, artists, or albums..."
                 className="w-full bg-transparent border-none text-ink-primary placeholder-ink-tertiary focus:outline-none text-sm font-sans"
               />
-              {searchQuery && (
+              {searchQueryLocal && (
                 <button 
-                  onClick={() => setSearchQuery('')} 
+                  onClick={() => {
+                    setSearchQueryLocal('');
+                    setSearchQuery('');
+                  }} 
                   className="p-1 hover:text-white text-ink-secondary transition-colors"
                 >
                   <X className="w-4 h-4" />

@@ -2560,101 +2560,72 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
                     </div>
                   </div>
 
-                  {/* ===== NEW RELEASES — Date-driven section ===== */}
+                  {/* ===== LATEST ALBUMS — Optimized O(N) Grouping ===== */}
                   {(() => {
-                    const now = new Date();
-                    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-                    const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+                    // O(N) Map to prevent massive lag
+                    const uniqueAlbumsMap = new Map();
+                    tracks.forEach(t => {
+                      if (!t.releaseDate || !t.album || t.album === 'Single') return;
+                      // Filter out generic collections to only show true albums
+                      if (t.album.includes('Hits') || t.album.includes('Best of') || t.album.includes('Collection')) return;
+                      
+                      if (!uniqueAlbumsMap.has(t.album)) {
+                        uniqueAlbumsMap.set(t.album, { ...t, albumTracks: [t], _relDate: new Date(t.releaseDate).getTime() });
+                      } else {
+                        uniqueAlbumsMap.get(t.album).albumTracks.push(t);
+                      }
+                    });
 
-                    const freshTracks = tracks
-                      .filter(t => t.releaseDate)
-                      .map(t => ({ ...t, _relDate: new Date(t.releaseDate!) }))
-                      .sort((a, b) => b._relDate.getTime() - a._relDate.getTime())
-                      .filter((t, i, arr) => arr.findIndex(x => x.album === t.album) === i) // one per album
+                    // Sort the grouped albums by release date
+                    const latestAlbums = Array.from(uniqueAlbumsMap.values())
+                      .sort((a, b) => b._relDate - a._relDate)
                       .slice(0, 20);
 
-                    const thisWeek = freshTracks.filter(t => t._relDate >= thirtyDaysAgo);
-                    const recentThree = freshTracks.filter(t => t._relDate >= ninetyDaysAgo && t._relDate < thirtyDaysAgo);
-                    const olderFresh = freshTracks.filter(t => t._relDate < ninetyDaysAgo).slice(0, 6);
-
-                    const getRelLabel = (d: Date) => {
-                      const days = Math.floor((now.getTime() - d.getTime()) / 86400000);
-                      if (days === 0) return '🔥 Today';
-                      if (days === 1) return '🔥 Yesterday';
-                      if (days <= 7) return `🔥 ${days} days ago`;
-                      if (days <= 30) return `✨ ${Math.floor(days / 7)}w ago`;
-                      if (days <= 90) return `${Math.floor(days / 30)}mo ago`;
-                      return `${d.getFullYear()}`;
-                    };
-
-                    const TrackCard: React.FC<{ t: any }> = ({ t }) => (
+                    const AlbumCard: React.FC<{ albumInfo: any }> = ({ albumInfo }) => (
                       <div
-                        key={t.id}
-                        onClick={() => handleSelectTrack(t)}
-                        className="min-w-[150px] w-[150px] flex flex-col gap-2 cursor-pointer group snap-start"
+                        key={albumInfo.id}
+                        className="min-w-[170px] w-[170px] flex flex-col gap-3 cursor-pointer group snap-start"
+                        onClick={() => {
+                          setQueue(albumInfo.albumTracks);
+                          setCurrentTrack(albumInfo.albumTracks[0]);
+                          setPlaybackState('playing');
+                        }}
                       >
-                        <div className="w-full aspect-square rounded-2xl overflow-hidden relative shadow-lg">
-                          <img loading="lazy" src={t.coverUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={t.title} />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                          <div className="absolute bottom-2 left-2">
-                            <span className="text-[9px] font-black uppercase tracking-widest bg-teal/90 text-black px-2 py-0.5 rounded-full shadow">
-                              {getRelLabel(t._relDate)}
+                        <div className="w-full aspect-square rounded-[1.25rem] overflow-hidden relative shadow-lg ring-1 ring-white/5">
+                          <img loading="lazy" src={albumInfo.coverUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={albumInfo.album} />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
+                          <div className="absolute bottom-2.5 left-2.5">
+                            <span className="text-[9px] font-black uppercase tracking-widest bg-white text-black px-2 py-0.5 rounded-full shadow-md">
+                              ALBUM
                             </span>
                           </div>
-                          <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-all translate-y-1 group-hover:translate-y-0 shadow-lg">
-                            <Play className="w-3.5 h-3.5 text-white fill-white" />
+                          <div className="absolute top-2.5 right-2.5 bg-teal/90 backdrop-blur-md rounded-full p-2.5 opacity-0 group-hover:opacity-100 transition-all translate-y-1 group-hover:translate-y-0 shadow-[0_0_20px_rgba(20,184,166,0.6)]">
+                            <Play className="w-4 h-4 text-black fill-black ml-0.5" />
                           </div>
                         </div>
                         <div className="flex flex-col px-1">
-                          <span className="text-sm font-bold text-white truncate group-hover:text-teal transition-colors">{t.title}</span>
-                          <span className="text-[10px] text-slate-400 truncate mt-0.5">{t.artist}</span>
+                          <span className="text-sm font-bold text-white truncate group-hover:text-[#00d4ff] transition-colors">{albumInfo.album}</span>
+                          <span className="text-[11px] text-slate-300 truncate mt-0.5">{albumInfo.artist}</span>
+                          <span className="text-[10px] text-slate-500 font-mono mt-1">{albumInfo.albumTracks.length} TRACKS</span>
                         </div>
                       </div>
                     );
 
                     return (
-                      <div className="flex flex-col gap-8">
-                        {/* This Month */}
-                        {thisWeek.length > 0 && (
-                          <div className="flex flex-col gap-4">
-                            <div className="flex justify-between items-end pr-2">
-                              <h2 className="font-display font-bold text-xl text-white tracking-wider flex items-center gap-2">
-                                <Flame className="w-5 h-5 text-orange-400 animate-pulse" /> Fresh This Month
-                                <span className="text-[10px] font-mono bg-orange-500/20 text-orange-300 px-2 py-0.5 rounded-full border border-orange-500/20 ml-1">NEW</span>
-                              </h2>
-                              <span onClick={() => setSidebarNav('new')} className="text-xs text-teal cursor-pointer hover:underline font-mono">See all</span>
-                            </div>
-                            <div className="flex gap-4 overflow-x-auto custom-scroll pb-4 snap-x">
-                              {thisWeek.slice(0, 12).map(t => <TrackCard key={t.id} t={t} />)}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Last 3 Months */}
-                        {recentThree.length > 0 && (
-                          <div className="flex flex-col gap-4">
-                            <div className="flex justify-between items-end pr-2">
-                              <h2 className="font-display font-bold text-xl text-white tracking-wider flex items-center gap-2">
-                                <Sparkles className="w-5 h-5 text-purple-400" /> Recent Releases
-                              </h2>
-                            </div>
-                            <div className="flex gap-4 overflow-x-auto custom-scroll pb-4 snap-x">
-                              {recentThree.slice(0, 12).map(t => <TrackCard key={t.id} t={t} />)}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Trending Older */}
-                        {olderFresh.length > 0 && (
-                          <div className="flex flex-col gap-4">
-                            <h2 className="font-display font-bold text-xl text-white tracking-wider flex items-center gap-2">
-                              <TrendingUp className="w-5 h-5 text-blue-400" /> Trending Picks
-                            </h2>
-                            <div className="flex gap-4 overflow-x-auto custom-scroll pb-4 snap-x">
-                              {olderFresh.map(t => <TrackCard key={t.id} t={t} />)}
-                            </div>
-                          </div>
-                        )}
+                      <div className="flex flex-col gap-4 mt-2 mb-8">
+                        <div className="flex justify-between items-end pr-2">
+                          <h2 className="font-display font-black text-[22px] text-white tracking-wider flex items-center gap-3">
+                            <Disc className="w-6 h-6 text-[#00d4ff] animate-[spin_4s_linear_infinite]" /> Latest Albums
+                          </h2>
+                          <span onClick={() => setSidebarNav('new')} className="text-xs text-[#00d4ff] cursor-pointer hover:underline font-mono">View all</span>
+                        </div>
+                        <div className="flex gap-5 overflow-x-auto custom-scroll pb-6 pt-2 snap-x">
+                          {latestAlbums.length > 0 ? (
+                            latestAlbums.map(album => <AlbumCard key={album.id} albumInfo={album} />)
+                          ) : (
+                            <div className="text-sm text-slate-500 italic px-2">No new albums found.</div>
+                          )}
+                        </div>
                       </div>
                     );
                   })()}

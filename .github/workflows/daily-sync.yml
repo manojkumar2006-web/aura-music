@@ -1,0 +1,31 @@
+name: Daily Music Database Sync
+
+on:
+  schedule:
+    # Runs automatically every day at 12:00 AM UTC (5:30 AM IST)
+    - cron: '0 0 * * *'
+  
+  # Also allows you to trigger the sync manually from the GitHub Actions tab!
+  workflow_dispatch:
+
+jobs:
+  sync_database:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm install mongodb dotenv
+
+      - name: Run Sync Script
+        env:
+          # This pulls the MongoDB URI securely from your GitHub Repository Secrets
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+        run: node sync-songs.cjs

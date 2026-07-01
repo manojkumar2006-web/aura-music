@@ -8,7 +8,7 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import express from 'express';
-import apiRouter from '../../routes/api';
+import apiRouter from '../routes/api';
 
 const app = express();
 app.use(express.json());

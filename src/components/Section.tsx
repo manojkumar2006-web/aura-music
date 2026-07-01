@@ -10,7 +10,7 @@ interface SectionProps {
   query: string;
 }
 
-export function Section({ title, query }: SectionProps) {
+export const Section: React.FC<SectionProps> = ({ title, query }) => {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [loading, setLoading] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);

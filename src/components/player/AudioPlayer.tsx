@@ -25,7 +25,8 @@ import {
   Minimize2,
   ChevronDown,
   MoreVertical,
-  Mic2
+  Mic2,
+  Sparkles
 } from 'lucide-react';
 import { useMusicStore } from '../../store/musicStore';
 import { Track } from '../../types';
@@ -545,7 +546,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
              <button 
                 onClick={() => {
                   if (currentUser) {
-                    toggleLike(currentUser.id, currentTrack.id);
+                    toggleLike(currentTrack.id);
                   }
                 }}
                 className="p-2 -mr-2 active:scale-90 transition-transform"

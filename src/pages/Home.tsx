@@ -2587,7 +2587,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
                       return `${d.getFullYear()}`;
                     };
 
-                    const TrackCard = ({ t }: { t: any }) => (
+                    const TrackCard: React.FC<{ t: any }> = ({ t }) => (
                       <div
                         key={t.id}
                         onClick={() => handleSelectTrack(t)}

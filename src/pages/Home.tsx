@@ -52,7 +52,8 @@ import {
   Trash2,
   Edit3,
   BarChart2,
-  Share2
+  Share2,
+  Flame
 } from 'lucide-react';
 import { useMusicStore } from '../store/musicStore';
 import { Section } from '../components/Section';

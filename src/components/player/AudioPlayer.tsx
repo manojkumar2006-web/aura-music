@@ -990,6 +990,9 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  if (e.data === 0) handleNext();
  else if (e.data === 1 && playbackState !== 'playing') setPlaybackState('playing');
  else if (e.data === 2 && playbackState !== 'paused') setPlaybackState('paused');
+ else if ((e.data === -1 || e.data === 5) && playbackState === 'playing') {
+ e.target.playVideo();
+ }
  }}
  />
  </div>

@@ -345,7 +345,7 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
     set({ playbackState: state });
     get().logAnalyticsEvent(`Playback state updated: ${state}`);
   },
-  userTier: 'Free',
+  userTier: 'Premium+',
   setTier: (tier: SubscriptionTier) => {
     set({ userTier: tier });
     get().logAnalyticsEvent(`Membership updated: ${tier} Tier`);
@@ -363,23 +363,9 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
   setVolume: (volume: number) => set({ volume }),
   
   // Tiered Premium Features Logic
-  remainingSkips: 6,
+  remainingSkips: 9999,
   useSkip: () => {
-    const store = get();
-    if (store.userTier !== 'Free') {
-      store.logAnalyticsEvent('Skipped song [Unlimited skips active]');
-      return true;
-    }
-    
-    if (store.remainingSkips > 0) {
-      const nextSkips = store.remainingSkips - 1;
-      set({ remainingSkips: nextSkips });
-      store.logAnalyticsEvent(`Skipped song [Free skips remaining: ${nextSkips}]`);
-      return true;
-    }
-    
-    store.logAnalyticsEvent('Skip blocked [Free skips depleted]');
-    return false;
+  return true;
   },
   resetSkips: () => set({ remainingSkips: 6 }),
   downloadedTracks: [],
@@ -393,14 +379,8 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
       return;
     }
     
-    if (store.downloadedTracks.length >= 100) {
-      store.logAnalyticsEvent(`Download failed: limit of 100 offline songs reached`);
-      alert('Offline limit reached! Upgrade or remove downloaded songs.');
-      return;
-    }
-    
     set((state) => ({ downloadedTracks: [...state.downloadedTracks, trackId] }));
-    store.logAnalyticsEvent(`Downloaded for offline playback: "${track.title}" [Total: ${store.downloadedTracks.length + 1}/100]`);
+    store.logAnalyticsEvent(`Downloaded for offline playback: "${track.title}" [Total: ${store.downloadedTracks.length + 1}]`);
   },
   activeTheme: 'slate',
   setTheme: (theme) => {

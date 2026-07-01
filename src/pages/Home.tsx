@@ -587,7 +587,7 @@ export const Home: React.FC = () => {
  }
  }, [searchQuery, activeView, sidebarNav]);
 
- const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+ 
  const [searchQueryLocal, setSearchQueryLocal] = useState('');
  
  // Debounce local search input to global search state
@@ -598,8 +598,8 @@ export const Home: React.FC = () => {
  return () => clearTimeout(timer);
  }, [searchQueryLocal, setSearchQuery]);
 
- const [upgradeModalFeature, setUpgradeModalFeature] = useState('');
- const [upgradeTargetTier, setUpgradeTargetTier] = useState<SubscriptionTier>('Premium');
+ 
+ 
  const [isLocating, setIsLocating] = useState(false);
  const [upgradeMessage, setUpgradeMessage] = useState('');
  const [newPlaylistName, setNewPlaylistName] = useState('');
@@ -644,16 +644,10 @@ export const Home: React.FC = () => {
  };
 
  const triggerUpgradePrompt = (feature: string, targetTier: SubscriptionTier) => {
- setUpgradeMessage(feature);
- setUpgradeTargetTier(targetTier);
- setShowUpgradeModal(true);
- logAnalyticsEvent(`Triggered Upgrade Prompt [Action: ${feature}]`);
- };
+    // Disabled paywall
+  };
 
- const handleUpgrade = (tier: SubscriptionTier) => {
- setTier(tier);
- setShowUpgradeModal(false);
- };
+ 
 
  // Admin: Add Track handler
  const handleAddTrackSubmit = (e: React.FormEvent) => {
@@ -3987,13 +3981,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  <div
  key={track.id}
  onClick={() => {
- if (false) {
- setUpgradeTargetTier('Premium');
- setUpgradeMessage('Offline playback of downloaded songs requires a Premium subscription.');
- setShowUpgradeModal(true);
- } else {
  handleSelectTrack(track);
- }
  }}
  className={`group relative rounded-2xl glass-panel p-4 cursor-pointer overflow-hidden transition-all duration-300 flex flex-col gap-3 border ${
  isSelected 
@@ -4768,103 +4756,8 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  </div>
  )}
  </AnimatePresence>
-
-
  </AnimatePresence>
 
- {/* ================= DUAL TIER PREMIUM UPGRADE MODAL ================= */}
- <AnimatePresence>
- {showUpgradeModal && (
- <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-shadow/85 ">
- <motion.div
- initial={{ opacity: 0, scale: 0.9, y: 30 }}
- animate={{ opacity: 1, scale: 1, y: 0 }}
- exit={{ opacity: 0, scale: 0.9, y: 30 }}
- className="relative w-full max-w-lg rounded-3xl border border-silver/10 bg-gradient-to-b from-graphite via-shadow to-shadow p-6 shadow-2xl flex flex-col gap-6 text-ink-primary"
- >
- <button
- onClick={() => setShowUpgradeModal(false)}
- className="absolute top-4 right-4 p-1 rounded-full hover:bg-[#181818] text-ink-secondary hover:text-white cursor-pointer"
- >
- <X className="w-5 h-5" />
- </button>
-
- <div className="text-center">
- <div className="mx-auto w-12 h-12 bg-gradient-to-tr from-ocean to-teal rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(24, 61, 61,0.35)] mb-3">
- <Crown className="w-6 h-6 text-ink-primary fill-current animate-bounce" />
- </div>
- <h3 className="font-display font-extrabold text-xl text-white uppercase tracking-wider">AURA Subscription Portal</h3>
- {upgradeMessage && (
- <p className="text-[11px] text-ink-secondary mt-1 max-w-sm mx-auto leading-relaxed">
- Action required to: <strong className="text-teal">{upgradeMessage}</strong>
- </p>
- )}
- </div>
-
- {/* Plans side-by-side grid */}
- <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
- {/* Tier 1: Premium */}
- <div className={`p-4 rounded-2xl border flex flex-col justify-between h-full bg-graphite/40 transition-all ${
- upgradeTargetTier === 'Premium' ? 'border-teal/50 bg-teal/5' : 'border-silver/8'
- }`}>
- <div>
- <div className="flex justify-between items-center border-b border-silver/10 pb-2">
- <span className="text-xs font-bold text-white uppercase tracking-wide">AURA Premium</span>
- <span className="text-[10px] font-mono text-teal">$4.99/mo</span>
- </div>
- <ul className="text-[10px] text-ink-secondary flex flex-col gap-2 mt-3 text-left">
- <li>✨ Ad-free listening</li>
- <li>✨ Download up to 100 songs</li>
- <li>✨ 320kbps High Quality Audio</li>
- <li>✨ Unlimited skips</li>
- </ul>
- </div>
-
- <button
- onClick={() => handleUpgrade('Premium')}
- className="w-full mt-4 py-2 btn-premium text-ink-primary font-black text-[10px] uppercase tracking-wider rounded-xl transition-transform active:scale-95 cursor-pointer shadow-md"
- >
- Activate Premium
- </button>
- </div>
-
- {/* Tier 2: Premium+ */}
- <div className={`p-4 rounded-2xl border flex flex-col justify-between h-full bg-graphite/40 transition-all ${
- upgradeTargetTier === 'Premium+' ? 'border-teal/70 bg-deepblue/20' : 'border-silver/8'
- }`}>
- <div>
- <div className="flex justify-between items-center border-b border-silver/10 pb-2">
- <span className="text-xs font-bold text-white uppercase tracking-wide">AURA Premium+</span>
- <span className="text-[10px] font-mono text-teal">$9.99/mo</span>
- </div>
- <ul className="text-[10px] text-ink-secondary flex flex-col gap-2 mt-3 text-left">
- <li className="text-teal font-semibold">Includes all Premium perks +</li>
- <li>✨ Lossless Studio FLAC Audio</li>
- <li>✨ Dolby Atmos Spatial Mode</li>
- <li>✨ Custom Appearance Themes</li>
- <li>✨ Add up to 5 family members</li>
- </ul>
- </div>
-
- <button
- onClick={() => handleUpgrade('Premium+')}
- className="w-full mt-4 py-2 bg-gradient-to-r from-deepblue via-ocean to-teal text-black font-black text-[10px] uppercase tracking-wider rounded-xl transition-transform active:scale-95 cursor-pointer shadow-lg"
- >
- Activate Premium+
- </button>
- </div>
- </div>
-
- <button
- onClick={() => setShowUpgradeModal(false)}
- className="text-center text-slate-500 hover:text-white transition-colors cursor-pointer text-[10px] uppercase font-mono tracking-widest"
- >
- Dismiss portal
- </button>
- </motion.div>
- </div>
- )}
- </AnimatePresence>
 
  {/* ================= TOAST NOTIFICATION ================= */}
  <AnimatePresence>

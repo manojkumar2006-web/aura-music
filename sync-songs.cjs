@@ -25,18 +25,39 @@ async function fetchWithRetry(url, retries = 4, delayMs = 1000) {
 
 // A subset of top artists to sync regularly. You can expand this.
 const ARTISTS_TO_SYNC = [
-      // Top Kollywood / Tollywood Music Directors
+      // ===== MASSIVE TAMIL / KOLLYWOOD EXPANSION =====
+      // Music Directors
       'Anirudh Ravichander', 'A. R. Rahman', 'Yuvan Shankar Raja', 'Harris Jayaraj', 
       'Devi Sri Prasad', 'Thaman S', 'Santhosh Narayanan', 'G.V. Prakash Kumar', 
       'Ilayaraja', 'Vidyasagar', 'Hiphop Tamizha', 'Vijay Antony', 'Sam C.S.', 
       'Ravi Basrur', 'D. Imman', 'Mani Sharma', 'M. M. Keeravani', 'Mickey J. Meyer',
-      'Sai Abhyankar',
-      
-      // Top Indian Singers
-      'Arijit Singh', 'Shreya Ghoshal', 'Sid Sriram', 'S. P. Balasubrahmanyam', 
-      'K. S. Chithra', 'Karthik', 'Hariharan', 'Udit Narayan', 'Sonu Nigam', 
-      'KK', 'Mohit Chauhan', 'Atif Aslam', 'Rahat Fateh Ali Khan', 'Neha Kakkar', 
-      'Jubin Nautiyal', 'Jonita Gandhi', 'Shweta Mohan', 'Armaan Malik', 'Darshan Raval',
+      'Sai Abhyankar', 'Sean Roldan', 'Ghibran', 'Justin Prabhakaran', 'Leon James',
+      'Vivek-Mervin', 'Darbuka Siva', 'Pradeep Kumar', 'Nivas K. Prasanna', 
+      'Arrol Corelli', 'Govind Vasantha', 'Hesham Abdul Wahab', 'Jakes Bejoy', 
+      'Karthik Raja', 'Bhavatharini', 'Deva', 'S. A. Rajkumar', 'Sirpy', 'Bharadwaj',
+      'Joshua Sridhar', 'Srikanth Deva', 'C. Sathya', 'K', 'Simon K. King', 
+      'Girishh G', 'Vishal Chandrashekhar', 'Javed Riaz', 'Gopi Sundar',
+
+      // Singers
+      'Sid Sriram', 'Shreya Ghoshal', 'S. P. Balasubrahmanyam', 'K. S. Chithra', 
+      'Karthik', 'Hariharan', 'Shweta Mohan', 'Jonita Gandhi', 'Haricharan', 
+      'Tippu', 'Benny Dayal', 'Naresh Iyer', 'Chinmayi', 'Andrea Jeremiah', 
+      'Nakul Abhyankar', 'Vijay Yesudas', 'Swetha Mohan', 'Sujatha Mohan', 
+      'Unnikrishnan', 'Srinivas', 'Shankar Mahadevan', 'Anuradha Sriram', 
+      'Mahalaxmi Iyer', 'Sadhana Sargam', 'Harini', 'Prashanthini', 'K. J. Yesudas', 
+      'Mano', 'Malaysia Vasudevan', 'P. Susheela', 'S. Janaki', 'L. R. Eswari',
+      'Pradeep Kumar', 'Anthony Daasan', 'Arivu', 'Dhee', 'Muthu Sirpi',
+      'Vaikom Vijayalakshmi', 'Sathyaprakash', 'Ranjith', 'Rahul Nambiar',
+
+      // Actors / Star Search Terms (iTunes often tags songs with actor names)
+      'Thalapathy Vijay', 'Rajinikanth', 'Kamal Haasan', 'Ajith Kumar', 'Suriya',
+      'Vikram', 'Dhanush', 'Silambarasan TR', 'Sivakarthikeyan', 'Karthi',
+      'Jayam Ravi', 'Vishal', 'Arya', 'Vijay Sethupathi', 'Fahadh Faasil',
+
+      // Top Indian Singers (Non-Tamil)
+      'Arijit Singh', 'Udit Narayan', 'Sonu Nigam', 'KK', 'Mohit Chauhan', 
+      'Atif Aslam', 'Rahat Fateh Ali Khan', 'Neha Kakkar', 'Jubin Nautiyal', 
+      'Armaan Malik', 'Darshan Raval',
 
       // Bollywood Music Directors
       'Pritam', 'Amit Trivedi', 'Vishal-Shekhar', 'Sachin-Jigar', 'Shankar-Ehsaan-Loy', 
@@ -72,7 +93,7 @@ const ARTISTS_TO_SYNC = [
       'Michael Jackson', 'Queen', 'The Beatles', 'Kishore Kumar', 'Lata Mangeshkar', 
       'Asha Bhosle', 'Mohammed Rafi', 'Mukesh', 'Elton John', 'Elvis Presley',
 
-      // Trending & Actors
+      // Trending
       'Sadie Sink'
 ];
 

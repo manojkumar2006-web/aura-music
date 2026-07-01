@@ -722,6 +722,22 @@ export const Home: React.FC = () => {
  }
  };
 
+ const groupedAlbumsMap = useMemo(() => {
+ const map = new Map<string, Track[]>();
+ for (const track of tracks) {
+ if (!track.album || track.album === 'Single') continue;
+ if (track.album.includes('Hits') || track.album.includes('Best of') || track.album.includes('Collection')) continue;
+ 
+ let albumTracks = map.get(track.album);
+ if (!albumTracks) {
+ albumTracks = [];
+ map.set(track.album, albumTracks);
+ }
+ albumTracks.push(track);
+ }
+ return map;
+ }, [tracks]);
+
  const filteredTracks = useMemo(() => {
  const query = searchQuery.toLowerCase().trim();
  if (!query) return tracks;
@@ -2229,7 +2245,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  </motion.div>
  );
  })() : selectedAlbum ? (() => {
- const albumTracks = tracks.filter(t => t.album === selectedAlbum);
+ const albumTracks = groupedAlbumsMap.get(selectedAlbum) || [];
  const firstTrack = albumTracks[0];
  if (!firstTrack) return null;
  return (
@@ -2616,24 +2632,10 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
 
  {/* ===== LATEST ALBUMS — Optimized O(N) Grouping ===== */}
  {(() => {
- // O(N) Map to prevent massive lag
- const uniqueAlbumsMap = new Map();
- tracks.forEach(t => {
- if (!t.releaseDate || !t.album || t.album === 'Single') return;
- // Filter out generic collections to only show true albums
- if (t.album.includes('Hits') || t.album.includes('Best of') || t.album.includes('Collection')) return;
- 
- if (!uniqueAlbumsMap.has(t.album)) {
- uniqueAlbumsMap.set(t.album, { ...t, albumTracks: [t], _relDate: new Date(t.releaseDate).getTime() });
- } else {
- uniqueAlbumsMap.get(t.album).albumTracks.push(t);
- }
- });
-
- // Sort the grouped albums by release date
- const latestAlbums = Array.from(uniqueAlbumsMap.values())
- .sort((a, b) => b._relDate - a._relDate)
- .slice(0, 20);
+   const latestAlbums = Array.from(groupedAlbumsMap.values())
+    .map(tracks => ({ ...tracks[0], albumTracks: tracks, _relDate: new Date(tracks[0].releaseDate || '2026').getTime() }))
+    .sort((a, b) => b._relDate - a._relDate)
+    .slice(0, 20);
 
  const AlbumCard: React.FC<{ albumInfo: any }> = ({ albumInfo }) => (
  <div
@@ -3514,7 +3516,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  </motion.div>
  ) : sidebarNav === 'albums' ? (
  (() => {
- const globalAlbums = Array.from(new Set(tracks.map(t => t.album)));
+ const globalAlbums = Array.from(groupedAlbumsMap.keys());
  const globalArtistsList = tracks.flatMap(t => t.artist.split(', '));
  const globalArtists = Array.from(new Set(globalArtistsList));
  const newReleases = [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15);
@@ -3541,8 +3543,8 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  <Play className="w-5 h-5 text-[#00d4ff]" /> Blockbuster Albums
  </h3>
  <div className="flex gap-5 overflow-x-auto custom-scroll pb-6 pt-2 px-2 -mx-2 snap-x">
- {globalAlbums.map((albumName) => {
- const albumTrack = tracks.find(t => t.album === albumName);
+ {globalAlbums.map((albumName: string) => {
+ const albumTrack = groupedAlbumsMap.get(albumName)?.[0];
  return (
  <div 
  key={albumName} 
@@ -3927,8 +3929,8 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  <Disc className="w-5 h-5 text-blue-400" /> Top New Albums
  </h3>
  <div className="flex gap-5 overflow-x-auto custom-scroll pb-6 pt-2 px-2 -mx-2 snap-x">
- {Array.from(new Set(tracks.map(t=>t.album))).slice(2, 12).map(albumName => {
- const albumTrack = tracks.find(t => t.album === albumName);
+ {Array.from(groupedAlbumsMap.keys()).slice(2, 12).map((albumName: string) => {
+ const albumTrack = groupedAlbumsMap.get(albumName)?.[0];
  return (
  <div 
  key={`new-album-${albumName}`} 

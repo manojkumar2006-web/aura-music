@@ -2912,7 +2912,8 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
                       )})}
                     </div>
                   </div>
-sidebarNav === 'songs' ? (
+                </div>
+              ) : sidebarNav === 'songs' ? (
               <>
               {/* ADMIN: ADD SONG PANEL */}
               <AnimatePresence>

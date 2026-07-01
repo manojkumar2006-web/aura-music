@@ -150,91 +150,31 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
     set({ tracks: merged });
   },
   fetchTracks: async () => {
-    // Bootstrap the global library from multiple curated queries in parallel
-    const queries = [
-      // Top Kollywood / Tollywood Music Directors
-      'Anirudh Ravichander', 'A. R. Rahman', 'Yuvan Shankar Raja', 'Harris Jayaraj', 
-      'Devi Sri Prasad', 'Thaman S', 'Santhosh Narayanan', 'G.V. Prakash Kumar', 
-      'Ilayaraja', 'Vidyasagar', 'Hiphop Tamizha', 'Vijay Antony', 'Sam C.S.', 
-      'Ravi Basrur', 'D. Imman', 'Mani Sharma', 'M. M. Keeravani', 'Mickey J. Meyer',
-      'Sai Abhyankar',
-      
-      // Top Indian Singers
-      'Arijit Singh', 'Shreya Ghoshal', 'Sid Sriram', 'S. P. Balasubrahmanyam', 
-      'K. S. Chithra', 'Karthik', 'Hariharan', 'Udit Narayan', 'Sonu Nigam', 
-      'KK', 'Mohit Chauhan', 'Atif Aslam', 'Rahat Fateh Ali Khan', 'Neha Kakkar', 
-      'Jubin Nautiyal', 'Jonita Gandhi', 'Shweta Mohan', 'Armaan Malik', 'Darshan Raval',
-
-      // Bollywood Music Directors
-      'Pritam', 'Amit Trivedi', 'Vishal-Shekhar', 'Sachin-Jigar', 'Shankar-Ehsaan-Loy', 
-      'Anu Malik', 'Nadeem-Shravan', 'Jatin-Lalit', 'Himesh Reshammiya', 'Mithoon',
-      'Meet Bros', 'Tanishk Bagchi', 'Amaal Mallik',
-
-      // Global Pop & R&B
-      'The Weeknd', 'Taylor Swift', 'Dua Lipa', 'Ed Sheeran', 'Ariana Grande', 
-      'Billie Eilish', 'Bruno Mars', 'SZA', 'Frank Ocean', 'Rihanna', 'Katy Perry', 
-      'Justin Bieber', 'Selena Gomez', 'Lady Gaga', 'Adele', 'Harry Styles', 
-      'Shawn Mendes', 'Charlie Puth', 'Miley Cyrus', 'Lana Del Rey',
-
-      // Hip Hop & Rap
-      'Drake', 'Kendrick Lamar', 'Travis Scott', 'Eminem', 'Post Malone', 'J. Cole', 
-      'Badshah', 'Yo Yo Honey Singh', 'Kanye West', 'Jay-Z', 'Lil Wayne', 'Nicki Minaj', 
-      'Cardi B', 'Megan Thee Stallion', 'Doja Cat', 'Future', '21 Savage',
-
-      // Latin & Reggaeton
-      'Bad Bunny', 'J Balvin', 'Shakira', 'Karol G', 'Maluma', 'Ozuna', 'Daddy Yankee',
-
-      // K-Pop
-      'BTS', 'BLACKPINK', 'Stray Kids', 'NewJeans', 'TWICE', 'SEVENTEEN', 'EXO', 'Red Velvet',
-
-      // Rock, Indie & Alternative
-      'Coldplay', 'Arctic Monkeys', 'The Neighbourhood', 'Imagine Dragons', 'Linkin Park', 
-      'Avril Lavigne', 'Green Day', 'Nirvana', 'Red Hot Chili Peppers', 'Foo Fighters',
-
-      // EDM & Electronic
-      'David Guetta', 'Calvin Harris', 'Martin Garrix', 'Avicii', 'The Chainsmokers', 
-      'DJ Snake', 'Marshmello', 'Alan Walker', 'Tiesto', 'Skrillex', 'Zedd', 'Kygo',
-
-      // Classics & Legends
-      'Michael Jackson', 'Queen', 'The Beatles', 'Kishore Kumar', 'Lata Mangeshkar', 
-      'Asha Bhosle', 'Mohammed Rafi', 'Mukesh', 'Elton John', 'Elvis Presley',
-
-      // Trending & Actors
-      'Sadie Sink'
-    ];
     try {
-      // Chunk requests into batches of 10 to avoid iTunes API rate limits (403/429)
-      const chunkSize = 10;
-      const results: any[] = [];
-      
-      for (let i = 0; i < queries.length; i += chunkSize) {
-        const chunk = queries.slice(i, i + chunkSize);
-        const chunkResults = await Promise.all(
-          chunk.map(q => fetch(`/api/search?q=${encodeURIComponent(q)}`).then(r => r.json()).catch(() => []))
-        );
-        results.push(...chunkResults);
-        // Small delay between batches to be nice to the API
-        if (i + chunkSize < queries.length) {
-          await new Promise(resolve => setTimeout(resolve, 300));
-        }
+      // Fetch tracks directly from our MongoDB database (populated by the daily sync script)
+      const response = await fetch('/api/tracks');
+      if (!response.ok) {
+        throw new Error('Failed to fetch tracks from database');
       }
+      const data = await response.json();
+      
       const allTracks: any[] = [];
       const seen = new Set<string>();
-      results.forEach(data => {
-        if (Array.isArray(data)) {
-          data.forEach((t: any) => {
-            if (t.id && !seen.has(t.id)) {
-              seen.add(t.id);
-              allTracks.push(t);
-            }
-          });
-        }
-      });
+      
+      if (Array.isArray(data)) {
+        data.forEach((t: any) => {
+          if (t.id && !seen.has(t.id)) {
+            seen.add(t.id);
+            allTracks.push(t);
+          }
+        });
+      }
+      
       if (allTracks.length > 0) {
         set({ tracks: allTracks });
       }
     } catch (e) {
-      console.error('Failed to bootstrap tracks:', e);
+      console.error('Failed to bootstrap tracks from database:', e);
     }
   },
   searchAndAppendTracks: async (query: string) => {

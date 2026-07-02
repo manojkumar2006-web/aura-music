@@ -2583,7 +2583,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  { id: 'sid', title: 'Sid Sriram', subtitle: 'With Thaman S, Hesham Abdul...', bg: 'bg-gradient-to-br from-indigo-500/20 to-black/40 border border-indigo-500/20', artistQuery: 'Sid Sriram' }
  ].map((radio, i) => {
  const radioTracks = tracks.filter(t => t.artist.includes(radio.artistQuery) || t.musicDirector?.includes(radio.artistQuery) || t.title.includes(radio.artistQuery));
- const displayTracks = radioTracks.length >= 3 ? radioTracks : [...tracks].sort(() => 0.5 - Math.random()).slice(0, 3);
+ const displayTracks = radioTracks.length >= 3 ? radioTracks : [...tracks].slice(0, 3);
  
  return (
  <div key={i} className={`glass-panel min-w-[190px] w-[190px] h-[210px] rounded-3xl ${radio.bg} p-4 flex flex-col justify-between relative group cursor-pointer overflow-hidden snap-start premium-card-hover`}>
@@ -2779,7 +2779,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  mixes.push({
  title: 'On Repeat',
  desc: 'Songs you love',
- tracks: [...likedTracksList].sort(() => 0.5 - Math.random())
+ tracks: [...likedTracksList]
  });
  }
  
@@ -2790,7 +2790,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  mixes.push({
  title: 'Favorite Artists Mix',
  desc: 'Based on your likes',
- tracks: artistTracks.sort(() => 0.5 - Math.random())
+ tracks: artistTracks
  });
  }
  
@@ -2801,7 +2801,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  mixes.push({
  title: `${artist} Mix`,
  desc: 'Made for you',
- tracks: singleArtistTracks.sort(() => 0.5 - Math.random())
+ tracks: singleArtistTracks
  });
  }
  });
@@ -2823,20 +2823,20 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  mixes.push({
  title: 'Discover Weekly',
  desc: 'New recommendations',
- tracks: discoveryTracks.sort(() => 0.5 - Math.random()).slice(0, 20)
+ tracks: discoveryTracks.slice(0, 20)
  });
  }
  }
 
  // Fallbacks and Fillers to guarantee 10+ mixes
  const generics = [
- { title: 'Top Hits', desc: 'Global chart toppers', coverUrl: '/covers/mix_top_hits_1782360170480.png', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
- { title: 'Chill Vibes', desc: 'Relaxing tunes', coverUrl: '/covers/mix_chill_vibes_1782360181446.png', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
- { title: 'Workout Mix', desc: 'High energy', coverUrl: '/covers/mix_workout_1782360193898.png', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
- { title: 'Late Night Drive', desc: 'Night vibes', coverUrl: '/covers/mix_late_night_1782360208454.png', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
- { title: 'Daily Mix 1', desc: 'Made for you', coverUrl: '/covers/mix_top_hits_1782360170480.png', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
- { title: 'Upbeats', desc: 'Feel good songs', coverUrl: '/covers/mix_upbeats_1782360219265.png', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
- { title: 'Lo-Fi Chill', desc: 'Study beats', coverUrl: '/covers/mix_lofi_1782360233562.png', tracks: [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15) },
+ { title: 'Top Hits', desc: 'Global chart toppers', coverUrl: '/covers/mix_top_hits_1782360170480.png', tracks: tracks.slice(Math.max(0, tracks.length - 15)) },
+ { title: 'Chill Vibes', desc: 'Relaxing tunes', coverUrl: '/covers/mix_chill_vibes_1782360181446.png', tracks: tracks.slice(Math.max(0, tracks.length - 15)) },
+ { title: 'Workout Mix', desc: 'High energy', coverUrl: '/covers/mix_workout_1782360193898.png', tracks: tracks.slice(Math.max(0, tracks.length - 15)) },
+ { title: 'Late Night Drive', desc: 'Night vibes', coverUrl: '/covers/mix_late_night_1782360208454.png', tracks: tracks.slice(Math.max(0, tracks.length - 15)) },
+ { title: 'Daily Mix 1', desc: 'Made for you', coverUrl: '/covers/mix_top_hits_1782360170480.png', tracks: tracks.slice(Math.max(0, tracks.length - 15)) },
+ { title: 'Upbeats', desc: 'Feel good songs', coverUrl: '/covers/mix_upbeats_1782360219265.png', tracks: tracks.slice(Math.max(0, tracks.length - 15)) },
+ { title: 'Lo-Fi Chill', desc: 'Study beats', coverUrl: '/covers/mix_lofi_1782360233562.png', tracks: tracks.slice(Math.max(0, tracks.length - 15)) },
  { title: 'Tollywood Top 10', desc: 'Regional hits', coverUrl: '/covers/hero-images.jpg', tracks: tracks.filter(t => t.region === 'Tollywood').slice(0, 10) },
  { title: 'Kollywood Top 10', desc: 'Regional hits', coverUrl: '/covers/hero-images.jpg', tracks: tracks.filter(t => t.region === 'Kollywood').slice(0, 10) },
  { title: 'Bollywood Chartbusters', desc: 'Regional hits', coverUrl: '/covers/hero-images.jpg', tracks: tracks.filter(t => t.region === 'Bollywood').slice(0, 10) }
@@ -3515,7 +3515,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  const globalAlbums = Array.from(groupedAlbumsMap.keys());
  const globalArtistsList = tracks.flatMap(t => t.artist.split(', '));
  const globalArtists = Array.from(new Set(globalArtistsList));
- const newReleases = [...tracks].sort(() => 0.5 - Math.random()).slice(0, 15);
+ const newReleases = tracks.slice(Math.max(0, tracks.length - 15));
 
  return (
  /* ===== Dedicated Albums Page ===== */
@@ -4218,7 +4218,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  });
  
  // Shuffle and limit to 10 recommendations to keep it fresh
- const shuffledRecommendations = [...recommendedTracks].sort(() => 0.5 - Math.random()).slice(0, 10);
+ const shuffledRecommendations = [...recommendedTracks].slice(0, 10);
  
  // Explicitly Liked Artists/Composers
  const explicitlyLikedCreators = currentUser?.likedArtists || [];
@@ -4390,7 +4390,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  return (
  <div 
  key={i} 
- onClick={() => handleSelectTrack(tracks[Math.floor(Math.random() * tracks.length)], [...tracks].sort(() => 0.5 - Math.random()))}
+ onClick={() => handleSelectTrack(tracks[Math.floor(Math.random() * tracks.length)], [...tracks])}
  className={`min-w-[280px] w-[280px] h-[280px] rounded-[32px] ${station.bg} p-6 flex flex-col justify-between relative cursor-pointer snap-start overflow-hidden premium-card-hover group shadow-xl`}
  >
  <div className="flex-grow flex items-center justify-center">
@@ -4427,7 +4427,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  ].map((station, i) => (
  <div 
  key={i} 
- onClick={() => handleSelectTrack(tracks[Math.floor(Math.random() * tracks.length)], [...tracks].sort(() => 0.5 - Math.random()))}
+ onClick={() => handleSelectTrack(tracks[Math.floor(Math.random() * tracks.length)], [...tracks])}
  className={`min-w-[220px] w-[220px] h-[140px] rounded-[24px] ${station.bg} p-5 flex flex-col justify-end relative cursor-pointer snap-start overflow-hidden premium-card-hover group shadow-lg`}
  >
  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
@@ -4462,7 +4462,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  ].map((podcast, i) => (
  <div 
  key={`pod-${i}`}
- onClick={() => handleSelectTrack(tracks[Math.floor(Math.random() * tracks.length)], [...tracks].sort(() => 0.5 - Math.random()))}
+ onClick={() => handleSelectTrack(tracks[Math.floor(Math.random() * tracks.length)], [...tracks])}
  className="min-w-[140px] max-w-[140px] flex flex-col items-start gap-3 snap-start group cursor-pointer text-left premium-card-hover"
  >
  <div className="w-full aspect-square rounded-[24px] overflow-hidden relative shadow-lg bg-[#121212] premium-image-hover">
@@ -4499,7 +4499,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  ].map((episode, i) => (
  <div 
  key={i}
- onClick={() => handleSelectTrack(tracks[Math.floor(Math.random() * tracks.length)], [...tracks].sort(() => 0.5 - Math.random()))}
+ onClick={() => handleSelectTrack(tracks[Math.floor(Math.random() * tracks.length)], [...tracks])}
  className="flex gap-4 items-center cursor-pointer group p-2 rounded-2xl hover:bg-[#181818] transition-colors border border-transparent hover:border-white/5"
  >
  <div className="w-[100px] h-[100px] rounded-xl overflow-hidden flex-shrink-0 shadow-lg relative premium-image-hover">

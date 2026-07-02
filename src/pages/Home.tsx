@@ -2863,7 +2863,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  ) : (
  <Disc className="w-10 h-10 text-white/50" />
  )}
- <div className="absolute inset-0 bg-[#121212] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center">
+ <div className="absolute inset-0 bg-black/40 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center">
  <Play className="w-8 h-8 text-white fill-white ml-1" />
  </div>
  </div>
@@ -3237,7 +3237,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  {/* Art */}
  <div className="w-16 h-16 rounded-xl overflow-hidden bg-[#121212] relative flex-shrink-0">
  <img loading="lazy" src={track.coverUrl} className="w-full h-full object-cover" alt="" />
- <div className="absolute inset-0 bg-[#121212] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center">
+ <div className="absolute inset-0 bg-black/40 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center">
  {isSelected && playbackState === 'playing' ? (
  <Pause className="w-4 h-4 fill-current text-white" />
  ) : (
@@ -4000,7 +4000,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  <div className="flex gap-4">
  <div className="w-16 h-16 rounded-xl overflow-hidden bg-[#121212] relative flex-shrink-0">
  <img loading="lazy" src={track.coverUrl} className="w-full h-full object-cover" alt="" />
- <div className="absolute inset-0 bg-[#121212] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center">
+ <div className="absolute inset-0 bg-black/40 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center">
  {isSelected && playbackState === 'playing' ? (
  <Pause className="w-4 h-4 fill-current text-white" />
  ) : (
@@ -4271,7 +4271,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  <div key={`song-${track.id}`} className="min-w-[140px] max-w-[140px] flex flex-col gap-2 snap-start group cursor-pointer active:scale-95 transition-transform" onClick={() => handleSelectTrack(track)}>
  <div className="w-full aspect-square rounded-2xl overflow-hidden relative shadow-lg">
  <img loading="lazy" src={track.coverUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={track.title} />
- <div className="absolute inset-0 bg-[#121212] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center">
+ <div className="absolute inset-0 bg-black/40 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center">
  <Play className="w-8 h-8 text-white fill-white ml-1" />
  </div>
  </div>
@@ -4339,7 +4339,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  <div key={`rec-${track.id}`} className="min-w-[140px] max-w-[140px] flex flex-col gap-2 snap-start group cursor-pointer active:scale-95 transition-transform" onClick={() => handleSelectTrack(track, shuffledRecommendations)}>
  <div className="w-full aspect-square rounded-2xl overflow-hidden relative shadow-lg">
  <img loading="lazy" src={track.coverUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={track.title} />
- <div className="absolute inset-0 bg-[#121212] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center">
+ <div className="absolute inset-0 bg-black/40 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center">
  <Play className="w-8 h-8 text-white fill-white ml-1" />
  </div>
  </div>

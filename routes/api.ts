@@ -53,39 +53,48 @@ apiRouter.get('/tracks', async (_req, res) => {
 
 // ==================== JIOSAAVN SEARCH ====================
 
-const SAAVN_BASE = 'https://saavn.dev/api';
+const cryptoJs = require('crypto-js');
+
+function decryptUrl(encrypted: string) {
+  if (!encrypted) return '';
+  try {
+    const key = cryptoJs.enc.Utf8.parse('38346591');
+    const decrypted = cryptoJs.DES.decrypt(
+      { ciphertext: cryptoJs.enc.Base64.parse(encrypted) },
+      key,
+      { mode: cryptoJs.mode.ECB, padding: cryptoJs.pad.Pkcs7 }
+    );
+    return decrypted.toString(cryptoJs.enc.Utf8).replace('_96.mp4', '_320.mp4');
+  } catch (e) {
+    return '';
+  }
+}
 
 function mapSaavnSong(song: any) {
   if (!song?.id) return null;
-  const imageArr: any[] = Array.isArray(song.image) ? song.image : [];
-  const coverUrl =
-    imageArr.find((i: any) => i.quality === '500x500')?.url ||
-    imageArr.find((i: any) => i.quality === '150x150')?.url || '';
-  const downloadArr: any[] = Array.isArray(song.downloadUrl) ? song.downloadUrl : [];
-  const audioUrl320k = downloadArr.find((d: any) => d.quality === '320kbps')?.url || '';
-  const audioUrl128k =
-    downloadArr.find((d: any) => d.quality === '160kbps')?.url ||
-    downloadArr.find((d: any) => d.quality === '96kbps')?.url ||
-    downloadArr[0]?.url || '';
-  const artistNames = Array.isArray(song.artists?.primary)
-    ? song.artists.primary.map((a: any) => a.name).join(', ')
-    : song.primaryArtists || 'Unknown Artist';
-  const albumName = song.album?.name || song.album || 'Single';
-  const releaseYear = song.year ? String(song.year)
-    : (song.releaseDate ? song.releaseDate.substring(0, 4) : new Date().getFullYear().toString());
+  if (song.language && song.language.toLowerCase() !== 'tamil') return null;
+
+  const coverUrl = (song.image || song.image_url || '').replace('150x150', '500x500');
+  const audioUrl = decryptUrl(song.more_info?.encrypted_media_url || song.encrypted_media_url);
+  if (!audioUrl) return null;
+
+  const artistNames = song.more_info?.singers || song.subtitle || song.primary_artists || 'Unknown Artist';
+  const albumName = song.more_info?.album || song.album || 'Single';
+  const releaseYear = song.year || new Date().getFullYear().toString();
+
   return {
     id: `saavn_${song.id}`,
-    title: song.name || song.title || 'Unknown',
+    title: song.title ? song.title.replace(/&quot;/g, '"') : 'Unknown',
     artist: artistNames,
     album: albumName,
     coverUrl,
-    audioUrl128k,
-    audioUrl320k,
+    audioUrl128k: audioUrl.replace('_320.mp4', '_160.mp4'),
+    audioUrl320k: audioUrl,
     youtubeId: '',
     isPremium: false,
     isPremiumPlus: false,
-    duration: song.duration ? parseInt(song.duration) : 180,
-    releaseDate: song.releaseDate || `${releaseYear}-01-01`,
+    duration: parseInt(song.more_info?.duration || song.duration || 180),
+    releaseDate: `${releaseYear}-01-01`,
     region: 'Tamil',
     source: 'jiosaavn',
   };
@@ -101,14 +110,14 @@ apiRouter.get('/search', async (req, res) => {
 
     if (query === 'new_releases') {
       const [r1, r2] = await Promise.all([
-        fetch(`${SAAVN_BASE}/search/songs?query=new+tamil+songs+2025&page=1&limit=50`).then(r => r.json()),
-        fetch(`${SAAVN_BASE}/search/songs?query=trending+tamil+2026&page=1&limit=50`).then(r => r.json()),
+        fetch(`https://www.jiosaavn.com/api.php?_format=json&_marker=0&api_version=4&ctx=web6dot0&__call=search.getResults&q=${encodeURIComponent('new tamil songs 2026')}`).then(r => r.json()),
+        fetch(`https://www.jiosaavn.com/api.php?_format=json&_marker=0&api_version=4&ctx=web6dot0&__call=search.getResults&q=${encodeURIComponent('trending tamil 2026')}`).then(r => r.json()),
       ]);
-      songs = [...(r1?.data?.results || []), ...(r2?.data?.results || [])];
+      songs = [...(r1?.results || []), ...(r2?.results || [])];
     } else {
-      const url = `${SAAVN_BASE}/search/songs?query=${encodeURIComponent(query)}&page=1&limit=50`;
+      const url = `https://www.jiosaavn.com/api.php?_format=json&_marker=0&api_version=4&ctx=web6dot0&__call=search.getResults&q=${encodeURIComponent(query)}`;
       const data = await fetch(url).then(r => r.json());
-      songs = data?.data?.results || [];
+      songs = data?.results || [];
     }
 
     const tracks = songs.map(mapSaavnSong).filter(Boolean);

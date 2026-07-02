@@ -74,6 +74,11 @@ function mapSaavnSong(song: any) {
   if (!song?.id) return null;
   if (song.language && song.language.toLowerCase() !== 'tamil') return null;
 
+  const searchStr = `${song.title || song.name || ''} ${song.more_info?.album || song.album || ''}`.toLowerCase();
+  if (searchStr.includes('telugu') || searchStr.includes('kannada') || searchStr.includes('malayalam') || searchStr.includes('hindi version')) {
+    return null;
+  }
+
   const coverUrl = (song.image || song.image_url || '').replace('150x150', '500x500');
   const audioUrl = decryptUrl(song.more_info?.encrypted_media_url || song.encrypted_media_url);
   if (!audioUrl) return null;

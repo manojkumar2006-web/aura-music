@@ -16,49 +16,34 @@
 require('dotenv').config();
 const { MongoClient } = require('mongodb');
 
-const VERCEL_URL = (process.env.VERCEL_APP_URL || 'https://aura-music-git-main-manojkumar2006-webs-projects.vercel.app').replace(/\/$/, '');
-const SAAVN_DIRECT = 'https://saavn.dev/api'; // Works in cloud, may fail locally
+const cryptoJs = require('crypto-js');
 
-// Helper: fetch with retry
-async function fetchWithRetry(url, retries = 4, delayMs = 1200) {
-  for (let attempt = 1; attempt <= retries; attempt++) {
-    try {
-      const res = await fetch(url);
-      if (res.status === 429 || res.status === 503) {
-        const wait = delayMs * attempt;
-        console.log(`    Rate limited. Waiting ${wait}ms... (attempt ${attempt}/${retries})`);
-        await new Promise(r => setTimeout(r, wait));
-        continue;
-      }
-      const data = await res.json();
-      return data;
-    } catch (err) {
-      if (attempt === retries) throw err;
-      const wait = delayMs * attempt;
-      console.log(`    Error: ${err.message}. Retrying in ${wait}ms...`);
-      await new Promise(r => setTimeout(r, wait));
-    }
+function decryptUrl(encrypted) {
+  if (!encrypted) return '';
+  try {
+    const key = cryptoJs.enc.Utf8.parse('38346591');
+    const decrypted = cryptoJs.DES.decrypt(
+      { ciphertext: cryptoJs.enc.Base64.parse(encrypted) },
+      key,
+      { mode: cryptoJs.mode.ECB, padding: cryptoJs.pad.Pkcs7 }
+    );
+    return decrypted.toString(cryptoJs.enc.Utf8).replace('_96.mp4', '_320.mp4');
+  } catch (e) {
+    return '';
   }
 }
 
-// Try saavn.dev directly first; if blocked, fall back to your Vercel proxy
 async function searchSaavn(query, limit = 50) {
+  const url = `https://www.jiosaavn.com/api.php?_format=json&_marker=0&api_version=4&ctx=web6dot0&__call=search.getResults&q=${encodeURIComponent(query)}`;
   try {
-    const url = `${SAAVN_DIRECT}/search/songs?query=${encodeURIComponent(query)}&page=1&limit=${limit}`;
-    const data = await fetchWithRetry(url, 2, 800);
-    const results = data?.data?.results || [];
-    if (results.length > 0) return results;
-  } catch (_) {}
-
-  // Fallback: call your own Vercel /api/search endpoint
-  try {
-    const url = `${VERCEL_URL}/api/search?q=${encodeURIComponent(query)}`;
-    console.log(`    [Fallback] Using Vercel proxy: ${url}`);
-    const data = await fetchWithRetry(url, 3, 1000);
-    if (Array.isArray(data)) return data; // Already mapped
-    return data?.data?.results || [];
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data && data.results) {
+      return data.results;
+    }
+    return [];
   } catch (err) {
-    console.error(`    Both saavn.dev and Vercel proxy failed: ${err.message}`);
+    console.error(`    Search failed for ${query}: ${err.message}`);
     return [];
   }
 }
@@ -67,43 +52,40 @@ async function searchSaavn(query, limit = 50) {
 function mapSaavnSong(song) {
   if (!song || !song.id) return null;
 
-  // If already mapped (from Vercel proxy), return as-is
-  if (song.audioUrl128k !== undefined) return song;
+  // STRICTLY filter out non-Tamil songs to prevent Telugu/Kannada/Hindi dubs leaking in
+  if (song.language && song.language.toLowerCase() !== 'tamil') {
+    return null;
+  }
 
-  const imageArr = Array.isArray(song.image) ? song.image : [];
-  const coverUrl = imageArr.find(i => i.quality === '500x500')?.url
-    || imageArr.find(i => i.quality === '150x150')?.url
-    || '';
+  // Double check title and album for incorrect metadata by JioSaavn
+  const searchStr = `${song.title || song.name || ''} ${song.more_info?.album || song.album || ''}`.toLowerCase();
+  if (searchStr.includes('telugu') || searchStr.includes('kannada') || searchStr.includes('malayalam') || searchStr.includes('hindi version')) {
+    return null;
+  }
 
-  const downloadArr = Array.isArray(song.downloadUrl) ? song.downloadUrl : [];
-  const audioUrl320k = downloadArr.find(d => d.quality === '320kbps')?.url || '';
-  const audioUrl128k =
-    downloadArr.find(d => d.quality === '160kbps')?.url ||
-    downloadArr.find(d => d.quality === '96kbps')?.url ||
-    downloadArr[0]?.url || '';
+  const coverUrl = (song.image || song.image_url || '').replace('150x150', '500x500');
+  const audioUrl = decryptUrl(song.more_info?.encrypted_media_url || song.encrypted_media_url);
 
-  const artistNames = Array.isArray(song.artists?.primary)
-    ? song.artists.primary.map(a => a.name).join(', ')
-    : song.primaryArtists || 'Unknown Artist';
+  const artistNames = song.more_info?.singers || song.subtitle || song.primary_artists || 'Unknown Artist';
+  const albumName = song.more_info?.album || song.album || 'Single';
+  const releaseYear = song.year || new Date().getFullYear().toString();
 
-  const albumName = song.album?.name || song.album || 'Single';
-  const releaseYear = song.year
-    ? String(song.year)
-    : (song.releaseDate ? song.releaseDate.substring(0, 4) : new Date().getFullYear().toString());
+  // If no audio url could be decrypted, return null
+  if (!audioUrl) return null;
 
   return {
     id: `saavn_${song.id}`,
-    title: song.name || song.title || 'Unknown',
+    title: song.title ? song.title.replace(/&quot;/g, '"') : 'Unknown',
     artist: artistNames,
     album: albumName,
     coverUrl,
-    audioUrl128k,
-    audioUrl320k,
+    audioUrl128k: audioUrl.replace('_320.mp4', '_160.mp4'), // Fake lower res if needed, backend prefers highest anyway
+    audioUrl320k: audioUrl,
     youtubeId: '',
     isPremium: false,
     isPremiumPlus: false,
-    duration: song.duration ? parseInt(song.duration) : 180,
-    releaseDate: song.releaseDate || `${releaseYear}-01-01`,
+    duration: parseInt(song.more_info?.duration || song.duration || 180),
+    releaseDate: `${releaseYear}-01-01`,
     region: 'Tamil',
     language: 'Tamil',
     source: 'jiosaavn',
@@ -193,7 +175,7 @@ async function syncFromJioSaavn() {
   }
 
   console.log(`\n🎵 AURA JioSaavn Tamil Sync`);
-  console.log(`   Vercel URL : ${VERCEL_URL}`);
+  console.log(`   API        : Direct JioSaavn Raw API`);
   console.log(`   MongoDB    : Connected\n`);
 
   const client = new MongoClient(process.env.MONGODB_URI);

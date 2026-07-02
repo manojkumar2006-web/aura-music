@@ -113,8 +113,27 @@ function mapSaavnSong(song) {
 
 // All Tamil queries to sweep
 const TAMIL_QUERIES = [
-  'new tamil songs 2025',
+  // 2026 specific queries up to July
   'new tamil songs 2026',
+  'trending tamil songs 2026',
+  'latest tamil hits 2026',
+  'tamil songs january 2026',
+  'tamil songs february 2026',
+  'tamil songs march 2026',
+  'tamil songs april 2026',
+  'tamil songs may 2026',
+  'tamil songs june 2026',
+  'tamil songs july 2026',
+  'top tamil songs 2026',
+  'anirudh ravichander 2026',
+  'ar rahman 2026',
+  'yuvan shankar raja 2026',
+  'santhosh narayanan 2026',
+  'gv prakash 2026',
+  'dsp tamil 2026',
+  
+  // 2025 Blockbusters (still relevant in 2026)
+  'new tamil songs 2025',
   'trending tamil songs 2025',
   'anirudh ravichander 2025',
   'ar rahman tamil',
@@ -124,29 +143,26 @@ const TAMIL_QUERIES = [
   'santhosh narayanan hits',
   'gv prakash songs',
   'sid sriram tamil hits',
-  'good bad ugly anirudh',
-  'amaran santhosh narayanan',
-  'leo anirudh songs',
-  'jailer anirudh',
-  'vettaiyan anirudh',
-  'vidaamuyarchi ar rahman',
-  'thangalaan gv prakash',
-  'raayan devi sri prasad',
-  'kanguva dsp songs',
-  'indian 2 ar rahman',
-  'sivakarthikeyan songs 2025',
-  'vijay songs 2025',
-  'ajith songs 2025',
+  
+  // Actor specific
+  'vijay songs 2026',
+  'ajith songs 2026',
   'rajinikanth songs',
   'suriya tamil songs',
   'dhanush tamil songs',
   'vijay sethupathi songs',
   'karthi tamil songs',
   'jayam ravi songs',
-  'tamil love songs 2025',
-  'tamil kuthu songs 2025',
-  'tamil album songs 2025',
-  'kollywood blockbuster 2025',
+  'sivakarthikeyan songs 2026',
+  
+  // Genres
+  'tamil love songs 2026',
+  'tamil kuthu songs 2026',
+  'tamil album songs 2026',
+  'kollywood blockbuster 2026',
+  'tamil indie songs 2026',
+  'tamil pop songs 2026',
+  'tamil rap songs 2026',
   'tamil folk songs',
   'ilaiyaraaja classics',
   'ar rahman classics',
@@ -156,8 +172,12 @@ const TAMIL_QUERIES = [
 ];
 
 const TAMIL_ALBUMS = [
-  'Good Bad Ugly', 'Amaran', 'Vettaiyan', 'Kanguva', 'Indian 2',
-  'Raayan', 'Thangalaan', 'Vidaamuyarchi', 'Leo', 'Jailer',
+  // 2026 & Late 2025 Major Releases
+  'Koolie', 'Thalapathy 69', 'Kanguva 2', 'Suriya 44', 'SDT 2', 
+  'Vidaamuyarchi', 'Good Bad Ugly', 'Amaran', 'Vettaiyan', 'Kanguva', 'Indian 2',
+  'Raayan', 'Thangalaan', 'Leo', 'Jailer',
+  
+  // Previous hits
   'Viduthalai Part 2', 'Lover', 'Manjummel Boys', 'Vikrant Rona',
   'Beast', 'Varisu', 'Thunivu', 'Ponniyin Selvan 2', 'Ponniyin Selvan 1',
   'Vikram', 'Kaathuvaakula Rendu Kaadhal', 'Vendhu Thanindhathu Kaadu',

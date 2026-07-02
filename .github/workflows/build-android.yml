@@ -40,7 +40,10 @@ jobs:
         run: npx cap sync android
 
       - name: Make Gradle Wrapper Executable
-        run: chmod +x android/gradlew
+        run: |
+          sudo apt-get update && sudo apt-get install -y dos2unix
+          dos2unix android/gradlew
+          chmod +x android/gradlew
 
       - name: Build Android APK
         working-directory: android

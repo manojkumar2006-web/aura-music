@@ -243,6 +243,7 @@ const CATEGORIES = [
 export const Home: React.FC = () => {
  const [visibleCount, setVisibleCount] = useState(3);
  const [visibleLibraryCount, setVisibleLibraryCount] = useState(50);
+ const [showDownloadModal, setShowDownloadModal] = useState(false);
  const libraryEndRef = useRef<HTMLDivElement>(null);
  const observerTarget = useRef(null);
  
@@ -1488,6 +1489,15 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  </button>
  )}
  </div>
+
+ <button
+    onClick={() => setShowDownloadModal(true)}
+    className="glass-panel rounded-2xl px-4 py-2 border border-silver/8 bg-graphite/45 flex items-center gap-2 hover:border-teal/30 hover:bg-teal/5 hover:text-teal transition-all cursor-pointer h-12 flex-shrink-0 text-slate-300 shadow-lg"
+    title="Download App"
+  >
+    <Download className="w-5 h-5" />
+    <span className="hidden md:inline text-xs font-bold font-display uppercase tracking-wider text-inherit">Get App</span>
+  </button>
 
  <button
  onClick={() => setActiveView(activeView === 'profile' ? 'library' : 'profile')}
@@ -4835,8 +4845,60 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  </div>
  </footer>
 
+ {/* Download App Modal */}
+ <AnimatePresence>
+ {showDownloadModal && (
+ <motion.div
+ initial={{ opacity: 0 }}
+ animate={{ opacity: 1 }}
+ exit={{ opacity: 0 }}
+ className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6"
+ onClick={() => setShowDownloadModal(false)}
+ >
+ <motion.div
+ initial={{ scale: 0.95, opacity: 0, y: 20 }}
+ animate={{ scale: 1, opacity: 1, y: 0 }}
+ exit={{ scale: 0.95, opacity: 0, y: 20 }}
+ onClick={(e) => e.stopPropagation()}
+ className="w-full max-w-md bg-[#121212] rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(24,61,61,0.3)] border border-teal/20 relative"
+ >
+ {/* Header Gradient */}
+ <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-br from-teal/20 to-ocean/5 pointer-events-none" />
+ 
+ <div className="p-8 flex flex-col items-center text-center relative z-10">
+ <button
+ onClick={() => setShowDownloadModal(false)}
+ className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white transition-colors hover:bg-white/10 rounded-full"
+ >
+ <X className="w-5 h-5" />
+ </button>
+ 
+ <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-teal to-ocean p-0.5 mb-6 shadow-[0_0_30px_rgba(20,184,166,0.4)]">
+ <div className="w-full h-full bg-[#121212] rounded-[14px] flex items-center justify-center">
+ <Download className="w-10 h-10 text-teal" />
+ </div>
+ </div>
+ 
+ <h2 className="text-2xl font-bold font-display text-white mb-3 tracking-wide">Get the Aura App</h2>
+ <p className="text-slate-400 text-sm mb-8 leading-relaxed max-w-[280px]">
+ Take your music anywhere. Download the official Aura Music app for Android to enjoy background playback and offline listening.
+ </p>
+ 
+ <a
+ href="/aura-music.apk"
+ download="AuraMusic.apk"
+ onClick={() => setShowDownloadModal(false)}
+ className="w-full py-4 rounded-full bg-teal text-black font-bold font-display uppercase tracking-widest text-sm hover:bg-white transition-all shadow-[0_0_20px_rgba(20,184,166,0.3)] hover:shadow-[0_0_30px_rgba(20,184,166,0.5)] hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-3"
+ >
+ <Download className="w-5 h-5" />
+ Download APK
+ </a>
+ </div>
+ </motion.div>
+ </motion.div>
+ )}
+ </AnimatePresence>
+
  </div>
  );
 };
-
-

@@ -2064,25 +2064,27 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  </div>
 
  {/* Artist Name & Play Header */}
- <div className="flex items-center justify-center md:justify-start gap-4 border-b border-white/5 pb-8">
+ <div className="flex flex-col md:flex-row items-center justify-center md:justify-start gap-4 md:gap-6 border-b border-white/5 pb-8 text-center md:text-left">
+ <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white font-display tracking-tight w-full md:w-auto break-words line-clamp-2 md:truncate">{selectedDirector}</h2>
+ <div className="flex items-center gap-4 mt-2 md:mt-0">
  <button 
  onClick={() => topSongs[0] && handleSelectTrack(topSongs[0], topSongs)}
- className="bg-teal hover:bg-teal/90 text-black p-4 rounded-full flex items-center justify-center transition-all hover:scale-105 shadow-lg flex-shrink-0"
+ className="bg-teal hover:bg-teal/90 text-black p-3 md:p-4 rounded-full flex items-center justify-center transition-all hover:scale-105 shadow-[0_0_20px_rgba(20,184,166,0.3)] flex-shrink-0"
  >
- <Play className="w-6 h-6 fill-current" />
+ <Play className="w-5 h-5 md:w-6 md:h-6 fill-current ml-0.5" />
  </button>
- <h2 className="text-4xl md:text-5xl font-black text-white font-display tracking-tight truncate">{selectedDirector}</h2>
  {currentUser && (
  <button 
  onClick={(e) => {
  e.stopPropagation();
  toggleArtistLike(selectedDirector);
  }}
- className="ml-4 p-3 rounded-full bg-[#181818] hover:bg-[#242424] transition-colors flex-shrink-0 group/like"
+ className="p-3 md:p-4 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-colors flex-shrink-0 group/like"
  >
- <Heart className={`w-6 h-6 transition-transform group-hover/like:scale-110 ${isArtistLiked ? 'text-teal fill-teal' : 'text-slate-400'}`} />
+ <Heart className={`w-5 h-5 md:w-6 md:h-6 transition-transform group-hover/like:scale-110 ${isArtistLiked ? 'text-teal fill-teal' : 'text-slate-300'}`} />
  </button>
  )}
+ </div>
  </div>
 
  {/* Latest Release & Top Songs Grid */}
@@ -2131,7 +2133,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  >
  <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 relative shadow-md">
  <img loading="lazy" src={track.coverUrl} className="w-full h-full object-cover" alt={track.title} />
- <div className={`absolute inset-0 bg-[#121212] flex items-center justify-center transition-opacity ${isPlaying ? 'opacity-100' : 'opacity-100 md:opacity-0 md:group-hover:opacity-100'}`}>
+ <div className={`absolute inset-0 bg-[#121212]/50 md:bg-[#121212] flex items-center justify-center transition-opacity ${isPlaying ? 'opacity-100' : 'opacity-0 md:group-hover:opacity-100'}`}>
  {isPlaying ? (
  <div className="flex gap-0.5 items-end h-3">
  <div className="w-1 bg-white rounded-full h-2 animate-[bounce_0.8s_infinite]" />
@@ -3811,7 +3813,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  >
  <div className="w-12 h-12 rounded-lg overflow-hidden relative flex-shrink-0 shadow-md">
  <img loading="lazy" src={track.coverUrl} className="w-full h-full object-cover" alt={track.title} />
- <div className={`absolute inset-0 bg-[#121212] flex items-center justify-center transition-opacity ${isSelected ? 'opacity-100' : 'opacity-100 md:opacity-0 md:group-hover:opacity-100'}`}>
+ <div className={`absolute inset-0 bg-[#121212]/50 md:bg-[#121212] flex items-center justify-center transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 md:group-hover:opacity-100'}`}>
  {isSelected && playbackState === 'playing' ? (
  <Pause className="w-4 h-4 fill-current text-white" />
  ) : (

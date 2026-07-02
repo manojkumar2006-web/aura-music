@@ -36,15 +36,87 @@ function validateEmail(email: string): boolean {
 
 // ==================== TRACKS ====================
 
-// GET /api/tracks — Fetch all tracks
+// GET /api/tracks — Fetch all tracks (newest first)
 apiRouter.get('/tracks', async (_req, res) => {
   try {
     const { db } = await connectToDatabase();
-    const tracks = await db.collection('tracks').find({}).toArray();
+    const tracks = await db.collection('tracks')
+      .find({})
+      .sort({ releaseDate: -1, updatedAt: -1 })
+      .toArray();
     res.json(tracks);
   } catch (error) {
     console.error('Error fetching tracks:', error);
     res.status(500).json({ error: 'Failed to fetch tracks' });
+  }
+});
+
+// ==================== JIOSAAVN SEARCH ====================
+
+const SAAVN_BASE = 'https://saavn.dev/api';
+
+function mapSaavnSong(song: any) {
+  if (!song?.id) return null;
+  const imageArr: any[] = Array.isArray(song.image) ? song.image : [];
+  const coverUrl =
+    imageArr.find((i: any) => i.quality === '500x500')?.url ||
+    imageArr.find((i: any) => i.quality === '150x150')?.url || '';
+  const downloadArr: any[] = Array.isArray(song.downloadUrl) ? song.downloadUrl : [];
+  const audioUrl320k = downloadArr.find((d: any) => d.quality === '320kbps')?.url || '';
+  const audioUrl128k =
+    downloadArr.find((d: any) => d.quality === '160kbps')?.url ||
+    downloadArr.find((d: any) => d.quality === '96kbps')?.url ||
+    downloadArr[0]?.url || '';
+  const artistNames = Array.isArray(song.artists?.primary)
+    ? song.artists.primary.map((a: any) => a.name).join(', ')
+    : song.primaryArtists || 'Unknown Artist';
+  const albumName = song.album?.name || song.album || 'Single';
+  const releaseYear = song.year ? String(song.year)
+    : (song.releaseDate ? song.releaseDate.substring(0, 4) : new Date().getFullYear().toString());
+  return {
+    id: `saavn_${song.id}`,
+    title: song.name || song.title || 'Unknown',
+    artist: artistNames,
+    album: albumName,
+    coverUrl,
+    audioUrl128k,
+    audioUrl320k,
+    youtubeId: '',
+    isPremium: false,
+    isPremiumPlus: false,
+    duration: song.duration ? parseInt(song.duration) : 180,
+    releaseDate: song.releaseDate || `${releaseYear}-01-01`,
+    region: 'Tamil',
+    source: 'jiosaavn',
+  };
+}
+
+// GET /api/search?q=... — Search via JioSaavn
+apiRouter.get('/search', async (req, res) => {
+  try {
+    const query = (req.query.q as string) || '';
+    if (!query) return res.status(400).json({ error: 'Missing query parameter' });
+
+    let songs: any[] = [];
+
+    if (query === 'new_releases') {
+      const [r1, r2] = await Promise.all([
+        fetch(`${SAAVN_BASE}/search/songs?query=new+tamil+songs+2025&page=1&limit=50`).then(r => r.json()),
+        fetch(`${SAAVN_BASE}/search/songs?query=trending+tamil+2026&page=1&limit=50`).then(r => r.json()),
+      ]);
+      songs = [...(r1?.data?.results || []), ...(r2?.data?.results || [])];
+    } else {
+      const url = `${SAAVN_BASE}/search/songs?query=${encodeURIComponent(query)}&page=1&limit=50`;
+      const data = await fetch(url).then(r => r.json());
+      songs = data?.data?.results || [];
+    }
+
+    const tracks = songs.map(mapSaavnSong).filter(Boolean);
+    res.setHeader('Cache-Control', 's-maxage=1800, stale-while-revalidate=3600');
+    res.json(tracks);
+  } catch (error) {
+    console.error('JioSaavn search error:', error);
+    res.status(500).json({ error: 'Failed to search tracks' });
   }
 });
 

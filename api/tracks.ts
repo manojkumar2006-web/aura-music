@@ -2,7 +2,6 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
-
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { MongoClient } from 'mongodb';
 
@@ -19,7 +18,12 @@ async function getDb() {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const db = await getDb();
-    const tracks = await db.collection('tracks').find({}).toArray();
+    // Return all tracks, sorted by releaseDate descending (newest first)
+    const tracks = await db.collection('tracks')
+      .find({})
+      .sort({ releaseDate: -1, updatedAt: -1 })
+      .toArray();
+    res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=300');
     res.status(200).json(tracks);
   } catch (error) {
     console.error('Error fetching tracks:', error);

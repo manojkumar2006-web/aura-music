@@ -1,57 +1,85 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+
+const SAAVN_BASE = 'https://saavn.dev/api';
+
+// Map a JioSaavn song to our app's Track format
+function mapSaavnSong(song: any) {
+  if (!song?.id) return null;
+
+  const imageArr: any[] = Array.isArray(song.image) ? song.image : [];
+  const coverUrl =
+    imageArr.find((i: any) => i.quality === '500x500')?.url ||
+    imageArr.find((i: any) => i.quality === '150x150')?.url ||
+    '';
+
+  const downloadArr: any[] = Array.isArray(song.downloadUrl) ? song.downloadUrl : [];
+  const audioUrl320k = downloadArr.find((d: any) => d.quality === '320kbps')?.url || '';
+  const audioUrl128k =
+    downloadArr.find((d: any) => d.quality === '160kbps')?.url ||
+    downloadArr.find((d: any) => d.quality === '96kbps')?.url ||
+    downloadArr[0]?.url ||
+    '';
+
+  const artistNames = Array.isArray(song.artists?.primary)
+    ? song.artists.primary.map((a: any) => a.name).join(', ')
+    : song.primaryArtists || 'Unknown Artist';
+
+  const albumName = song.album?.name || song.album || 'Single';
+  const releaseYear = song.year
+    ? String(song.year)
+    : (song.releaseDate ? song.releaseDate.substring(0, 4) : new Date().getFullYear().toString());
+
+  return {
+    id: `saavn_${song.id}`,
+    title: song.name || song.title || 'Unknown',
+    artist: artistNames,
+    album: albumName,
+    coverUrl,
+    audioUrl128k,
+    audioUrl320k,
+    youtubeId: '',
+    isPremium: false,
+    isPremiumPlus: false,
+    duration: song.duration ? parseInt(song.duration) : 180,
+    releaseDate: song.releaseDate || `${releaseYear}-01-01`,
+    region: 'Tamil',
+    source: 'jiosaavn',
+  };
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
-    const query = req.query.q as string;
-    if (!query) {
-      return res.status(400).json({ error: 'Missing query parameter' });
-    }
+    const query = (req.query.q as string) || '';
+    if (!query) return res.status(400).json({ error: 'Missing query parameter' });
 
-    let url = '';
-    let isRss = false;
-    
-    // If the query is asking for new releases, fetch iTunes Top Songs RSS Feed for India/Tamil
+    let tracks: any[] = [];
+
     if (query === 'new_releases') {
-       url = 'https://itunes.apple.com/in/rss/topsongs/limit=100/json';
-       isRss = true;
+      // Fetch trending Tamil songs from JioSaavn
+      const [trending, fresh] = await Promise.all([
+        fetch(`${SAAVN_BASE}/search/songs?query=new+tamil+songs+2025&page=1&limit=50`).then(r => r.json()),
+        fetch(`${SAAVN_BASE}/search/songs?query=trending+tamil+2026&page=1&limit=50`).then(r => r.json()),
+      ]);
+      const songs = [
+        ...(trending?.data?.results || []),
+        ...(fresh?.data?.results || []),
+      ];
+      tracks = songs.map(mapSaavnSong).filter(Boolean);
     } else {
-       // Request maximum allowed (200) to ensure we get deep cuts like "Aravindh"
-       url = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=200`;
+      // Live search via JioSaavn
+      const url = `${SAAVN_BASE}/search/songs?query=${encodeURIComponent(query)}&page=1&limit=50`;
+      const data = await fetch(url).then(r => r.json());
+      tracks = (data?.data?.results || []).map(mapSaavnSong).filter(Boolean);
     }
 
-    const response = await fetch(url);
-    const data = await response.json();
-
-    let tracks = [];
-    if (isRss) {
-       tracks = (data.feed?.entry || []).map((track: any) => ({
-          id: track.id.attributes['im:id'],
-          title: track['im:name'].label,
-          artist: track['im:artist'].label,
-          album: track['im:collection']['im:name'].label,
-          coverUrl: track['im:image'] && track['im:image'].length > 0 ? track['im:image'][track['im:image'].length - 1].label.replace('170x170', '600x600') : '',
-          youtubeId: '',
-          duration: 180, // RSS doesn't provide duration easily
-          releaseDate: track['im:releaseDate'] ? track['im:releaseDate'].label.substring(0, 4) : '2026',
-          isPremium: false
-       }));
-    } else {
-       tracks = (data.results || []).map((track: any) => ({
-          id: track.trackId.toString(),
-          title: track.trackName,
-          artist: track.artistName,
-          album: track.collectionName || 'Single',
-          coverUrl: track.artworkUrl100 ? track.artworkUrl100.replace('100x100bb.jpg', '600x600bb.jpg') : '',
-          youtubeId: '', 
-          duration: track.trackTimeMillis ? Math.floor(track.trackTimeMillis / 1000) : 180,
-          releaseDate: track.releaseDate ? track.releaseDate.substring(0, 4) : '2026',
-          isPremium: false
-       }));
-    }
-    res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=86400');
-    res.status(200).json(tracks);
+    res.setHeader('Cache-Control', 's-maxage=1800, stale-while-revalidate=3600');
+    return res.status(200).json(tracks);
   } catch (error) {
-    console.error('Error fetching search results:', error);
-    res.status(500).json({ error: 'Failed to search tracks' });
+    console.error('JioSaavn search error:', error);
+    return res.status(500).json({ error: 'Failed to search tracks' });
   }
 }

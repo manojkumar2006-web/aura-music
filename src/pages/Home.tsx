@@ -2518,56 +2518,62 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  <div data-scroll-reveal className="flex flex-col gap-10 pb-10">
  {/* Top: Getting Started & Radio */}
  <div className="flex flex-col xl:flex-row gap-6">
- {/* Getting Started Card */}
- <div className="xl:w-[45%] relative rounded-3xl overflow-hidden shadow-lg bg-gradient-to-br from-ocean/40 to-deepblue/60 border border-white/10 p-6 flex justify-between min-h-[240px] group cursor-pointer premium-card-hover">
- <div className="flex flex-col justify-between relative z-10 w-[60%]">
- <div className="mb-4">
- <h2 className="text-3xl font-extrabold text-white tracking-tight mb-2 group-hover:-translate-y-1 transition-transform duration-500">1. Start playing</h2>
- <p className="text-white/90 text-sm leading-relaxed font-medium">Search, browse, and play your favorite artists and creators.</p>
- </div>
- <div className="flex items-center gap-4 mt-auto">
- <button 
- onClick={(e) => {
- e.stopPropagation();
- setSidebarNav('search');
- }}
- className="px-6 py-2.5 bg-gradient-to-r from-ocean to-teal hover:scale-105 active:scale-95 text-black font-extrabold text-sm rounded-xl transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)]"
- >
- Search
- </button>
- <span 
- onClick={(e) => {
- e.stopPropagation();
- setShowTipsModal(true);
- }}
- className="text-white font-bold text-sm cursor-pointer hover:underline underline-offset-4 hidden sm:block"
- >
- Show more tips
- </span>
- </div>
- </div>
- 
- {/* Collage */}
- <div className="absolute right-0 top-0 bottom-0 w-[45%] pointer-events-none hidden sm:block">
- {tracks.slice(0, 4).map((t, i) => {
- const rotations = ['rotate-12', '-rotate-6', 'rotate-3', '-rotate-12'];
- const positions = [
- 'top-[-10%] right-[-10%]', 
- 'top-[20%] right-[15%]', 
- 'bottom-[-10%] right-[5%]',
- 'bottom-[10%] right-[30%]'
- ];
- const sizes = ['w-24 h-24', 'w-32 h-32', 'w-28 h-28', 'w-20 h-20'];
- const delays = ['delay-0', 'delay-75', 'delay-150', 'delay-200'];
- 
- return (
- <div key={`collage-${i}`} className={`absolute ${positions[i]} ${sizes[i]} rounded-lg overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.5)] transform ${rotations[i]} group-hover:scale-110 group-hover:rotate-0 transition-all duration-700 ${delays[i]}`}>
- <img loading="lazy" src={t.coverUrl} className="w-full h-full object-cover" alt="" />
- </div>
- );
- })}
- </div>
- </div>
+    {/* Getting Started Card */}
+    <div className="xl:w-[45%] relative rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 p-6 sm:p-8 flex flex-col justify-between min-h-[280px] group cursor-pointer premium-card-hover bg-[#0a1118]">
+      {/* Floral Background Image */}
+      <img src="/covers/floral_bg.png" className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-screen group-hover:scale-105 group-hover:opacity-80 transition-all duration-700" alt="Floral Edge Design" />
+      
+      {/* Gradient overlay for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+      
+      <div className="flex flex-col justify-between relative z-10 h-full w-full sm:w-[65%]">
+        <div className="mb-4">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-teal tracking-tight mb-3 group-hover:-translate-y-1 transition-transform duration-500 font-display">1. Start playing</h2>
+          <p className="text-slate-300 text-sm sm:text-base leading-relaxed font-medium max-w-sm">Search, browse, and play your favorite artists and creators effortlessly.</p>
+        </div>
+        <div className="flex items-center gap-4 mt-auto pt-6">
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              setSidebarNav('search');
+            }}
+            className="px-6 py-3 bg-gradient-to-r from-ocean to-teal hover:scale-105 active:scale-95 text-white font-extrabold text-sm rounded-xl transition-all shadow-[0_0_20px_rgba(24,61,61,0.5)] flex items-center gap-2"
+          >
+            <Search className="w-4 h-4" /> Search
+          </button>
+          <span 
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowTipsModal(true);
+            }}
+            className="text-white/60 font-bold text-sm cursor-pointer hover:text-white hover:underline underline-offset-4 hidden sm:block transition-colors"
+          >
+            Show more tips
+          </span>
+        </div>
+      </div>
+      
+      {/* Floating Song Covers (Visible on mobile too!) */}
+      <div className="absolute right-0 bottom-0 top-0 w-1/2 sm:w-[40%] pointer-events-none flex items-center justify-end pr-2 overflow-hidden">
+        <div className="relative w-full h-full">
+          {tracks.slice(0, 3).map((t, i) => {
+            const rotations = ['rotate-12', '-rotate-6', 'rotate-6'];
+            const positions = [
+              'right-[-10%] top-[10%] z-30', 
+              'right-[25%] top-[35%] z-20', 
+              'right-[10%] bottom-[5%] z-10'
+            ];
+            const sizes = ['w-24 h-24 sm:w-28 sm:h-28', 'w-20 h-20 sm:w-24 sm:h-24', 'w-16 h-16 sm:w-20 sm:h-20'];
+            
+            return (
+              <div key={`collage-${i}`} className={`absolute ${positions[i]} ${sizes[i]} rounded-2xl overflow-hidden shadow-[0_15px_35px_rgba(0,0,0,0.6)] border border-white/20 transform ${rotations[i]} group-hover:scale-110 group-hover:rotate-0 group-hover:-translate-y-2 transition-all duration-700`}>
+                <img loading="lazy" src={t.coverUrl} className="w-full h-full object-cover" alt="" />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
 
  {/* Popular Radio */}
  <div className="xl:flex-1 flex flex-col gap-3 min-w-0">

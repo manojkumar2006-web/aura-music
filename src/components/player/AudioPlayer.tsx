@@ -544,7 +544,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/60 to-black pointer-events-none" />
 
  {/* Top Bar */}
- <div className="relative z-10 flex justify-between items-center mb-6 pt-4">
+ <div className="relative z-50 flex justify-between items-center mb-6 pt-4">
  <button onClick={() => setIsMobileExpanded(false)} className="p-2 -ml-2 text-slate-300 hover:text-white transition-colors active:scale-90">
  <ChevronDown className="w-7 h-7" />
  </button>

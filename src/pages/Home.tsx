@@ -53,7 +53,9 @@ import {
  Edit3,
  BarChart2,
  Share2,
- Flame
+ Flame,
+ Shuffle,
+ MoreHorizontal
 } from 'lucide-react';
 import { useMusicStore } from '../store/musicStore';
 import { CompatibilityView } from '../components/CompatibilityView';

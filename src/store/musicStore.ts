@@ -64,7 +64,12 @@ interface MusicStore {
   updatePrivacy: (settings: Partial<PrivacySettings>) => void;
   completeOnboarding: (languages: string[], favoriteDirectors: string[]) => Promise<{ success: boolean; error?: string }>;
   incrementStats: (stat: 'play' | 'minute') => void;
+  searchResults: Track[];
+  artistImages: Record<string, string>;
+
+  // Actions
   fetchTracks: () => Promise<void>;
+  fetchArtistImage: (name: string) => Promise<string | null>;
   searchAndAppendTracks: (query: string) => Promise<void>;
   addTracksToLibrary: (newTracks: Track[]) => void;
   toggleLike: (trackId: string) => Promise<{ success: boolean; error?: string }>;
@@ -87,7 +92,28 @@ const PRESET_TRACKS: Track[] = [];
 
 export const useMusicStore = create<MusicStore>((set, get) => ({
   tracks: [], // Initially empty, populated by fetchTopTracks
+  artistImages: {},
   isSearching: false,
+  
+  fetchArtistImage: async (name: string) => {
+    const { artistImages } = get();
+    if (artistImages[name]) return artistImages[name];
+    try {
+      const response = await fetch(`/api/artist-image?name=${encodeURIComponent(name)}`);
+      if (!response.ok) return null;
+      const data = await response.json();
+      if (data.imageUrl) {
+        set((state) => ({
+          artistImages: { ...state.artistImages, [name]: data.imageUrl }
+        }));
+        return data.imageUrl;
+      }
+    } catch (err) {
+      console.error('Failed to fetch artist image', err);
+    }
+    return null;
+  },
+
   fetchTopTracks: async () => {
     set({ isSearching: true });
     try {

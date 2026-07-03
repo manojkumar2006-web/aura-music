@@ -12,6 +12,49 @@ import { sendVerificationEmail } from '../lib/email';
 
 const apiRouter = Router();
 
+// GET /api/artist-image - Scrapes Apple Music for artist HD image
+apiRouter.get('/artist-image', async (req, res) => {
+  try {
+    const { name } = req.query;
+    if (!name || typeof name !== 'string') {
+      return res.status(400).json({ error: 'Artist name required' });
+    }
+
+    // 1. Search iTunes API for artist
+    const itunesUrl = "https://itunes.apple.com/search?term=${encodeURIComponent(name)}&entity=musicArtist&limit=1";
+    const itunesRes = await fetch(itunesUrl);
+    if (!itunesRes.ok) throw new Error('iTunes API failed');
+    const itunesData = await itunesRes.json();
+    
+    if (!itunesData.results || itunesData.results.length === 0) {
+      return res.status(404).json({ error: 'Artist not found on iTunes' });
+    }
+    
+    const artistLinkUrl = itunesData.results[0].artistLinkUrl;
+    if (!artistLinkUrl) throw new Error('No artist link url');
+
+    // 2. Fetch the Apple Music page HTML
+    const pageRes = await fetch(artistLinkUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      }
+    });
+    if (!pageRes.ok) throw new Error('Failed to fetch Apple Music page');
+    const html = await pageRes.text();
+
+    // 3. Extract og:image
+    const match = html.match(/property="og:image"\s+content="([^"]+)"/);
+    if (match && match[1]) {
+      return res.json({ imageUrl: match[1] });
+    } else {
+      return res.status(404).json({ error: 'Image not found in meta tags' });
+    }
+  } catch (err: any) {
+    console.error('Error fetching artist image:', err.message);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 // ==================== VALIDATION HELPERS ====================
 
 function validateUsername(username: string): string | null {
@@ -692,3 +735,4 @@ apiRouter.get('/compatibility', async (req, res) => {
 });
 
 export default apiRouter;
+

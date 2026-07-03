@@ -191,34 +191,45 @@ const ARTIST_IMAGES: Record<string, string> = {
 };
 
 export const getCover = (name: string, type: 'hero' | 'director' | 'artist' | 'album', tracks?: Track[]) => {
- if (!name) return '/covers/hero-images.jpg';
+  if (!name) return '/covers/hero-images.jpg';
+  
+  if (type === 'hero' || type === 'director' || type === 'artist') {
+    // 1. Hardcoded high-quality overrides
+    if (ARTIST_IMAGES[name]) return ARTIST_IMAGES[name];
+    
+    // 2. Check dynamic iTunes API cache
+    const { artistImages, fetchArtistImage } = useMusicStore.getState();
+    if (artistImages[name]) return artistImages[name];
+    
+    // 3. Trigger iTunes fetch if never fetched before
+    if (artistImages[name] === undefined) {
+      useMusicStore.setState(state => ({ artistImages: { ...state.artistImages, [name]: '' } })); // Prevent infinite loops
+      fetchArtistImage(name);
+    }
+  }
 
- // Use real portrait for artist/hero/director if available
- if ((type === 'hero' || type === 'director' || type === 'artist') && ARTIST_IMAGES[name]) {
- return ARTIST_IMAGES[name];
- }
+  // Fallback to finding an associated track's cover URL
+  if (tracks) {
+    let match;
+    if (type === 'hero') match = tracks.find(t => t.hero === name);
+    if (type === 'director') match = tracks.find(t => t.musicDirector === name);
+    if (type === 'artist') match = tracks.find(t => t.artist?.split(', ').includes(name));
+    if (type === 'album') match = tracks.find(t => t.album === name);
+    
+    if (match && match.coverUrl) {
+      return match.coverUrl;
+    }
+  }
 
- // Fallback to finding an associated track's cover URL
- if (tracks) {
- let match;
- if (type === 'hero') match = tracks.find(t => t.hero === name);
- if (type === 'director') match = tracks.find(t => t.musicDirector === name);
- if (type === 'artist') match = tracks.find(t => t.artist?.split(', ').includes(name));
- if (type === 'album') match = tracks.find(t => t.album === name);
- 
- if (match && match.coverUrl) {
- return match.coverUrl;
- }
- }
-
- // Final fallback to generic covers
- const lower = name.toLowerCase();
- if (lower.includes('vijay')) return '/covers/Vijay.jpg';
- if (lower.includes('anirudh')) return '/covers/Anirudh.jpg';
- if (lower.includes('lokesh')) return '/covers/Lokesh Kanagaraj.jpg';
- if (lower.includes('leo')) return '/covers/Leo.jpg';
- if (lower.includes('sai abhyankkar')) return '/covers/Sai-Abhyankkar.avif';
- return '/covers/hero-images.jpg';
+  // Final fallback to generic covers
+  const lower = name.toLowerCase();
+  if (lower.includes('vijay')) return '/covers/Vijay.jpg';
+  if (lower.includes('anirudh')) return '/covers/Anirudh.jpg';
+  if (lower.includes('lokesh')) return '/covers/Lokesh Kanagaraj.jpg';
+  if (lower.includes('arr') || lower.includes('rahman')) return '/covers/ARR.jpg';
+  if (lower.includes('sai abhyankkar')) return '/covers/Sai-Abhyankkar.avif';
+  
+  return '/covers/hero-images.jpg';
 };
 
 const COMMUNITY_PLAYLISTS = [

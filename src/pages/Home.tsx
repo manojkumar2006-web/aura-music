@@ -56,6 +56,7 @@ import {
  Flame
 } from 'lucide-react';
 import { useMusicStore } from '../store/musicStore';
+import { CompatibilityView } from '../components/CompatibilityView';
 import { useShallow } from 'zustand/react/shallow';
 import { Section } from '../components/Section';
 import { CoupleCompatibility } from '../components/CoupleCompatibility';
@@ -178,7 +179,7 @@ const ARTIST_IMAGES: Record<string, string> = {
  "Allu Arjun": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Allu_Arjun_at_Pushpa_2_The_Rule_meet.jpg/330px-Allu_Arjun_at_Pushpa_2_The_Rule_meet.jpg",
  "Prabhas": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Prabhas_by_Gage_Skidmore.jpg/330px-Prabhas_by_Gage_Skidmore.jpg",
  "Ram Charan": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Ram_Charan_at_Game_Changer_trailer_launch.jpg/330px-Ram_Charan_at_Game_Changer_trailer_launch.jpg",
- "Ranbir Kapoor": "https://upload.wikimedia.org/wikipedia/commons/a/a0/Ranbir_Kapoor_snapped_at_Kalina_airport.jpg",
+ "Ranbir Kapoor": "https://upload.wikimedia.org/wikipedia/a/a0/Ranbir_Kapoor_snapped_at_Kalina_airport.jpg",
  // Misc
  "Max Martin": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/MaxMartin.jpg/330px-MaxMartin.jpg",
  "Daft Punk": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Daft_Punk_in_2013_2-_centered.jpg/330px-Daft_Punk_in_2013_2-_centered.jpg",
@@ -360,8 +361,8 @@ export const Home: React.FC = () => {
 
 
  // Local UI States
-
- const [activeView, setActiveView] = useState<'library' | 'profile'>('library');
+  const [activeView, setActiveView] = useState<'library' | 'profile' | 'compatibility'>('library');
+  const [matchId, setMatchId] = useState<string | null>(null);
  const [sidebarNav, setSidebarNav] = useState<string>('home');
  const [activeTrackMenu, setActiveTrackMenu] = useState<string | null>(null);
  const [showTipsModal, setShowTipsModal] = useState(false);
@@ -551,6 +552,18 @@ export const Home: React.FC = () => {
  mutationObs.disconnect();
  };
  }, [activeView, sidebarNav]);
+
+  // Synchronize compatibility match via query parameter
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('match')) {
+      const matchUserId = params.get('match');
+      if (matchUserId) {
+        setMatchId(matchUserId);
+        setActiveView('compatibility');
+      }
+    }
+  }, []);
 
  // Synchronize admin mode via query parameter or localStorage
  React.useEffect(() => {
@@ -1518,7 +1531,9 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  </button>
  </div>
  
- {activeView === 'profile' ? (
+ {activeView === 'compatibility' && matchId ? (
+            <CompatibilityView matchId={matchId} onBack={() => setActiveView('library')} />
+          ) : activeView === 'profile' ? (
  currentUser ? (
  // Profile Dashboard View
  <motion.div
@@ -1718,6 +1733,19 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  <p className="text-xs text-ink-secondary leading-relaxed bg-black/15 p-3 rounded-xl border border-white/5 italic">
  {currentUser.bio || "🌌 No bio added yet. Explore the cosmos and add your description above!"}
  </p>
+
+                <div className="mt-4 mb-2">
+                  <button
+                    onClick={() => {
+                      const url = `${window.location.origin}/?match=${currentUser.id}`;
+                      navigator.clipboard.writeText(url);
+                      alert('Compatibility link copied to clipboard! Share it with your partner.');
+                    }}
+                    className="w-full py-3.5 px-4 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-400 hover:to-rose-400 text-white font-bold rounded-2xl transition-all flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(236,72,153,0.3)] hover:shadow-[0_0_25px_rgba(236,72,153,0.5)] cursor-pointer"
+                  >
+                    <Heart className="w-5 h-5 fill-white" /> Generate Couples Compatibility Link
+                  </button>
+                </div>
  </div>
  )}
  </div>
@@ -2236,7 +2264,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  <img loading="lazy" src={albumTrack?.coverUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={albumName} />
  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
  <div className="absolute bottom-2 right-2 bg-teal text-black p-2 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-lg translate-y-2 group-hover:translate-y-0">
- <Play className="w-5 h-5 fill-current ml-0.5" />
+ <Play className="w-5 h-5 fill-current" />
  </div>
  </div>
  <div className="flex flex-col text-center px-1">

@@ -631,4 +631,64 @@ function getVerificationPage(success: boolean, message: string): string {
 
 
 
+// ==================== COMPATIBILITY ====================
+
+apiRouter.get('/compatibility', async (req, res) => {
+  try {
+    const { user1, user2 } = req.query as { user1: string; user2: string };
+    if (!user1 || !user2) return res.status(400).json({ error: 'user1 and user2 are required' });
+
+    const { db } = await connectToDatabase();
+    const [u1, u2] = await Promise.all([
+      db.collection('users').findOne({ id: user1 }),
+      db.collection('users').findOne({ id: user2 })
+    ]);
+
+    if (!u1 || !u2) return res.status(404).json({ error: 'One or both users not found' });
+
+    // Check verification
+    if (!u1.emailVerified || !u2.emailVerified) {
+      return res.status(403).json({ error: 'Both users must be verified to check compatibility.' });
+    }
+
+    // Check 1 month usage
+    const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    const u1Age = now - new Date(u1.createdAt).getTime();
+    const u2Age = now - new Date(u2.createdAt).getTime();
+    
+    if (u1Age < THIRTY_DAYS_MS || u2Age < THIRTY_DAYS_MS) {
+      return res.status(403).json({ error: 'Both users must have used the app for at least 1 month to calculate accurate compatibility.' });
+    }
+
+    const t1 = u1.likedTracks || [];
+    const t2 = u2.likedTracks || [];
+    const a1 = u1.likedArtists || [];
+    const a2 = u2.likedArtists || [];
+
+    const sharedTracks = t1.filter((t: string) => t2.includes(t));
+    const sharedArtists = a1.filter((a: string) => a2.includes(a));
+
+    // Basic scoring
+    let score = (sharedArtists.length * 15) + (sharedTracks.length * 10);
+    
+    const destinyHash = Array.from(user1 + user2).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const destinyScore = 20 + (destinyHash % 30); 
+    
+    score += destinyScore;
+    if (score > 100) score = 100;
+
+    res.json({
+      score,
+      sharedTracksCount: sharedTracks.length,
+      sharedArtistsCount: sharedArtists.length,
+      user1: { displayName: u1.displayName, avatarUrl: u1.avatarUrl },
+      user2: { displayName: u2.displayName, avatarUrl: u2.avatarUrl }
+    });
+  } catch (error) {
+    console.error('Compatibility error:', error);
+    res.status(500).json({ error: 'Failed to calculate compatibility' });
+  }
+});
+
 export default apiRouter;

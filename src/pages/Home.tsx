@@ -61,7 +61,10 @@ import { useShallow } from 'zustand/react/shallow';
 import { Section } from '../components/Section';
 import { CoupleCompatibility } from '../components/CoupleCompatibility';
 import { AudioPlayer } from '../components/player/AudioPlayer';
-import { Track, SubscriptionTier } from '../types';
+import { Track } from '../types';
+import { getThemeConfig } from '../theme';
+import { ARTIST_IMAGES as IMPORTED_ARTIST_IMAGES } from '../data/mockData';
+import { splitAndNormalizeArtists, normalizeName } from '../utils/nameNormalizer';
 import { getUserLocation, getWeather, getRegionIndustry } from '../services/locationService';
 import { OnboardingWizard } from '../components/OnboardingWizard';
 
@@ -1545,10 +1548,10 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  {/* Header Back Button & Title */}
  <div data-scroll-reveal className="flex items-center justify-between border-b border-white/5 pb-4">
  <button
- onClick={() => setActiveView('library')}
- className="flex items-center gap-1.5 text-xs text-ink-secondary hover:text-teal transition-colors cursor-pointer"
+   onClick={() => setActiveView('library')}
+   className="flex items-center gap-1.5 text-xs text-ink-secondary hover:text-teal transition-colors cursor-pointer"
  >
- <ChevronLeft className="w-4 h-4" /> Back to Library
+   <ChevronLeft className="w-4 h-4" /> Back to Library
  </button>
  <h2 className="text-sm font-bold text-white tracking-widest uppercase font-display flex items-center gap-2">
  <Sparkles className="w-4 h-4 text-teal animate-pulse" /> Profile Dashboard
@@ -3236,32 +3239,85 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  {(() => {
  if (!searchQuery.trim() || filteredTracks.length === 0) return null;
  const q = searchQuery.toLowerCase().trim();
- let matchedArtist: string | undefined;
  
- const topTrack = filteredTracks[0];
- const possibleNames = [...topTrack.artist.split(', '), topTrack.musicDirector].filter(Boolean) as string[];
- matchedArtist = possibleNames.find(n => n.toLowerCase() === q) || possibleNames.find(n => n.toLowerCase().includes(q));
+ // Try to find an exact or partial match across all tracks for Actor, Director, Album, or Artist
+ let matchedType: 'actor' | 'director' | 'album' | 'artist' | null = null;
+ let matchedName = '';
+ let matchedCover = '';
+ let entityTracks: any[] = [];
  
- if (!matchedArtist) return null;
+ // Find the best matching entity across tracks
+ for (const t of tracks) {
+   if (t.hero && t.hero.toLowerCase() === q) {
+     matchedType = 'actor'; matchedName = t.hero; break;
+   }
+   if (t.musicDirector && t.musicDirector.toLowerCase() === q) {
+     matchedType = 'director'; matchedName = t.musicDirector; break;
+   }
+   if (t.album && t.album.toLowerCase() === q) {
+     matchedType = 'album'; matchedName = t.album; matchedCover = t.coverUrl; break;
+   }
+   const artists = t.artist.split(', ').map((a: string) => a.trim());
+   const matchedArtist = artists.find((a: string) => a.toLowerCase() === q);
+   if (matchedArtist) {
+     matchedType = 'artist'; matchedName = matchedArtist; break;
+   }
+ }
  
- const artistTracks = tracks.filter(t => t.artist.includes(matchedArtist!) || t.musicDirector === matchedArtist || t.hero === matchedArtist);
- const artistCover = artistTracks.length > 0 ? artistTracks[0].coverUrl : '';
+ // Fallback to partial matches
+ if (!matchedType) {
+   for (const t of tracks) {
+     if (t.hero && t.hero.toLowerCase().includes(q)) {
+       matchedType = 'actor'; matchedName = t.hero; break;
+     }
+     if (t.musicDirector && t.musicDirector.toLowerCase().includes(q)) {
+       matchedType = 'director'; matchedName = t.musicDirector; break;
+     }
+     if (t.album && t.album.toLowerCase().includes(q)) {
+       matchedType = 'album'; matchedName = t.album; matchedCover = t.coverUrl; break;
+     }
+     const artists = t.artist.split(', ').map((a: string) => a.trim());
+     const matchedArtist = artists.find((a: string) => a.toLowerCase().includes(q));
+     if (matchedArtist) {
+       matchedType = 'artist'; matchedName = matchedArtist; break;
+     }
+   }
+ }
+ 
+ if (!matchedType) return null;
+ 
+ if (matchedType === 'album') {
+   entityTracks = tracks.filter(t => t.album === matchedName);
+ } else if (matchedType === 'actor') {
+   entityTracks = tracks.filter(t => t.hero === matchedName || t.artist.includes(matchedName));
+   matchedCover = getCover(matchedName, 'hero', tracks);
+ } else if (matchedType === 'director') {
+   entityTracks = tracks.filter(t => t.musicDirector === matchedName || t.artist.includes(matchedName));
+   matchedCover = getCover(matchedName, 'director', tracks);
+ } else {
+   entityTracks = tracks.filter(t => t.artist.includes(matchedName));
+   matchedCover = getCover(matchedName, 'artist', tracks);
+ }
+ 
+ const roleLabel = matchedType === 'actor' ? 'Actor' : matchedType === 'director' ? 'Music Director' : matchedType === 'album' ? 'Album' : 'Artist';
  
  return (
  <div 
  data-scroll-reveal
- onClick={() => setSelectedDirector(matchedArtist!)}
+ onClick={() => {
+   if (matchedType !== 'album') setSelectedDirector(matchedName);
+ }}
  className="mb-2 glass-panel rounded-3xl p-6 border border-teal/20 bg-gradient-to-br from-teal/10 to-transparent flex flex-col sm:flex-row gap-6 items-center sm:items-start cursor-pointer hover:border-teal/40 hover:shadow-[0_0_30px_rgba(20,184,166,0.15)] transition-all group"
  >
- <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden shadow-2xl flex-shrink-0 group-hover:scale-105 transition-transform duration-500">
- <img loading="lazy" src={artistCover} alt={matchedArtist} className="w-full h-full object-cover" />
+ <div className={`w-28 h-28 sm:w-32 sm:h-32 ${matchedType === 'album' ? 'rounded-xl' : 'rounded-full'} overflow-hidden shadow-2xl flex-shrink-0 group-hover:scale-105 transition-transform duration-500`}>
+ <img loading="lazy" src={matchedCover} alt={matchedName} className="w-full h-full object-cover" />
  </div>
  <div className="flex flex-col items-center sm:items-start text-center sm:text-left pt-2">
  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal/20 text-teal text-[10px] font-bold uppercase tracking-widest mb-3">
- <Star className="w-3 h-3" /> Top Result: Artist
+ <Star className="w-3 h-3" /> Top Result: {roleLabel}
  </div>
- <h1 className="text-3xl font-display font-bold text-white mb-2">{matchedArtist}</h1>
- <p className="text-slate-400 text-sm">{artistTracks.length} tracks in AURA Library</p>
+ <h1 className="text-3xl font-display font-bold text-white mb-2">{matchedName}</h1>
+ <p className="text-slate-400 text-sm">{entityTracks.length} tracks in AURA Library</p>
  </div>
  </div>
  );
@@ -4428,8 +4484,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  >
  {/* Page Header */}
  <div className="flex items-center justify-between border-b border-white/5 pb-4">
- <button
- <h2 className="text-sm font-bold text-white tracking-widest uppercase font-display flex items-center gap-2">
+ <button onClick={() => setSidebarNav('home')} className="flex items-center gap-1.5 text-xs text-ink-secondary hover:text-teal transition-colors cursor-pointer"><ChevronLeft className="w-4 h-4" /> Back to Home</button><h2 className="text-sm font-bold text-white tracking-widest uppercase font-display flex items-center gap-2">
  {sidebarNav === 'radio' && <><Radio className="w-4 h-4 text-teal" /> Radio</>}
  </h2>
  </div>
@@ -4955,4 +5010,5 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  </div>
  );
 };
+
 

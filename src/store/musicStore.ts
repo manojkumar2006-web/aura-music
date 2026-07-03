@@ -5,6 +5,7 @@
 
 import { create } from 'zustand';
 import { Track, PlaybackState, SubscriptionTier, UserProfile, PrivacySettings } from '../types';
+import { splitAndNormalizeArtists, normalizeName } from '../utils/nameNormalizer';
 
 interface Playlist {
   name: string;
@@ -209,6 +210,13 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
         data.forEach((t: any) => {
           if (!t.id || seen.has(t.id)) return;
 
+          // Normalize names
+          const normalizedArtists = splitAndNormalizeArtists(t.artist);
+          t.artist = normalizedArtists.join(', ');
+          t.musicDirector = normalizeName(t.musicDirector);
+          t.hero = normalizeName(t.hero);
+          
+          seen.add(t.id);
           // If user has language preferences, filter tracks by matching artists
           if (userLanguages.length > 0) {
             const artistLower = (t.artist || '').toLowerCase();

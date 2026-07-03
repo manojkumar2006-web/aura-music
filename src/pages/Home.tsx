@@ -1503,9 +1503,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  )}
  </div>
 
- <button
-    onClick={() => setShowDownloadModal(true)}
-    className="glass-panel rounded-2xl px-4 py-2 border border-silver/8 bg-graphite/45 flex items-center gap-2 hover:border-teal/30 hover:bg-teal/5 hover:text-teal transition-all cursor-pointer h-12 flex-shrink-0 text-slate-300 shadow-lg"
+ <button`n    onClick={() => setShowDownloadModal(true)}`n    className="md:hidden glass-panel rounded-2xl px-4 py-2 border border-silver/8 bg-graphite/45 flex items-center gap-2 hover:border-teal/30 hover:bg-teal/5 hover:text-teal transition-all cursor-pointer h-12 flex-shrink-0 text-slate-300 shadow-lg"
     title="Download App"
   >
     <Download className="w-5 h-5" />
@@ -4930,3 +4928,4 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  </div>
  );
 };
+

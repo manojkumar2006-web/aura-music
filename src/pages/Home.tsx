@@ -2892,18 +2892,20 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  }
  }
 
- // Fallbacks and Fillers to guarantee 10+ mixes
+ const getCoverByArtist = (artistName: string) => tracks.find(t => t.artist.includes(artistName) || t.musicDirector === artistName)?.coverUrl || '/covers/hero-images.jpg';
+ const getCoverByRegion = (region: string) => tracks.find(t => t.region === region)?.coverUrl || '/covers/hero-images.jpg';
+
  const generics = [
- { title: 'Top Hits', desc: 'Global chart toppers', coverUrl: '/covers/mix_top_hits_1782360170480.png', tracks: tracks.slice(Math.max(0, tracks.length - 15)) },
- { title: 'Chill Vibes', desc: 'Relaxing tunes', coverUrl: '/covers/mix_chill_vibes_1782360181446.png', tracks: tracks.slice(Math.max(0, tracks.length - 15)) },
- { title: 'Workout Mix', desc: 'High energy', coverUrl: '/covers/mix_workout_1782360193898.png', tracks: tracks.slice(Math.max(0, tracks.length - 15)) },
- { title: 'Late Night Drive', desc: 'Night vibes', coverUrl: '/covers/mix_late_night_1782360208454.png', tracks: tracks.slice(Math.max(0, tracks.length - 15)) },
- { title: 'Daily Mix 1', desc: 'Made for you', coverUrl: '/covers/mix_top_hits_1782360170480.png', tracks: tracks.slice(Math.max(0, tracks.length - 15)) },
- { title: 'Upbeats', desc: 'Feel good songs', coverUrl: '/covers/mix_upbeats_1782360219265.png', tracks: tracks.slice(Math.max(0, tracks.length - 15)) },
- { title: 'Lo-Fi Chill', desc: 'Study beats', coverUrl: '/covers/mix_lofi_1782360233562.png', tracks: tracks.slice(Math.max(0, tracks.length - 15)) },
- { title: 'Tollywood Top 10', desc: 'Regional hits', coverUrl: '/covers/hero-images.jpg', tracks: tracks.filter(t => t.region === 'Tollywood').slice(0, 10) },
- { title: 'Kollywood Top 10', desc: 'Regional hits', coverUrl: '/covers/hero-images.jpg', tracks: tracks.filter(t => t.region === 'Kollywood').slice(0, 10) },
- { title: 'Bollywood Chartbusters', desc: 'Regional hits', coverUrl: '/covers/hero-images.jpg', tracks: tracks.filter(t => t.region === 'Bollywood').slice(0, 10) }
+ { title: 'Morning Mix', desc: 'Start your day fresh', coverUrl: getCoverByArtist('A.R. Rahman'), tracks: tracks.filter(t => t.musicDirector === 'A.R. Rahman' || t.artist.includes('A.R. Rahman') || t.title.toLowerCase().includes('sun')).slice(0, 15) },
+ { title: 'Late Night Mix', desc: 'Chill night vibes', coverUrl: getCoverByArtist('Harris Jayaraj'), tracks: tracks.filter(t => t.musicDirector === 'Harris Jayaraj' || t.artist.includes('Harris Jayaraj') || t.title.toLowerCase().includes('night')).slice(0, 15) },
+ { title: 'Workout Mix', desc: 'High energy beats', coverUrl: getCoverByArtist('Anirudh'), tracks: tracks.filter(t => t.musicDirector === 'Anirudh Ravichander' || t.artist.includes('Anirudh')).slice(0, 15) },
+ { title: 'Top Hits', desc: 'Global chart toppers', coverUrl: tracks[0]?.coverUrl || '/covers/hero-images.jpg', tracks: tracks.slice(0, 15) },
+ { title: 'Daily Mix 1', desc: 'Made for you', coverUrl: tracks[5]?.coverUrl || '/covers/hero-images.jpg', tracks: tracks.slice(15, 30) },
+ { title: 'Upbeats', desc: 'Feel good songs', coverUrl: getCoverByArtist('Devi Sri Prasad'), tracks: tracks.filter(t => t.musicDirector === 'Devi Sri Prasad' || t.artist.includes('Devi Sri Prasad')).slice(0, 15) },
+ { title: 'Lo-Fi Chill', desc: 'Study beats', coverUrl: getCoverByArtist('Santhosh Narayanan'), tracks: tracks.filter(t => t.musicDirector === 'Santhosh Narayanan' || t.artist.includes('Santhosh Narayanan')).slice(0, 15) },
+ { title: 'Tollywood Top 10', desc: 'Regional hits', coverUrl: getCoverByRegion('Tollywood'), tracks: tracks.filter(t => t.region === 'Tollywood').slice(0, 10) },
+ { title: 'Kollywood Top 10', desc: 'Regional hits', coverUrl: getCoverByRegion('Kollywood'), tracks: tracks.filter(t => t.region === 'Kollywood').slice(0, 10) },
+ { title: 'Bollywood Chartbusters', desc: 'Regional hits', coverUrl: getCoverByRegion('Bollywood'), tracks: tracks.filter(t => t.region === 'Bollywood').slice(0, 10) }
  ].filter(m => m.tracks.length > 0);
 
  for (const g of generics) {

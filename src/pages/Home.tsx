@@ -2556,8 +2556,28 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  <div className="flex flex-col xl:flex-row gap-6">
     {/* Getting Started Card */}
     <div className="xl:w-[45%] relative rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 p-6 sm:p-8 flex flex-col justify-between min-h-[280px] group cursor-pointer premium-card-hover bg-[#0a1118]">
-      {/* Floral Background Image */}
-      <img src="/covers/floral_bg.png" className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-screen group-hover:scale-105 group-hover:opacity-80 transition-all duration-700" alt="Floral Edge Design" />
+      {/* Floral Background Image (3D Swinging) */}
+      <motion.div
+        className="absolute inset-0 w-[120%] h-[120%] -left-[10%] -top-[10%] pointer-events-none"
+        style={{ perspective: 1000 }}
+      >
+        <motion.img 
+          src="/covers/floral_bg.png" 
+          className="w-full h-full object-cover opacity-60 mix-blend-screen"
+          alt="Floral Edge Design"
+          animate={{ 
+            rotateX: [0, 8, -8, 0],
+            rotateY: [0, -8, 8, 0],
+            rotateZ: [0, 3, -3, 0],
+            scale: [1, 1.1, 1.1, 1]
+          }}
+          transition={{ 
+            repeat: Infinity,
+            duration: 12,
+            ease: "easeInOut"
+          }}
+        />
+      </motion.div>
       
       {/* Gradient overlay for text readability */}
       <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />

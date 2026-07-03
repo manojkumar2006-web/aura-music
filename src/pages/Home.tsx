@@ -203,7 +203,7 @@ export const getCover = (name: string, type: 'hero' | 'director' | 'artist' | 'a
  let match;
  if (type === 'hero') match = tracks.find(t => t.hero === name);
  if (type === 'director') match = tracks.find(t => t.musicDirector === name);
- if (type === 'artist') match = tracks.find(t => t.artist?.includes(name));
+ if (type === 'artist') match = tracks.find(t => t.artist?.split(', ').includes(name));
  if (type === 'album') match = tracks.find(t => t.album === name);
  
  if (match && match.coverUrl) {
@@ -2056,7 +2056,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
   ) : (
   <>
   {selectedDirector ? (() => {
- const directorTracks = tracks.filter(t => t.musicDirector === selectedDirector || t.artist?.includes(selectedDirector) || t.hero?.includes(selectedDirector));
+ const directorTracks = tracks.filter(t => t.musicDirector === selectedDirector || t.artist?.split(', ').includes(selectedDirector) || t.hero === selectedDirector);
  const isHero = directorTracks.some(t => t.hero === selectedDirector);
  
  // Sort tracks by releaseDate (newest first)
@@ -2649,7 +2649,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  { id: 'anirudh', title: 'Anirudh', subtitle: 'With Dhanush, Jonita Gandhi...', bg: 'bg-gradient-to-br from-teal/20 to-black/40 border border-teal/20', artistQuery: 'Anirudh' },
  { id: 'sid', title: 'Sid Sriram', subtitle: 'With Thaman S, Hesham Abdul...', bg: 'bg-gradient-to-br from-indigo-500/20 to-black/40 border border-indigo-500/20', artistQuery: 'Sid Sriram' }
  ].map((radio, i) => {
- const radioTracks = tracks.filter(t => t.artist.includes(radio.artistQuery) || t.musicDirector?.includes(radio.artistQuery) || t.title.includes(radio.artistQuery));
+ const radioTracks = tracks.filter(t => t.artist.split(', ').includes(radio.artistQuery) || t.musicDirector?.includes(radio.artistQuery) || t.title.includes(radio.artistQuery));
  const displayTracks = radioTracks.length >= 3 ? radioTracks : [...tracks].slice(0, 3);
  
  return (
@@ -2852,7 +2852,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  
  // Mix 2: Favorite Artists Mix
  if (explicitArtists.length > 0) {
- const artistTracks = tracks.filter(t => explicitArtists.some(a => t.artist.includes(a) || t.hero?.includes(a) || t.musicDirector === a));
+ const artistTracks = tracks.filter(t => explicitArtists.some(a => t.artist.split(', ').includes(a) || t.hero === a || t.musicDirector === a));
  if (artistTracks.length > 0) {
  mixes.push({
  title: 'Favorite Artists Mix',
@@ -2863,7 +2863,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  
  // Mix 2.5: Individual Artist Mixes
  explicitArtists.slice(0, 5).forEach(artist => {
- const singleArtistTracks = tracks.filter(t => t.artist.includes(artist) || t.hero?.includes(artist) || t.musicDirector === artist);
+ const singleArtistTracks = tracks.filter(t => t.artist.split(', ').includes(artist) || t.hero === artist || t.musicDirector === artist);
  if (singleArtistTracks.length >= 3) {
  mixes.push({
  title: `${artist} Mix`,
@@ -2878,7 +2878,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  if (likedTracksList.length > 0 || explicitArtists.length > 0) {
  const discoveryTracks = tracks.filter(t => {
  if (currentUser?.likedTracks?.includes(t.id)) return false;
- const fromExplicitArtist = explicitArtists.some(a => t.artist.includes(a) || t.hero?.includes(a) || t.musicDirector === a);
+ const fromExplicitArtist = explicitArtists.some(a => t.artist.split(', ').includes(a) || t.hero === a || t.musicDirector === a);
  const fromLikedTrackArtist = likedTracksList.some(lt => {
  const likedTrackArtists = lt.artist.split(', ');
  const currentTrackArtists = t.artist.split(', ');
@@ -2895,17 +2895,17 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  }
  }
 
- const getCoverByArtist = (artistName: string) => tracks.find(t => t.artist.includes(artistName) || t.musicDirector === artistName)?.coverUrl || '/covers/hero-images.jpg';
+ const getCoverByArtist = (artistName: string) => tracks.find(t => t.artist.split(', ').includes(artistName) || t.musicDirector === artistName)?.coverUrl || '/covers/hero-images.jpg';
  const getCoverByRegion = (region: string) => tracks.find(t => t.region === region)?.coverUrl || '/covers/hero-images.jpg';
 
  const generics = [
- { title: 'Morning Mix', desc: 'Start your day fresh', coverUrl: getCoverByArtist('A.R. Rahman'), tracks: tracks.filter(t => t.musicDirector === 'A.R. Rahman' || t.artist.includes('A.R. Rahman') || t.title.toLowerCase().includes('sun')).slice(0, 15) },
- { title: 'Late Night Mix', desc: 'Chill night vibes', coverUrl: getCoverByArtist('Harris Jayaraj'), tracks: tracks.filter(t => t.musicDirector === 'Harris Jayaraj' || t.artist.includes('Harris Jayaraj') || t.title.toLowerCase().includes('night')).slice(0, 15) },
- { title: 'Workout Mix', desc: 'High energy beats', coverUrl: getCoverByArtist('Anirudh'), tracks: tracks.filter(t => t.musicDirector === 'Anirudh Ravichander' || t.artist.includes('Anirudh')).slice(0, 15) },
+ { title: 'Morning Mix', desc: 'Start your day fresh', coverUrl: getCoverByArtist('A.R. Rahman'), tracks: tracks.filter(t => t.musicDirector === 'A.R. Rahman' || t.artist.split(', ').includes('A.R. Rahman') || t.title.toLowerCase().includes('sun')).slice(0, 15) },
+ { title: 'Late Night Mix', desc: 'Chill night vibes', coverUrl: getCoverByArtist('Harris Jayaraj'), tracks: tracks.filter(t => t.musicDirector === 'Harris Jayaraj' || t.artist.split(', ').includes('Harris Jayaraj') || t.title.toLowerCase().includes('night')).slice(0, 15) },
+ { title: 'Workout Mix', desc: 'High energy beats', coverUrl: getCoverByArtist('Anirudh'), tracks: tracks.filter(t => t.musicDirector === 'Anirudh Ravichander' || t.artist.split(', ').includes('Anirudh')).slice(0, 15) },
  { title: 'Top Hits', desc: 'Global chart toppers', coverUrl: tracks[0]?.coverUrl || '/covers/hero-images.jpg', tracks: tracks.slice(0, 15) },
  { title: 'Daily Mix 1', desc: 'Made for you', coverUrl: tracks[5]?.coverUrl || '/covers/hero-images.jpg', tracks: tracks.slice(15, 30) },
- { title: 'Upbeats', desc: 'Feel good songs', coverUrl: getCoverByArtist('Devi Sri Prasad'), tracks: tracks.filter(t => t.musicDirector === 'Devi Sri Prasad' || t.artist.includes('Devi Sri Prasad')).slice(0, 15) },
- { title: 'Lo-Fi Chill', desc: 'Study beats', coverUrl: getCoverByArtist('Santhosh Narayanan'), tracks: tracks.filter(t => t.musicDirector === 'Santhosh Narayanan' || t.artist.includes('Santhosh Narayanan')).slice(0, 15) },
+ { title: 'Upbeats', desc: 'Feel good songs', coverUrl: getCoverByArtist('Devi Sri Prasad'), tracks: tracks.filter(t => t.musicDirector === 'Devi Sri Prasad' || t.artist.split(', ').includes('Devi Sri Prasad')).slice(0, 15) },
+ { title: 'Lo-Fi Chill', desc: 'Study beats', coverUrl: getCoverByArtist('Santhosh Narayanan'), tracks: tracks.filter(t => t.musicDirector === 'Santhosh Narayanan' || t.artist.split(', ').includes('Santhosh Narayanan')).slice(0, 15) },
  { title: 'Tollywood Top 10', desc: 'Regional hits', coverUrl: getCoverByRegion('Tollywood'), tracks: tracks.filter(t => t.region === 'Tollywood').slice(0, 10) },
  { title: 'Kollywood Top 10', desc: 'Regional hits', coverUrl: getCoverByRegion('Kollywood'), tracks: tracks.filter(t => t.region === 'Kollywood').slice(0, 10) },
  { title: 'Bollywood Chartbusters', desc: 'Regional hits', coverUrl: getCoverByRegion('Bollywood'), tracks: tracks.filter(t => t.region === 'Bollywood').slice(0, 10) }
@@ -3289,13 +3289,13 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  if (matchedType === 'album') {
    entityTracks = tracks.filter(t => t.album === matchedName);
  } else if (matchedType === 'actor') {
-   entityTracks = tracks.filter(t => t.hero === matchedName || t.artist.includes(matchedName));
+   entityTracks = tracks.filter(t => t.hero === matchedName || t.artist.split(', ').includes(matchedName));
    matchedCover = getCover(matchedName, 'hero', tracks);
  } else if (matchedType === 'director') {
-   entityTracks = tracks.filter(t => t.musicDirector === matchedName || t.artist.includes(matchedName));
+   entityTracks = tracks.filter(t => t.musicDirector === matchedName || t.artist.split(', ').includes(matchedName));
    matchedCover = getCover(matchedName, 'director', tracks);
  } else {
-   entityTracks = tracks.filter(t => t.artist.includes(matchedName));
+   entityTracks = tracks.filter(t => t.artist.split(', ').includes(matchedName));
    matchedCover = getCover(matchedName, 'artist', tracks);
  }
  
@@ -3464,7 +3464,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  
  // Add explicitly liked artists first (baseline count 0)
  currentUser?.likedArtists?.forEach(artistName => {
- const trackWithArtist = tracks.find(t => t.musicDirector === artistName || t.artist.includes(artistName) || t.hero === artistName);
+ const trackWithArtist = tracks.find(t => t.musicDirector === artistName || t.artist.split(', ').includes(artistName) || t.hero === artistName);
  const coverUrl = trackWithArtist ? trackWithArtist.coverUrl : 'https://picsum.photos/seed/music20/400/400';
  likedArtistMap.set(artistName, { name: artistName, coverUrl, count: 0 });
  });
@@ -3694,7 +3694,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  </h3>
  <div className="flex gap-5 overflow-x-auto custom-scroll pb-6 pt-2 px-2 -mx-2 snap-x">
  {globalArtists.slice(0, 20).map((artist) => {
- const artistTrack = tracks.find(t => t.artist.includes(artist));
+ const artistTrack = tracks.find(t => t.artist.split(', ').includes(artist));
  return (
  <div 
  key={artist} 
@@ -5010,5 +5010,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  </div>
  );
 };
+
+
 
 

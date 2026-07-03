@@ -4429,11 +4429,6 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  {/* Page Header */}
  <div className="flex items-center justify-between border-b border-white/5 pb-4">
  <button
- onClick={() => setSidebarNav('home')}
- className="flex items-center gap-1.5 text-xs text-ink-secondary hover:text-teal transition-colors cursor-pointer"
- >
- <ChevronLeft className="w-4 h-4" /> Back to Home
- </button>
  <h2 className="text-sm font-bold text-white tracking-widest uppercase font-display flex items-center gap-2">
  {sidebarNav === 'radio' && <><Radio className="w-4 h-4 text-teal" /> Radio</>}
  </h2>
@@ -4446,17 +4441,21 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  <h2 className="text-2xl font-extrabold text-white tracking-tight">On Air Now</h2>
  <div className="flex gap-4 overflow-x-auto custom-scroll pb-4 snap-x hide-scrollbar">
  {[
- { id: '1', label: '1', title: 'HITS', subtitle: 'Aura Radio', bg: 'bg-[#ff0000]', textColor: 'text-white' },
- { id: 'hits', label: 'HITS\nHITS\nHITS', title: 'BOLLYWOOD', subtitle: 'Aura Radio', bg: 'bg-white', textColor: 'text-[#007aff]' },
- { id: 'country', label: 'COUNTRY', title: 'COUNTRY', subtitle: 'Aura Radio', bg: 'bg-white', textColor: 'text-[#ff9f0a]' },
- { id: 'musica', label: 'MÚSICA\nUNO', title: 'LATIN', subtitle: 'Aura Radio', bg: 'bg-white', textColor: 'text-[#ff2d55]' },
- { id: 'club', label: 'Club', title: 'DANCE', subtitle: 'Aura Radio', bg: 'bg-white', textColor: 'text-[#1c1c1e]' },
- { id: 'chill', label: 'Chill', title: 'LO-FI', subtitle: 'Aura Radio', bg: 'bg-white', textColor: 'text-[#32ade6]' },
+ { id: '1', label: '1', title: 'TAMIL HITS', subtitle: 'Aura Radio', bg: 'bg-[#ff0000]', textColor: 'text-white', filter: (t: any) => t.region === 'Kollywood' },
+ { id: 'hits', label: 'HITS\nHITS\nHITS', title: 'KOLLYWOOD', subtitle: 'Aura Radio', bg: 'bg-white', textColor: 'text-[#007aff]', filter: (t: any) => t.region === 'Kollywood' },
+ { id: 'kuthu', label: 'KUTHU', title: 'MASS', subtitle: 'Aura Radio', bg: 'bg-white', textColor: 'text-[#ff9f0a]', filter: (t: any) => t.region === 'Kollywood' && (t.musicDirector === 'Anirudh Ravichander' || t.musicDirector === 'Devi Sri Prasad') },
+ { id: 'melody', label: 'MELODY\nLOVE', title: 'ROMANCE', subtitle: 'Aura Radio', bg: 'bg-white', textColor: 'text-[#ff2d55]', filter: (t: any) => t.region === 'Kollywood' && (t.musicDirector === 'A.R. Rahman' || t.musicDirector === 'Harris Jayaraj') },
+ { id: '90s', label: '90s', title: 'CLASSIC', subtitle: 'Aura Radio', bg: 'bg-white', textColor: 'text-[#1c1c1e]', filter: (t: any) => t.region === 'Kollywood' },
+ { id: 'chill', label: 'Chill', title: 'LO-FI', subtitle: 'Aura Radio', bg: 'bg-white', textColor: 'text-[#32ade6]', filter: (t: any) => t.region === 'Kollywood' && t.musicDirector === 'Santhosh Narayanan' },
  ].map((station, i) => {
  return (
  <div 
  key={i} 
- onClick={() => handleSelectTrack(tracks[Math.floor(Math.random() * tracks.length)], [...tracks])}
+ onClick={() => {
+   const stationTracks = tracks.filter(station.filter);
+   const playTracks = stationTracks.length > 0 ? stationTracks : tracks;
+   handleSelectTrack(playTracks[Math.floor(Math.random() * playTracks.length)], playTracks);
+ }}
  className={`min-w-[280px] w-[280px] h-[280px] rounded-[32px] ${station.bg} p-6 flex flex-col justify-between relative cursor-pointer snap-start overflow-hidden premium-card-hover group shadow-xl`}
  >
  <div className="flex-grow flex items-center justify-center">
@@ -4479,21 +4478,25 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  <div className="flex flex-col gap-4 mt-6 mb-6">
  <div className="flex items-center justify-between">
  <h2 className="text-lg font-bold text-white hover:underline cursor-pointer flex items-center gap-1">
- Global Live Stations <ChevronRight className="w-5 h-5 text-slate-400" />
+ Regional Live Stations <ChevronRight className="w-5 h-5 text-slate-400" />
  </h2>
  </div>
  <div className="flex gap-4 overflow-x-auto custom-scroll pb-4 snap-x hide-scrollbar">
  {[
- { title: 'K-Pop Beats', subtitle: 'Seoul', bg: 'bg-pink-500' },
- { title: 'Tokyo Lofi', subtitle: 'Tokyo', bg: 'bg-indigo-500' },
- { title: 'NY Hip-Hop', subtitle: 'New York', bg: 'bg-slate-800' },
- { title: 'London Electronic', subtitle: 'London', bg: 'bg-purple-600' },
- { title: 'Paris Jazz', subtitle: 'Paris', bg: 'bg-amber-600' },
- { title: 'Rio Carnival', subtitle: 'Rio de Janeiro', bg: 'bg-green-500' },
+ { title: 'Chennai Beats', subtitle: 'Chennai', bg: 'bg-pink-500', region: 'Kollywood' },
+ { title: 'Madurai Folk', subtitle: 'Madurai', bg: 'bg-indigo-500', region: 'Kollywood' },
+ { title: 'Coimbatore Chill', subtitle: 'Coimbatore', bg: 'bg-slate-800', region: 'Kollywood' },
+ { title: 'Kerala Melodies', subtitle: 'Kochi', bg: 'bg-purple-600', region: 'Mollywood' },
+ { title: 'Telugu Chartbusters', subtitle: 'Hyderabad', bg: 'bg-amber-600', region: 'Tollywood' },
+ { title: 'Bangalore Indie', subtitle: 'Bangalore', bg: 'bg-green-500', region: 'Sandalwood' },
  ].map((station, i) => (
  <div 
  key={i} 
- onClick={() => handleSelectTrack(tracks[Math.floor(Math.random() * tracks.length)], [...tracks])}
+ onClick={() => {
+   const regionalTracks = tracks.filter(t => t.region === station.region || t.region === 'Kollywood');
+   const playTracks = regionalTracks.length > 0 ? regionalTracks : tracks;
+   handleSelectTrack(playTracks[Math.floor(Math.random() * playTracks.length)], playTracks);
+ }}
  className={`min-w-[220px] w-[220px] h-[140px] rounded-[24px] ${station.bg} p-5 flex flex-col justify-end relative cursor-pointer snap-start overflow-hidden premium-card-hover group shadow-lg`}
  >
  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />

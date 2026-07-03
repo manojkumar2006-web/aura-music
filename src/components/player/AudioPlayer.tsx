@@ -33,33 +33,73 @@ import { useShallow } from 'zustand/react/shallow';
 import { Track } from '../../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { SyncedLyrics } from './SyncedLyrics';
+import { DndContext, closestCenter, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 
-const MemoizedQueue = React.memo(({ queue, currentTrack }: { queue: Track[], currentTrack: Track | null }) => {
- if (!queue || queue.length === 0) return null;
- return (
- <>
- <div className="text-xs uppercase text-slate-400 font-bold mb-2 mt-4">Next in Queue</div>
- {queue.map((track, i) => (
- <div key={`${track.id}-${i}`} className="flex items-center gap-3 p-3 hover:bg-[#181818] rounded-xl transition-colors">
- <img src={track.coverUrl} className="w-12 h-12 rounded-lg object-cover" />
- <div className="flex-1 min-w-0">
- <div className="text-white font-medium truncate text-sm">{track.title}</div>
- <div className="text-slate-400 text-xs truncate">{track.artist}</div>
- </div>
- </div>
- ))}
- </>
- );
-});
 
-const MemoizedFullscreenQueue = React.memo(({ queue, currentTrack, setCurrentTrack }: { queue: Track[], currentTrack: Track | null, setCurrentTrack: (t: Track) => void }) => {
- if (!queue || queue.length === 0) return null;
- return (
- <>
- <MemoizedFullscreenQueue queue={queue} currentTrack={currentTrack} setCurrentTrack={setCurrentTrack} />
- </>
- );
+const SortableTrackItem = ({ track, id, onClick }: { track: Track; id: string; onClick: () => void }) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 50 : 'auto',
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      onClick={onClick}
+      className="flex items-center gap-3 p-2 hover:bg-[#181818] rounded-xl transition-colors cursor-pointer group"
+    >
+      <div 
+        {...attributes} 
+        {...listeners} 
+        className="text-slate-500 hover:text-white cursor-grab active:cursor-grabbing p-1.5 opacity-50 group-hover:opacity-100"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+      </div>
+      <img loading="lazy" src={track.coverUrl} className="w-12 h-12 rounded-lg object-cover pointer-events-none" />
+      <div className="flex-1 min-w-0 pointer-events-none">
+        <div className="text-white font-medium truncate text-sm group-hover:text-teal transition-colors">{track.title}</div>
+        <div className="text-slate-400 text-xs truncate">{track.artist}</div>
+      </div>
+    </div>
+  );
+};
+
+const MemoizedQueue = React.memo(({ queue, setQueue, onPlayTrack }: { queue: Track[], setQueue: (q: Track[]) => void, onPlayTrack: (index: number) => void }) => {
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } })
+  );
+
+  if (!queue || queue.length === 0) return null;
+
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = queue.findIndex((t, i) => `${t.id}-${i}` === active.id);
+      const newIndex = queue.findIndex((t, i) => `${t.id}-${i}` === over.id);
+      setQueue(arrayMove(queue, oldIndex, newIndex));
+    }
+  };
+
+  return (
+    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <div className="text-xs uppercase text-slate-400 font-bold mb-2 mt-4 px-2">Next in Queue</div>
+      <SortableContext items={queue.map((t, i) => `${t.id}-${i}`)} strategy={verticalListSortingStrategy}>
+        {queue.map((track, i) => (
+          <SortableTrackItem key={`${track.id}-${i}`} id={`${track.id}-${i}`} track={track} onClick={() => onPlayTrack(i)} />
+        ))}
+      </SortableContext>
+    </DndContext>
+  );
 });
 
 interface AudioPlayerProps {
@@ -335,18 +375,10 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  return;
  }
 
- let nextTrack: Track;
- if (isShuffle) {
- const randomIndex = Math.floor(Math.random() * tracks.length);
- nextTrack = tracks[randomIndex];
- } else {
- const currentIndex = tracks.findIndex(t => t.id === currentTrack?.id);
- const nextIndex = (currentIndex + 1) % tracks.length;
- nextTrack = tracks[nextIndex];
- }
-
- setCurrentTrack(nextTrack);
- setPlaybackState('playing');
+ setPlaybackState('paused');
+   if (audioRef.current) {
+     audioRef.current.pause();
+   }
  };
 
  const handlePrev = () => {
@@ -706,7 +738,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  </div>
  </div>
  
- <MemoizedQueue queue={queue} currentTrack={currentTrack} />
+ <MemoizedQueue queue={queue} setQueue={setQueue} onPlayTrack={handlePlayFromQueue} />
  </div>
  </motion.div>
  )}

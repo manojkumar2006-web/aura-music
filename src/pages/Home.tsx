@@ -2654,7 +2654,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  key={albumInfo.id}
  className="min-w-[170px] w-[170px] flex flex-col gap-3 cursor-pointer group snap-start"
  onClick={() => {
- setQueue(albumInfo.albumTracks);
+ setQueue(albumInfo.albumTracks.slice(1));
  setCurrentTrack(albumInfo.albumTracks[0]);
  setPlaybackState('playing');
  }}
@@ -3678,7 +3678,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  onClick={() => {
  setCurrentTrack(track);
  setPlaybackState('playing');
- setQueue(newReleases);
+ setQueue(newReleases.filter(t => t.id !== track.id));
  }}
  className="min-w-[160px] max-w-[160px] flex flex-col gap-3 snap-start group cursor-pointer premium-card-hover"
  >
@@ -3968,7 +3968,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  onClick={() => {
  setCurrentTrack(track);
  setPlaybackState('playing');
- setQueue(tracks.slice(15, 25));
+ setQueue(tracks.slice(15, 25).filter(t => t.id !== track.id));
  }}
  className="min-w-[160px] max-w-[160px] flex flex-col gap-3 snap-start group cursor-pointer premium-card-hover"
  >
@@ -4959,6 +4959,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  </div>
  );
 };
+
 
 
 

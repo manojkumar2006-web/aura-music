@@ -2092,206 +2092,142 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
 
 
  return (
- <motion.div
- key="director-profile"
- initial={{ opacity: 0, scale: 0.98 }}
- animate={{ opacity: 1, scale: 1 }}
- transition={{ duration: 0.3 }}
- className="flex flex-col gap-10 pb-10 relative pt-10"
- >
- <button 
- onClick={() => setSelectedDirector(null)}
- className="absolute top-0 left-0 bg-[#181818] hover:bg-[#242424] p-2 rounded-full transition-colors text-slate-300 flex items-center gap-2 text-xs font-bold uppercase tracking-wider z-20"
- >
- <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
- Back
- </button>
+<motion.div
+  key="director-profile"
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  exit={{ opacity: 0 }}
+  transition={{ duration: 0.3 }}
+  className="flex flex-col pb-10"
+>
+  {/* 1. Spotify-Style Hero Banner */}
+  <div className="relative w-full h-[350px] md:h-[40vh] min-h-[300px] flex items-end pb-6 px-6 md:px-10 -mt-6">
+    <button 
+      onClick={() => setSelectedDirector(null)}
+      className="absolute top-6 left-6 bg-black/50 hover:bg-black/80 backdrop-blur-md p-2.5 rounded-full transition-colors text-white z-50 flex items-center justify-center"
+    >
+      <ChevronLeft className="w-5 h-5" />
+    </button>
 
- {/* Circular Image Header */}
- <div className="flex flex-col items-center justify-center pt-4 pb-6 border-b border-white/5 relative">
- <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-teal/20 blur-[100px] rounded-full opacity-50 pointer-events-none" />
- <div className="w-64 h-64 rounded-full overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] z-10 relative border-4 border-white/10">
- <img loading="lazy" src={getCover(selectedDirector, 'director', tracks)} alt={selectedDirector} className="w-full h-full object-cover" />
- </div>
- </div>
+    <div className="absolute inset-0 z-0">
+      <img 
+        loading="lazy" 
+        src={getCover(selectedDirector, 'director', tracks)} 
+        alt={selectedDirector} 
+        className="w-full h-full object-cover object-[center_20%] opacity-90"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-[#121212]/60 to-transparent" />
+    </div>
 
- {/* Artist Name & Play Header */}
- <div className="flex flex-col md:flex-row items-center justify-center md:justify-start gap-4 md:gap-6 border-b border-white/5 pb-8 text-center md:text-left">
- <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white font-display tracking-tight w-full md:w-auto break-words line-clamp-2 md:truncate">{selectedDirector}</h2>
- <div className="flex items-center gap-4 mt-2 md:mt-0">
- <button 
- onClick={() => topSongs[0] && handleSelectTrack(topSongs[0], topSongs)}
- className="bg-teal hover:bg-teal/90 text-black p-3 md:p-4 rounded-full flex items-center justify-center transition-all hover:scale-105 shadow-[0_0_20px_rgba(20,184,166,0.3)] flex-shrink-0"
- >
- <Play className="w-5 h-5 md:w-6 md:h-6 fill-current ml-0.5" />
- </button>
- {currentUser && (
- <button 
- onClick={(e) => {
- e.stopPropagation();
- toggleArtistLike(selectedDirector);
- }}
- className="p-3 md:p-4 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-colors flex-shrink-0 group/like"
- >
- <Heart className={`w-5 h-5 md:w-6 md:h-6 transition-transform group-hover/like:scale-110 ${isArtistLiked ? 'text-teal fill-teal' : 'text-slate-300'}`} />
- </button>
- )}
- </div>
- </div>
+    <div className="relative z-10 flex flex-col gap-1 w-full">
+      <div className="flex items-center gap-2 text-sm text-white font-bold tracking-widest uppercase mb-1">
+        <div className="w-5 h-5 bg-blue-500 text-white rounded-full flex items-center justify-center">
+          <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="m9 16.2-3.5-3.5 1.4-1.4 2.1 2.1 6.1-6.1 1.4 1.4-7.5 7.5z"/></svg>
+        </div>
+        Verified by AURA
+      </div>
+      <h2 className="text-5xl md:text-[6rem] leading-none font-black text-white font-display tracking-tighter drop-shadow-2xl">
+        {selectedDirector}
+      </h2>
+      <div className="text-white/80 text-base font-medium mt-3">
+        {(sortedTracks.length * 142857).toLocaleString()} monthly listeners
+      </div>
+    </div>
+  </div>
 
- {/* Latest Release & Top Songs Grid */}
- <div className="grid grid-cols-1 md:grid-cols-12 gap-10 border-b border-white/5 pb-10">
- {/* Latest Release */}
- <div className="md:col-span-4 flex flex-col gap-4">
- <h3 className="text-xl font-bold text-white font-display tracking-wide flex items-center justify-between">
- {isHero ? 'Latest Film' : 'Latest Release'}
- <ChevronRight className="w-5 h-5 text-slate-500 cursor-pointer hover:text-white" />
- </h3>
- {latestAlbumName && (
- <div 
- className="flex flex-col gap-3 cursor-pointer group"
- onClick={() => {
- setSelectedAlbum(latestAlbumName);
- setSelectedDirector(null);
- }}
- >
- <div className="w-full aspect-square rounded-2xl overflow-hidden relative shadow-lg bg-[#121212]">
- <img loading="lazy" src={latestAlbumTracks[0]?.coverUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={latestAlbumName} />
- <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
- </div>
- <div className="flex flex-col">
- <span className="text-xs uppercase tracking-widest text-slate-400 font-bold mb-1">Latest Release</span>
- <span className="text-base font-bold text-white truncate mt-1 group-hover:text-teal transition-colors">{latestAlbumName} (Original Motion Picture Soundtrack)</span>
- <span className="text-xs text-slate-400 mt-0.5">{latestAlbumTracks.length} song{latestAlbumTracks.length !== 1 && 's'}</span>
- </div>
- </div>
- )}
- </div>
+  {/* 2. Action Bar */}
+  <div className="px-6 md:px-10 flex items-center gap-6 py-6 border-b border-white/5 bg-gradient-to-b from-[#181818]/80 to-[#121212]">
+    <button 
+      onClick={() => topSongs[0] && handleSelectTrack(topSongs[0], topSongs)} 
+      className="bg-teal hover:bg-teal/90 text-black w-14 h-14 rounded-full flex items-center justify-center transition-transform hover:scale-105 shadow-[0_8px_30px_rgba(20,184,166,0.4)] flex-shrink-0"
+    >
+      <Play className="w-7 h-7 fill-current ml-1" />
+    </button>
+    <button className="text-slate-400 hover:text-white transition-colors">
+      <Shuffle className="w-7 h-7" />
+    </button>
+    <button 
+      onClick={(e) => {
+        e.stopPropagation();
+        toggleArtistLike(selectedDirector);
+      }}
+      className={`border px-5 py-1.5 rounded-full text-sm font-bold tracking-widest transition-colors uppercase ${isArtistLiked ? 'border-teal text-teal hover:border-teal/80 hover:text-teal/80' : 'border-slate-400 text-white hover:border-white'}`}
+    >
+      {isArtistLiked ? 'Following' : 'Follow'}
+    </button>
+    <button className="text-slate-400 hover:text-white transition-colors">
+      <MoreHorizontal className="w-8 h-8" />
+    </button>
+  </div>
 
- {/* Top Songs */}
- <div className="md:col-span-8 flex flex-col gap-4">
- <h3 className="text-xl font-bold text-white font-display tracking-wide flex items-center justify-between">
- {isHero ? 'Popular Songs' : 'Top Songs'}
- <ChevronRight className="w-5 h-5 text-slate-500 cursor-pointer hover:text-white" />
- </h3>
- <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
- {topSongs.map((track) => {
- const isPlaying = currentTrack?.id === track.id;
- return (
- <div 
- key={track.id}
- onClick={() => handleSelectTrack(track)}
- className={`flex items-center gap-4 p-2 rounded-xl cursor-pointer group transition-colors ${activeTrackMenu === track.id ? 'z-30 relative' : ''} ${isPlaying ? 'bg-[#242424]' : 'hover:bg-[#181818]'}`}
- >
- <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 relative shadow-md">
- <img loading="lazy" src={track.coverUrl} className="w-full h-full object-cover" alt={track.title} />
- <div className={`absolute inset-0 bg-[#121212]/50 md:bg-[#121212] flex items-center justify-center transition-opacity ${isPlaying ? 'opacity-100' : 'opacity-0 md:group-hover:opacity-100'}`}>
- {isPlaying ? (
- <div className="flex gap-0.5 items-end h-3">
- <div className="w-1 bg-white rounded-full h-2 animate-[bounce_0.8s_infinite]" />
- <div className="w-1 bg-white rounded-full h-3 animate-[bounce_0.8s_infinite_0.15s]" />
- <div className="w-1 bg-white rounded-full h-1.5 animate-[bounce_0.8s_infinite_0.3s]" />
- </div>
- ) : (
- <Play className="w-5 h-5 text-white fill-current" />
- )}
- </div>
- </div>
- <div className="flex flex-col flex-1 overflow-hidden">
- <span className={`text-sm font-bold truncate ${isPlaying ? 'text-white' : 'text-slate-200'}`}>{track.title}</span>
- <span className="text-xs text-slate-400 truncate">{track.album}</span>
- </div>
- <div className="relative">
- <button 
- onClick={(e) => {
- e.stopPropagation();
- setActiveTrackMenu(activeTrackMenu === track.id ? null : track.id);
- }}
- className={`p-2 rounded-full transition-all text-slate-300 hover:bg-[#242424] ${activeTrackMenu === track.id ? 'opacity-100 bg-[#242424]' : 'opacity-100 md:opacity-0 md:group-hover:opacity-100'}`}
- >
- <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
- </button>
- 
- <AnimatePresence>
- {activeTrackMenu === track.id && (
- <motion.div
- initial={{ opacity: 0, scale: 0.95, y: -10 }}
- animate={{ opacity: 1, scale: 1, y: 0 }}
- exit={{ opacity: 0, scale: 0.95, y: -10 }}
- transition={{ duration: 0.15 }}
- className="absolute right-0 top-full mt-1 w-48 rounded-xl bg-[#0f172a] border border-white/10 shadow-2xl py-1.5 z-50 flex flex-col text-left"
- onClick={(e) => e.stopPropagation()}
- >
- <button
- onClick={(e) => handleAddToQueue(e, track)}
- className="w-full px-3 py-2 text-xs font-semibold text-slate-200 hover:text-white hover:bg-[#242424] flex items-center gap-2 transition-colors text-left"
- >
- <PlusCircle className="w-3.5 h-3.5 text-teal" />
- Add to Queue
- </button>
- <button
- onClick={(e) => handlePlayNext(e, track)}
- className="w-full px-3 py-2 text-xs font-semibold text-slate-200 hover:text-white hover:bg-[#242424] flex items-center gap-2 transition-colors text-left"
- >
- <Play className="w-3.5 h-3.5 text-teal" />
- Play Next
- </button>
- <button
- onClick={(e) => handleOpenPlaylistModal(e, track.id)}
- className="w-full px-3 py-2 text-xs font-semibold text-slate-200 hover:text-white hover:bg-[#242424] flex items-center gap-2 transition-colors text-left"
- >
- <FolderPlus className="w-3.5 h-3.5 text-teal" />
- Add to Playlist
- </button>
- </motion.div>
- )}
- </AnimatePresence>
- </div>
- </div>
- );
- })}
- </div>
- </div>
- </div>
+  <div className="px-6 md:px-10 flex flex-col gap-12 pt-8">
+    
+    {/* 3. Popular Section */}
+    <div className="flex flex-col gap-6">
+      <h3 className="text-2xl font-bold text-white font-display tracking-tight">Popular</h3>
+      <div className="flex flex-col gap-1">
+         {topSongs.map((track, i) => {
+           const isPlaying = currentTrack?.id === track.id;
+           return (
+             <div 
+               key={track.id} 
+               onClick={() => handleSelectTrack(track)}
+               className="flex items-center gap-4 hover:bg-white/10 p-2.5 rounded-lg group transition-colors cursor-pointer relative"
+             >
+                <div className="w-6 flex justify-end text-slate-400 text-base font-medium relative">
+                  <span className={`group-hover:opacity-0 transition-opacity ${isPlaying ? 'text-teal' : ''}`}>{isPlaying ? '' : i + 1}</span>
+                  <Play className={`w-4 h-4 absolute right-0 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity ${isPlaying ? 'text-teal opacity-100' : 'text-white'}`} fill={isPlaying ? "currentColor" : "none"} />
+                </div>
+                <img loading="lazy" src={track.coverUrl} className="w-10 h-10 rounded shadow object-cover" alt={track.title} />
+                <div className="flex flex-col flex-1 min-w-0">
+                   <span className={`truncate text-base font-medium ${isPlaying ? 'text-teal' : 'text-white group-hover:underline'}`}>{track.title}</span>
+                   {track.album !== 'Single' && <span className="text-slate-400 text-sm truncate hover:underline">{track.album}</span>}
+                </div>
+                <span className="text-slate-400 text-sm hidden md:block w-32 text-right">
+                   {(Math.floor(Math.random() * 50) + 10).toLocaleString()}M
+                </span>
+                <span className="text-slate-400 text-sm w-12 text-right">
+                   3:{String(Math.floor(Math.random() * 50) + 10).padStart(2, '0')}
+                </span>
+             </div>
+           );
+         })}
+      </div>
+    </div>
 
- {/* Discography / Albums */}
- <div className="flex flex-col gap-4 pb-4">
- <h3 className="text-xl font-bold text-white font-display tracking-wide flex items-center justify-between">
- Albums
- <div className="flex gap-2">
- <button className="text-xs text-slate-400 hover:text-white font-bold uppercase tracking-widest flex items-center gap-1">See All <ChevronRight className="w-4 h-4" /></button>
- </div>
- </h3>
- <div className="flex gap-4 overflow-x-auto custom-scroll pb-4 snap-x">
- {directorAlbums.map((albumName) => {
- const albumTrack = directorTracks.find(t => t.album === albumName);
- return (
- <div 
- key={albumName} 
- onClick={() => {
- setSelectedAlbum(albumName);
- setSelectedDirector(null);
- }}
- className="min-w-[160px] w-[160px] flex flex-col gap-3 cursor-pointer group snap-start"
- >
- <div className="w-full aspect-square rounded-2xl overflow-hidden relative shadow-lg bg-[#121212]">
- <img loading="lazy" src={albumTrack?.coverUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={albumName} />
- <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
- <div className="absolute bottom-2 right-2 bg-teal text-black p-2 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-lg translate-y-2 group-hover:translate-y-0">
- <Play className="w-5 h-5 fill-current" />
- </div>
- </div>
- <div className="flex flex-col text-center px-1">
- <span className="text-sm font-bold text-white truncate group-hover:text-teal transition-colors">{albumName}</span>
- <span className="text-xs text-slate-400 truncate mt-0.5">{albumTrack?.releaseDate || '2026'}</span>
- </div>
- </div>
- );
- })}
- </div>
- </div>
- </motion.div>
- );
+    {/* 4. Discography */}
+    <div className="flex flex-col gap-4">
+       <h3 className="text-2xl font-bold text-white font-display tracking-tight flex justify-between items-end">
+         Discography
+         <span className="text-sm font-bold text-slate-400 hover:text-white cursor-pointer uppercase tracking-widest hidden md:block">Show All</span>
+       </h3>
+       <div className="flex gap-4 md:gap-6 overflow-x-auto custom-scroll pb-6 snap-x">
+         {directorAlbums.map((albumName) => {
+           const albumTrack = directorTracks.find(t => t.album === albumName);
+           return (
+             <div 
+               key={albumName} 
+               onClick={() => { setSelectedAlbum(albumName); setSelectedDirector(null); }}
+               className="min-w-[150px] w-[150px] md:min-w-[180px] md:w-[180px] flex flex-col gap-4 cursor-pointer group snap-start bg-[#181818] hover:bg-[#282828] p-4 rounded-xl transition-colors"
+             >
+               <div className="w-full aspect-square rounded-md overflow-hidden relative shadow-lg">
+                 <img loading="lazy" src={albumTrack?.coverUrl} className="w-full h-full object-cover" alt={albumName} />
+                 <div className="absolute bottom-2 right-2 bg-teal text-black p-3 rounded-full opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all shadow-xl">
+                   <Play className="w-6 h-6 fill-current ml-0.5" />
+                 </div>
+               </div>
+               <div className="flex flex-col">
+                 <span className="text-base font-bold text-white truncate">{albumName}</span>
+                 <span className="text-sm text-slate-400 truncate mt-1">2026 • {albumName === 'Single' ? 'Single' : 'Album'}</span>
+               </div>
+             </div>
+           );
+         })}
+       </div>
+    </div>
+  </div>
+</motion.div>
+);
  })() : selectedAlbum ? (() => {
  const albumTracks = groupedAlbumsMap.get(selectedAlbum) || [];
  const firstTrack = albumTracks[0];
@@ -5021,6 +4957,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  </div>
  );
 };
+
 
 
 

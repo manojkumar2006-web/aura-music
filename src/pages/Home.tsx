@@ -183,6 +183,7 @@ export const Home: React.FC = () => {
  setUserRegion,
  fetchTracks,
  searchAndAppendTracks,
+ fetchAlbumTracks,
  toggleLike,
  toggleArtistLike
  } = useMusicStore(useShallow(state => ({

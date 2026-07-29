@@ -233,14 +233,6 @@ export const Home: React.FC = () => {
  useEffect(() => {
  fetchTracks();
  }, [fetchTracks]);
-
- 
-  // Dynamic Album API Fetcher
-  useEffect(() => {
-    if (selectedAlbum) {
-      fetchAlbumTracks(selectedAlbum);
-    }
-  }, [selectedAlbum, fetchAlbumTracks]);
   
   // Dynamic Search API Fetcher
  useEffect(() => {
@@ -381,6 +373,13 @@ export const Home: React.FC = () => {
  setSelectedDirector(null);
  setSelectedPlaylist(null);
  }, [sidebarNav]);
+
+  // Dynamic Album API Fetcher (placed safely after selectedAlbum state declaration)
+  useEffect(() => {
+    if (selectedAlbum) {
+      fetchAlbumTracks(selectedAlbum);
+    }
+  }, [selectedAlbum, fetchAlbumTracks]);
 
  useEffect(() => {
  const handleGlobalClick = () => {

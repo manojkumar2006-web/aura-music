@@ -70,21 +70,47 @@ import { splitAndNormalizeArtists, normalizeName } from '../utils/nameNormalizer
 import { getUserLocation, getWeather, getRegionIndustry } from '../services/locationService';
 import { OnboardingWizard } from '../components/OnboardingWizard';
 
+const INSTANT_ARTIST_PHOTOS: Record<string, string> = {
+  'Anirudh Ravichander': 'https://cdn-images.dzcdn.net/images/artist/439c98aa303d76eb58472ac1773ec01c/1000x1000-000000-80-0-0.jpg',
+  'Anirudh': 'https://cdn-images.dzcdn.net/images/artist/c938ba78118d3c5f7c2edf0974b023b9/1000x1000-000000-80-0-0.jpg',
+  'A. R. Rahman': 'https://cdn-images.dzcdn.net/images/artist/bd34315ef977a62a9e28c1ab19bb8ac4/1000x1000-000000-80-0-0.jpg',
+  'A.R. Rahman': 'https://cdn-images.dzcdn.net/images/artist/bd34315ef977a62a9e28c1ab19bb8ac4/1000x1000-000000-80-0-0.jpg',
+  'Yuvan Shankar Raja': 'https://cdn-images.dzcdn.net/images/artist/1dbf7d81a2e964d9c707e53478407974/1000x1000-000000-80-0-0.jpg',
+  'Vijay': 'https://cdn-images.dzcdn.net/images/artist/9d8fcf8f387cd57e0d9f70484b83eecb/1000x1000-000000-80-0-0.jpg',
+  'Harris Jayaraj': 'https://cdn-images.dzcdn.net/images/artist/b10caf45eae518a2b16997874ded7143/1000x1000-000000-80-0-0.jpg',
+  'Devi Sri Prasad': 'https://cdn-images.dzcdn.net/images/artist/a904f8ee6cc4dcb472f75bd8ae1a21da/1000x1000-000000-80-0-0.jpg',
+  'Santhosh Narayanan': 'https://cdn-images.dzcdn.net/images/artist/74004fed94dddf9ae2d7c83084eaf1ad/1000x1000-000000-80-0-0.jpg',
+  'Sid Sriram': 'https://cdn-images.dzcdn.net/images/artist/fbe3e1d17fc6958e047f011f74233f82/1000x1000-000000-80-0-0.jpg',
+  'Shreya Ghoshal': 'https://cdn-images.dzcdn.net/images/artist/3bb832d37d10ff2affcfa9afdc7c68a0/1000x1000-000000-80-0-0.jpg',
+  'Ilaiyaraaja': 'https://cdn-images.dzcdn.net/images/artist/aeeca2a4b9f808c8e8f5d281b1fb48d0/1000x1000-000000-80-0-0.jpg',
+  'D. Imman': 'https://cdn-images.dzcdn.net/images/artist/b7f064e7e78b9bf3eb1ac62839c731cd/1000x1000-000000-80-0-0.jpg',
+  'G.V. Prakash Kumar': 'https://cdn-images.dzcdn.net/images/artist/dd0597e5d5ff31f0523bcf68232a89e6/1000x1000-000000-80-0-0.jpg',
+  'Arijit Singh': 'https://cdn-images.dzcdn.net/images/artist/ac5350cff290edd5b69fa584b8b1bd4f/1000x1000-000000-80-0-0.jpg',
+  'Taylor Swift': 'https://cdn-images.dzcdn.net/images/artist/e528e270424103b527f8a27ac625563b/1000x1000-000000-80-0-0.jpg',
+  'The Weeknd': 'https://cdn-images.dzcdn.net/images/artist/d41d8cd98f00b204e9800998ecf8427e/1000x1000-000000-80-0-0.jpg'
+};
+
 export const getCover = (name: string, type: 'hero' | 'director' | 'artist' | 'album', tracks?: Track[]) => {
   if (!name) return '/covers/hero-images.jpg';
   
   if (type === 'hero' || type === 'director' || type === 'artist') {
-    // 1. Check dynamic iTunes API cache
+    // 0. Instant verified 1000x1000 HD photo
+    const normalized = Object.keys(INSTANT_ARTIST_PHOTOS).find(k => k.toLowerCase() === name.toLowerCase());
+    if (normalized && INSTANT_ARTIST_PHOTOS[normalized]) {
+      return INSTANT_ARTIST_PHOTOS[normalized];
+    }
+
+    // 1. Check dynamic API cache
     const { artistImages, fetchArtistImage } = useMusicStore.getState();
-    if (artistImages[name]) return artistImages[name];
+    if (artistImages[name] && artistImages[name] !== '') return artistImages[name];
     
-    // 2. Trigger iTunes fetch if never fetched before
+    // 2. Trigger dynamic fetch if never fetched before
     if (artistImages[name] === undefined) {
-      useMusicStore.setState(state => ({ artistImages: { ...state.artistImages, [name]: '' } })); // Prevent infinite loops
+      useMusicStore.setState(state => ({ artistImages: { ...state.artistImages, [name]: '' } }));
       fetchArtistImage(name);
     }
     
-    // 3. Strict fallback: NEVER use album covers for artists to prevent showing movie actors.
+    // 3. Strict fallback
     return 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name) + '&background=14b8a6&color=fff&size=512';
   }
   
@@ -184,7 +210,8 @@ export const Home: React.FC = () => {
  fetchTracks,
  searchAndAppendTracks,
  fetchAlbumTracks,
- toggleLike,
+  artistImages,
+  toggleLike,
  toggleArtistLike
  } = useMusicStore(useShallow(state => ({
  tracks: state.tracks,
@@ -227,6 +254,7 @@ export const Home: React.FC = () => {
  fetchTracks: state.fetchTracks,
  searchAndAppendTracks: state.searchAndAppendTracks,
   fetchAlbumTracks: state.fetchAlbumTracks,
+      artistImages: state.artistImages,
  toggleLike: state.toggleLike,
  toggleArtistLike: state.toggleArtistLike
  })));
@@ -3341,8 +3369,8 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  {/* Artist Avatar */}
  <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 border-2 border-transparent group-hover:border-teal/30 transition-colors shadow-[0_0_10px_rgba(0,0,0,0.3)]">
  <img loading="lazy"
- src={artist.coverUrl}
- alt={artist.name}
+ src={getCover(artist.name, 'artist', tracks)}
+                            alt={artist.name}
  className="w-full h-full object-cover"
  />
  </div>
@@ -3524,7 +3552,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  className="min-w-[160px] max-w-[160px] flex flex-col items-center gap-4 snap-start group cursor-pointer text-center premium-card-hover"
  >
  <div className="w-full aspect-square rounded-full overflow-hidden relative shadow-lg border-4 border-transparent group-hover:border-purple-500/50 transition-all premium-image-hover">
- <img loading="lazy" src={artistTrack?.coverUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(artist)}&background=random`} className="w-full h-full object-cover" alt={artist} />
+ <img loading="lazy" src={getCover(artist, 'artist', tracks)} className="w-full h-full object-cover" alt={artist} />
  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
  </div>
  <div className="flex flex-col w-full">

@@ -6,3 +6,8 @@ coverage/
 *.log
 .env*
 !.env.example
+jdk17/
+jdk17.zip
+*.zip
+.system_generated/
+*.cjs.map

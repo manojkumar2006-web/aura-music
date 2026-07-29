@@ -70,168 +70,29 @@ import { splitAndNormalizeArtists, normalizeName } from '../utils/nameNormalizer
 import { getUserLocation, getWeather, getRegionIndustry } from '../services/locationService';
 import { OnboardingWizard } from '../components/OnboardingWizard';
 
-const ARTIST_IMAGES: Record<string, string> = {
- // ===== TAMIL/KOLLYWOOD MUSIC DIRECTORS =====
- "Anirudh Ravichander": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Anirudh_Ravichander_at_Audi_Ritz_Style_Awards_2017_%28cropped%29.jpg/330px-Anirudh_Ravichander_at_Audi_Ritz_Style_Awards_2017_%28cropped%29.jpg",
- "A. R. Rahman": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/A._R._Rahman_photo.jpg/330px-A._R._Rahman_photo.jpg",
- "AR Rahman": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/A._R._Rahman_photo.jpg/330px-A._R._Rahman_photo.jpg",
- "Yuvan Shankar Raja": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Yuvan_Shankar_Raja_2011.jpg/330px-Yuvan_Shankar_Raja_2011.jpg",
- "Harris Jayaraj": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Harris_Jayaraj_at_Maatraan_audio_launch.jpg/330px-Harris_Jayaraj_at_Maatraan_audio_launch.jpg",
- "Devi Sri Prasad": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Devi_sri_prasad.jpg/330px-Devi_sri_prasad.jpg",
- "Thaman S": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/S._Thaman_at_Damaal_Dumeel_Audio_Launch.jpg/330px-S._Thaman_at_Damaal_Dumeel_Audio_Launch.jpg",
- "Santhosh Narayanan": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Santhosh_Narayanan_at_Kabali_audio_launch.jpg/330px-Santhosh_Narayanan_at_Kabali_audio_launch.jpg",
- "G.V. Prakash Kumar": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/GV_Prakash_Kumar_at_Darling_audio_launch_%28cropped%29.jpg/330px-GV_Prakash_Kumar_at_Darling_audio_launch_%28cropped%29.jpg",
- "Ilayaraja": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Ilaiyaraaja_at_the_63rd_National_Film_Awards_%28cropped%29.jpg/330px-Ilaiyaraaja_at_the_63rd_National_Film_Awards_%28cropped%29.jpg",
- "Hiphop Tamizha": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Hiphop_Tamizha_Adhi.jpg/330px-Hiphop_Tamizha_Adhi.jpg",
- "Vijay Antony": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Vijay_Antony_at_Naan_audio_launch.jpg/330px-Vijay_Antony_at_Naan_audio_launch.jpg",
- "D. Imman": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/D._Imman_at_Vizhu_Vizha_2018.jpg/330px-D._Imman_at_Vizhu_Vizha_2018.jpg",
- "Vidyasagar": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Vidyasagar_at_the_58th_Filmfare_Awards_South.jpg/330px-Vidyasagar_at_the_58th_Filmfare_Awards_South.jpg",
- "M. M. Keeravani": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/M._M._Keeravani_at_Inji_Iduppazhagi_Audio_Launch_%28cropped%29.jpg/330px-M._M._Keeravani_at_Inji_Iduppazhagi_Audio_Launch_%28cropped%29.jpg",
- "Mickey J. Meyer": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mickey_J_Meyer.jpg/330px-Mickey_J_Meyer.jpg",
- "Mani Sharma": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Mani_Sharma_at_Julayi_Audio_Launch.jpg/330px-Mani_Sharma_at_Julayi_Audio_Launch.jpg",
- "Sam C.S.": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Sam_CS_at_Vikram_audio_launch.jpg/330px-Sam_CS_at_Vikram_audio_launch.jpg",
- // ===== TAMIL/INDIAN SINGERS =====
- "Sid Sriram": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Sid_Sriram_in_2022.jpg/330px-Sid_Sriram_in_2022.jpg",
- "Shreya Ghoshal": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Shreya_Ghoshal_at_the_International_Indian_Film_Academy_Awards_in_Tampa%2C_Florida%2C_USA_%28cropped%29.jpg/330px-Shreya_Ghoshal_at_the_International_Indian_Film_Academy_Awards_in_Tampa%2C_Florida%2C_USA_%28cropped%29.jpg",
- "K. S. Chithra": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/K._S._Chithra.jpg/330px-K._S._Chithra.jpg",
- "Karthik": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Karthik_Singer.jpg/330px-Karthik_Singer.jpg",
- "Hariharan": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Hariharan_at_a_concert.jpg/330px-Hariharan_at_a_concert.jpg",
- "Shweta Mohan": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Shweta_Mohan_2012.jpg/330px-Shweta_Mohan_2012.jpg",
- "Jonita Gandhi": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Jonita_Gandhi.jpg/330px-Jonita_Gandhi.jpg",
- "Lata Mangeshkar": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Lata_Mangeshkar_-_still_from_documentary.jpg/330px-Lata_Mangeshkar_-_still_from_documentary.jpg",
- "Asha Bhosle": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Asha_Bhosle_at_Filmfare_Awards_%282009%29.jpg/330px-Asha_Bhosle_at_Filmfare_Awards_%282009%29.jpg",
- "Kishore Kumar": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Kishore_Kumar_1970.jpg/330px-Kishore_Kumar_1970.jpg",
- "Mohammed Rafi": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Mohammed_Rafi.jpg/330px-Mohammed_Rafi.jpg",
- "Arijit Singh": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Arijit_Singh_Live_Performance_at_concert_%28cropped%29.jpg/330px-Arijit_Singh_Live_Performance_at_concert_%28cropped%29.jpg",
- "Sonu Nigam": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Sonu_Nigam_Live_in_Vancouver_%28cropped%29.jpg/330px-Sonu_Nigam_Live_in_Vancouver_%28cropped%29.jpg",
- "Udit Narayan": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Udit_Narayan_at_the_60th_Filmfare_Awards.jpg/330px-Udit_Narayan_at_the_60th_Filmfare_Awards.jpg",
- "Mohit Chauhan": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Mohit_Chauhan.jpg/330px-Mohit_Chauhan.jpg",
- "Atif Aslam": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Atif_Aslam_TOIFA_2013.jpg/330px-Atif_Aslam_TOIFA_2013.jpg",
- "Rahat Fateh Ali Khan": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Rahat_Fateh_Ali_Khan.jpg/330px-Rahat_Fateh_Ali_Khan.jpg",
- "Neha Kakkar": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Neha_Kakkar_at_the_65th_Filmfare_Awards.jpg/330px-Neha_Kakkar_at_the_65th_Filmfare_Awards.jpg",
- "Jubin Nautiyal": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Jubin_Nautiyal_at_the_65th_Filmfare_Awards_%28cropped%29.jpg/330px-Jubin_Nautiyal_at_the_65th_Filmfare_Awards_%28cropped%29.jpg",
- "Armaan Malik": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Armaan_Malik_2017.jpg/330px-Armaan_Malik_2017.jpg",
- "Darshan Raval": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Darshan_Raval_in_2019.jpg/330px-Darshan_Raval_in_2019.jpg",
- "Badshah": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Badshah_Rapper_cropped.jpg/330px-Badshah_Rapper_cropped.jpg",
- "Yo Yo Honey Singh": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Honey_Singh_at_India_International_Centre_at_a_promotional_event_for_International_Villager.jpg/330px-Honey_Singh_at_India_International_Centre_at_a_promotional_event_for_International_Villager.jpg",
- // ===== BOLLYWOOD DIRECTORS =====
- "Pritam": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Pritam_Live_%28cropped%29.jpg/330px-Pritam_Live_%28cropped%29.jpg",
- "Amit Trivedi": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Amit_Trivedi_at_58th_Filmfare.jpg/330px-Amit_Trivedi_at_58th_Filmfare.jpg",
- "Vishal-Shekhar": "https://upload.wikimedia.org/wikipedia/commons/8/87/Vishal_shekhar_live_hungama_concert.jpg",
- "Himesh Reshammiya": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Himesh_Reshammiya_at_the_63rd_Filmfare_Awards_-_2018_%28cropped%29.jpg/330px-Himesh_Reshammiya_at_the_63rd_Filmfare_Awards_-_2018_%28cropped%29.jpg",
- // ===== GLOBAL POP =====
- "The Weeknd": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/The_Weeknd_Portrait_by_Brian_Ziff.jpg/330px-The_Weeknd_Portrait_by_Brian_Ziff.jpg",
- "Taylor Swift": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Taylor_Swift_at_the_2023_MTV_Video_Music_Awards_%283%29.png/330px-Taylor_Swift_at_the_2023_MTV_Video_Music_Awards_%283%29.png",
- "Dua Lipa": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Dua_Lipa_in_2021_2_%28cropped%29.jpg/330px-Dua_Lipa_in_2021_2_%28cropped%29.jpg",
- "Ed Sheeran": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Ed_Sheeran-6886_%28cropped%29.jpg/330px-Ed_Sheeran-6886_%28cropped%29.jpg",
- "Ariana Grande": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/191125_Ariana_Grande_%28cropped%29.jpg/330px-191125_Ariana_Grande_%28cropped%29.jpg",
- "Billie Eilish": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Billie_Eilish_for_the_2023_Met_Gala.jpg/330px-Billie_Eilish_for_the_2023_Met_Gala.jpg",
- "Bruno Mars": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Bruno_Mars_2016.jpg/330px-Bruno_Mars_2016.jpg",
- "Rihanna": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Rihanna_Barbados_2013.jpg/330px-Rihanna_Barbados_2013.jpg",
- "Katy Perry": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Katy_Perry_2011.jpg/330px-Katy_Perry_2011.jpg",
- "Selena Gomez": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Selena_Gomez_2024.png/330px-Selena_Gomez_2024.png",
- "Lady Gaga": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Lady_Gaga_2019_by_Glenn_Francis.jpg/330px-Lady_Gaga_2019_by_Glenn_Francis.jpg",
- "Adele": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Adele_2016.jpg/330px-Adele_2016.jpg",
- "Harry Styles": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Harry_Styles_in_2022.jpg/330px-Harry_Styles_in_2022.jpg",
- "Shawn Mendes": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Shawn_Mendes_2018.jpg/330px-Shawn_Mendes_2018.jpg",
- "Charlie Puth": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Charlie_Puth_2022.jpg/330px-Charlie_Puth_2022.jpg",
- "Miley Cyrus": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Miley_Cyrus_2023.jpg/330px-Miley_Cyrus_2023.jpg",
- "Lana Del Rey": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Lana_Del_Rey_Coachella_2014.jpg/330px-Lana_Del_Rey_Coachella_2014.jpg",
- "SZA": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/SZA_in_2023.jpg/330px-SZA_in_2023.jpg",
- // ===== HIP HOP =====
- "Drake": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Drake_July_2016.jpg/330px-Drake_July_2016.jpg",
- "Kendrick Lamar": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Kendrick_Lamar_2014.jpg/330px-Kendrick_Lamar_2014.jpg",
- "Travis Scott": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Travis_Scott_2018.jpg/330px-Travis_Scott_2018.jpg",
- "Eminem": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Eminem_performing_at_Bonnaroo_2011_%28cropped%29.jpg/330px-Eminem_performing_at_Bonnaroo_2011_%28cropped%29.jpg",
- "Post Malone": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Post_Malone_2019.jpg/330px-Post_Malone_2019.jpg",
- "Kanye West": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Kanye_West_American_Music_Awards_2014.jpg/330px-Kanye_West_American_Music_Awards_2014.jpg",
- "Nicki Minaj": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Nicki_Minaj_2018_MTV_VMAs.jpg/330px-Nicki_Minaj_2018_MTV_VMAs.jpg",
- "Cardi B": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Cardi_B_2019.jpg/330px-Cardi_B_2019.jpg",
- "Doja Cat": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Doja_Cat_2021.jpg/330px-Doja_Cat_2021.jpg",
- // ===== LATIN =====
- "Bad Bunny": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Bad_Bunny_2020.jpg/330px-Bad_Bunny_2020.jpg",
- "J Balvin": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/J_Balvin_2019.jpg/330px-J_Balvin_2019.jpg",
- "Shakira": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Shakira_2009_2.jpg/330px-Shakira_2009_2.jpg",
- "Karol G": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Karol_G_2022.jpg/330px-Karol_G_2022.jpg",
- "Daddy Yankee": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Daddy_Yankee_2015.jpg/330px-Daddy_Yankee_2015.jpg",
- // ===== K-POP =====
- "BTS": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/BTS_at_the_2019_MBC_Music_Festival_%28cropped%29.jpg/330px-BTS_at_the_2019_MBC_Music_Festival_%28cropped%29.jpg",
- "BLACKPINK": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/BLACKPINK_at_the_2019_MTV_VMAs.jpg/330px-BLACKPINK_at_the_2019_MTV_VMAs.jpg",
- "Stray Kids": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Stray_Kids_2022.jpg/330px-Stray_Kids_2022.jpg",
- "TWICE": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/TWICE_at_KCON_NY_2019.jpg/330px-TWICE_at_KCON_NY_2019.jpg",
- // ===== ROCK =====
- "Coldplay": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Coldplay_July_2016.jpg/330px-Coldplay_July_2016.jpg",
- "Arctic Monkeys": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Arctic_Monkeys_2011.jpg/330px-Arctic_Monkeys_2011.jpg",
- "Imagine Dragons": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Imagine_Dragons_2017.jpg/330px-Imagine_Dragons_2017.jpg",
- "Linkin Park": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Linkin_Park_2012.jpg/330px-Linkin_Park_2012.jpg",
- "Nirvana": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Nirvana_around_1992.jpg/330px-Nirvana_around_1992.jpg",
- // ===== EDM =====
- "David Guetta": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/David_Guetta_2018.jpg/330px-David_Guetta_2018.jpg",
- "Calvin Harris": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Calvin_Harris_2012_Olympics.jpg/330px-Calvin_Harris_2012_Olympics.jpg",
- "Alan Walker": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Alan_Walker_2018.jpg/330px-Alan_Walker_2018.jpg",
- "DJ Snake": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/DJ_Snake_2016.jpg/330px-DJ_Snake_2016.jpg",
- // ===== LEGENDS =====
- "Michael Jackson": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Michael_Jackson_in_1988.jpg/330px-Michael_Jackson_in_1988.jpg",
- "Queen": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Queen_performing_in_New_Haven%2C_1977.jpg/330px-Queen_performing_in_New_Haven%2C_1977.jpg",
- "The Beatles": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/The_Beatles_in_America.JPG/330px-The_Beatles_in_America.JPG",
- "Elton John": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Elton_John_in_2015_%28Elton_John_AIDS_Foundation%29.jpg/330px-Elton_John_in_2015_%28Elton_John_AIDS_Foundation%29.jpg",
- "Elvis Presley": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Elvis_Presley_promoting_Jailhouse_Rock.jpg/330px-Elvis_Presley_promoting_Jailhouse_Rock.jpg",
-  // ===== ACTORS =====
- "Thalapathy Vijay": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/C._Joseph_Vijay_%28cropped%29.jpg/330px-C._Joseph_Vijay_%28cropped%29.jpg",
- "Rajinikanth": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Rajinikanth_in_2019.jpg/330px-Rajinikanth_in_2019.jpg",
- "Kamal Haasan": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Kamal_Haasan_at_2023_San_Diego_Comic-Con_International_by_Gage_Skidmore%2C_005_%28cropped%29.jpg/330px-Kamal_Haasan_at_2023_San_Diego_Comic-Con_International_by_Gage_Skidmore%2C_005_%28cropped%29.jpg",
- "Shah Rukh Khan": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Shah_Rukh_Khan_graces_the_launch_of_the_new_Santro.jpg/330px-Shah_Rukh_Khan_graces_the_launch_of_the_new_Santro.jpg",
- "Allu Arjun": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Allu_Arjun_at_Pushpa_2_The_Rule_meet.jpg/330px-Allu_Arjun_at_Pushpa_2_The_Rule_meet.jpg",
- "Prabhas": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Prabhas_by_Gage_Skidmore.jpg/330px-Prabhas_by_Gage_Skidmore.jpg",
- "Ram Charan": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Ram_Charan_at_Game_Changer_trailer_launch.jpg/330px-Ram_Charan_at_Game_Changer_trailer_launch.jpg",
- "Ranbir Kapoor": "https://upload.wikimedia.org/wikipedia/a/a0/Ranbir_Kapoor_snapped_at_Kalina_airport.jpg",
- // Misc
- "Max Martin": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/MaxMartin.jpg/330px-MaxMartin.jpg",
- "Daft Punk": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Daft_Punk_in_2013_2-_centered.jpg/330px-Daft_Punk_in_2013_2-_centered.jpg",
- "Jack Antonoff": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Jack_Antonoff_at_Electric_Lady_Studios_2023_%28cropped%29.jpg/330px-Jack_Antonoff_at_Electric_Lady_Studios_2023_%28cropped%29.jpg",
- "Lofi Girl": "https://upload.wikimedia.org/wikipedia/en/f/f5/Lofi_Girl_logo_2024.jpg",
-};
-
 export const getCover = (name: string, type: 'hero' | 'director' | 'artist' | 'album', tracks?: Track[]) => {
   if (!name) return '/covers/hero-images.jpg';
   
   if (type === 'hero' || type === 'director' || type === 'artist') {
-    // 1. Hardcoded high-quality overrides
-    if (ARTIST_IMAGES[name]) return ARTIST_IMAGES[name];
-    
-    // 2. Check dynamic iTunes API cache
+    // 1. Check dynamic iTunes API cache
     const { artistImages, fetchArtistImage } = useMusicStore.getState();
     if (artistImages[name]) return artistImages[name];
     
-    // 3. Trigger iTunes fetch if never fetched before
+    // 2. Trigger iTunes fetch if never fetched before
     if (artistImages[name] === undefined) {
       useMusicStore.setState(state => ({ artistImages: { ...state.artistImages, [name]: '' } })); // Prevent infinite loops
       fetchArtistImage(name);
     }
-  }
-
-  // Fallback to finding an associated track's cover URL
-  if (tracks) {
-    let match;
-    if (type === 'hero') match = tracks.find(t => t.hero === name);
-    if (type === 'director') match = tracks.find(t => t.musicDirector === name);
-    if (type === 'artist') match = tracks.find(t => t.artist?.split(', ').includes(name));
-    if (type === 'album') match = tracks.find(t => t.album === name);
     
-    if (match && match.coverUrl) {
-      return match.coverUrl;
-    }
+    // 3. Strict fallback: NEVER use album covers for artists to prevent showing movie actors.
+    return 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name) + '&background=14b8a6&color=fff&size=512';
   }
-
-  // Final fallback to generic covers
-  const lower = name.toLowerCase();
-  if (lower.includes('vijay')) return '/covers/Vijay.jpg';
-  if (lower.includes('anirudh')) return '/covers/Anirudh.jpg';
-  if (lower.includes('lokesh')) return '/covers/Lokesh Kanagaraj.jpg';
-  if (lower.includes('arr') || lower.includes('rahman')) return '/covers/ARR.jpg';
-  if (lower.includes('sai abhyankkar')) return '/covers/Sai-Abhyankkar.avif';
   
-  return '/covers/hero-images.jpg';
+  if (tracks && tracks.length > 0) {
+    return tracks[0].coverUrl;
+  }
+  
+  return '/covers/default.png';
 };
 
 const COMMUNITY_PLAYLISTS = [
@@ -243,22 +104,30 @@ const COMMUNITY_PLAYLISTS = [
 
 
 const CATEGORIES = [
- { title: "Trending Kollywood", query: "Anirudh Ravichander" },
- { title: "Global Top 50", query: "Taylor Swift" },
- { title: "A.R. Rahman Classics", query: "A. R. Rahman" },
- { title: "The Weeknd Top Hits", query: "The Weeknd" },
- { title: "Late Night Lo-Fi", query: "Lofi Beats" },
- { title: "Trending Bollywood", query: "Arijit Singh" },
- { title: "Top Telugu", query: "Devi Sri Prasad" },
- { title: "Yuvan Magic", query: "Yuvan Shankar Raja" },
- { title: "Ilayaraja Classics", query: "Ilayaraja" },
- { title: "Harris Jayaraj Hits", query: "Harris Jayaraj" },
- { title: "Epic Soundtracks", query: "Hans Zimmer" },
- { title: "Workout Mix", query: "Eminem" }
+  { title: "Trending Kollywood", query: "Anirudh Ravichander" },
+  { title: "Global Top 50", query: "Taylor Swift" },
+  { title: "A.R. Rahman Classics", query: "A. R. Rahman" },
+  { title: "The Weeknd Top Hits", query: "The Weeknd" },
+  { title: "Late Night Lo-Fi", query: "Lofi Beats" },
+  { title: "Trending Bollywood", query: "Arijit Singh" },
+  { title: "Top Telugu", query: "Devi Sri Prasad" },
+  { title: "Yuvan Magic", query: "Yuvan Shankar Raja" },
+  { title: "Ilayaraja Classics", query: "Ilayaraja" },
+  { title: "Harris Jayaraj Hits", query: "Harris Jayaraj" },
+  { title: "Epic Soundtracks", query: "Hans Zimmer" },
+  { title: "Workout Mix", query: "Eminem" },
+  { title: "Malayalam Melodies", query: "Hesham Abdul Wahab" },
+  { title: "K-Pop Sensations", query: "BTS" },
+  { title: "Hip Hop Essentials", query: "Kendrick Lamar" },
+  { title: "Santhosh Narayanan Specials", query: "Santhosh Narayanan" },
+  { title: "G.V. Prakash Hits", query: "G.V. Prakash Kumar" },
+  { title: "Classic Rock", query: "Queen" },
+  { title: "90s Tamil Hits", query: "Deva" },
+  { title: "Pop Anthems", query: "Dua Lipa" }
 ];
 
 export const Home: React.FC = () => {
- const [visibleCount, setVisibleCount] = useState(3);
+ const [visibleCount, setVisibleCount] = useState(10);
  const [visibleLibraryCount, setVisibleLibraryCount] = useState(50);
  const [showDownloadModal, setShowDownloadModal] = useState(false);
  const libraryEndRef = useRef<HTMLDivElement>(null);
@@ -356,6 +225,7 @@ export const Home: React.FC = () => {
  setUserRegion: state.setUserRegion,
  fetchTracks: state.fetchTracks,
  searchAndAppendTracks: state.searchAndAppendTracks,
+  fetchAlbumTracks: state.fetchAlbumTracks,
  toggleLike: state.toggleLike,
  toggleArtistLike: state.toggleArtistLike
  })));
@@ -364,7 +234,15 @@ export const Home: React.FC = () => {
  fetchTracks();
  }, [fetchTracks]);
 
- // Dynamic Search API Fetcher
+ 
+  // Dynamic Album API Fetcher
+  useEffect(() => {
+    if (selectedAlbum) {
+      fetchAlbumTracks(selectedAlbum);
+    }
+  }, [selectedAlbum, fetchAlbumTracks]);
+  
+  // Dynamic Search API Fetcher
  useEffect(() => {
  if (!searchQuery.trim() || searchQuery.length < 3) return;
  
@@ -531,43 +409,38 @@ export const Home: React.FC = () => {
  };
 
  useEffect(() => {
- const scrollEl = mainScrollRef.current;
- if (!scrollEl) return;
+    const scrollEl = mainScrollRef.current;
+    if (!scrollEl) return;
 
- const observer = new IntersectionObserver(
- (entries) => {
- entries.forEach((entry) => {
- if (entry.isIntersecting) {
- entry.target.classList.add('scroll-revealed');
- entry.target.classList.remove('scroll-hidden');
- } else {
- entry.target.classList.remove('scroll-revealed');
- entry.target.classList.add('scroll-hidden');
- }
- });
- },
- {
- root: scrollEl,
- threshold: 0.08,
- rootMargin: '0px 0px -40px 0px',
- }
- );
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('scroll-revealed');
+            entry.target.classList.remove('scroll-hidden');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        root: scrollEl,
+        threshold: 0.05,
+        rootMargin: '50px 0px 50px 0px',
+      }
+    );
 
- const observeChildren = () => {
- const items = scrollEl.querySelectorAll('[data-scroll-reveal]');
- items.forEach((el) => observer.observe(el));
- };
+    const items = scrollEl.querySelectorAll('[data-scroll-reveal]');
+    items.forEach((el) => {
+      if (!el.classList.contains('scroll-revealed')) {
+        el.classList.add('scroll-hidden');
+        observer.observe(el);
+      }
+    });
 
- // Initial + re-observe on DOM changes
- observeChildren();
- const mutationObs = new MutationObserver(observeChildren);
- mutationObs.observe(scrollEl, { childList: true, subtree: true });
-
- return () => {
- observer.disconnect();
- mutationObs.disconnect();
- };
- }, [activeView, sidebarNav]);
+    return () => {
+      observer.disconnect();
+    };
+  }, [activeView, sidebarNav, visibleCount, selectedAlbum, selectedDirector]);
 
   // Synchronize compatibility match via query parameter
   React.useEffect(() => {
@@ -1044,7 +917,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  disabled={authLoading}
  className="relative w-full mt-6 py-3.5 font-black text-xs uppercase tracking-widest rounded-xl transition-all duration-300 disabled:opacity-50 flex justify-center items-center gap-2 group overflow-hidden active:scale-95 text-[color:var(--color-onyx)] bg-gradient-to-r from-[color:var(--color-teal)] to-[color:var(--color-ocean)] hover:shadow-[0_0_30px_var(--color-teal)]"
  >
- <div className="absolute inset-0 bg-[#333333] translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out" />
+ <div className="absolute inset-0 bg-[#333333] translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-300 ease-in-out" />
  <span className="relative z-10">{authLoading ? 'Authenticating...' : 'Enter AURA'}</span>
  {!authLoading && <ChevronRight className="w-4 h-4 relative z-10 group-hover:translate-x-1 transition-transform" />}
  </button>
@@ -1183,7 +1056,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  disabled={authLoading || (signupConfirmPassword !== '' && signupPassword !== signupConfirmPassword)}
  className="relative w-full mt-4 py-3.5 font-black text-xs uppercase tracking-widest rounded-xl transition-all duration-300 disabled:opacity-50 flex justify-center items-center gap-2 group overflow-hidden active:scale-95 text-[color:var(--color-onyx)] bg-gradient-to-r from-[color:var(--color-teal)] to-[color:var(--color-ocean)] hover:shadow-[0_0_30px_var(--color-teal)]"
  >
- <div className="absolute inset-0 bg-[#333333] translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out" />
+ <div className="absolute inset-0 bg-[#333333] translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-300 ease-in-out" />
  <span className="relative z-10">{authLoading ? 'Creating Account...' : 'Join AURA'}</span>
  {!authLoading && <ChevronRight className="w-4 h-4 relative z-10 group-hover:translate-x-1 transition-transform" />}
  </button>
@@ -1202,7 +1075,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
 
 
  return (
- <div className={`h-screen overflow-hidden ${activeThemeStyle.bg} text-ink-primary flex flex-col relative select-none transition-colors duration-500 star-field`}>
+ <div className={`h-screen overflow-hidden ${activeThemeStyle.bg} text-ink-primary flex flex-col relative select-none transition-colors duration-300 star-field`}>
  {currentUser && currentUser.onboardingComplete !== true && (
  <OnboardingWizard />
  )}
@@ -2019,7 +1892,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  </div>
  <div className="w-full h-1.5 bg-[#181818] rounded-full overflow-hidden">
  <div
- className="h-full bg-gradient-to-r from-ocean to-teal transition-all duration-500"
+ className="h-full bg-gradient-to-r from-ocean to-teal transition-all duration-300"
  style={{ width: currentUser.stats.tracksPlayed > 0 ? '70%' : '0%' }}
  />
  </div>
@@ -2031,7 +1904,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  </div>
  <div className="w-full h-1.5 bg-[#181818] rounded-full overflow-hidden">
  <div
- className="h-full bg-gradient-to-r from-slate-soft to-[#00d4ff] transition-all duration-500"
+ className="h-full bg-gradient-to-r from-slate-soft to-[#00d4ff] transition-all duration-300"
  style={{ width: currentUser.stats.tracksPlayed > 0 ? '45%' : '0%' }}
  />
  </div>
@@ -2043,7 +1916,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  </div>
  <div className="w-full h-1.5 bg-[#181818] rounded-full overflow-hidden">
  <div
- className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500"
+ className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300"
  style={{ width: currentUser.stats.tracksPlayed > 0 ? '20%' : '0%' }}
  />
  </div>
@@ -2210,7 +2083,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
              <div 
                key={albumName} 
                onClick={() => { setSelectedAlbum(albumName); setSelectedDirector(null); }}
-               className="min-w-[150px] w-[150px] md:min-w-[180px] md:w-[180px] flex flex-col gap-4 cursor-pointer group snap-start bg-[#181818] hover:bg-[#282828] p-4 rounded-xl transition-colors"
+               className="min-w-[150px] w-[150px] md:min-w-[180px] md:w-[180px] flex flex-col gap-4 cursor-pointer group snap-start bg-[#181818] p-4 rounded-xl premium-card-hover"
              >
                <div className="w-full aspect-square rounded-md overflow-hidden relative shadow-lg">
                  <img loading="lazy" src={albumTrack?.coverUrl} className="w-full h-full object-cover" alt={albumName} />
@@ -2538,7 +2411,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
       
       <div className="flex flex-col justify-between relative z-10 h-full w-full sm:w-[65%]">
         <div className="mb-4">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-teal tracking-tight mb-3 group-hover:-translate-y-1 transition-transform duration-500 font-display">1. Start playing</h2>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-teal tracking-tight mb-3 group-hover:-translate-y-1 transition-transform duration-300 font-display">1. Start playing</h2>
           <p className="text-slate-300 text-sm sm:text-base leading-relaxed font-medium max-w-sm">Search, browse, and play your favorite artists and creators effortlessly.</p>
         </div>
         <div className="flex items-center gap-4 mt-auto pt-6">
@@ -2576,7 +2449,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
             const sizes = ['w-24 h-24 sm:w-28 sm:h-28', 'w-20 h-20 sm:w-24 sm:h-24', 'w-16 h-16 sm:w-20 sm:h-20'];
             
             return (
-              <div key={`collage-${i}`} className={`absolute ${positions[i]} ${sizes[i]} rounded-2xl overflow-hidden shadow-[0_15px_35px_rgba(0,0,0,0.6)] border border-white/20 transform ${rotations[i]} group-hover:scale-110 group-hover:rotate-0 group-hover:-translate-y-2 transition-all duration-700`}>
+              <div key={`collage-${i}`} className={`absolute ${positions[i]} ${sizes[i]} rounded-2xl overflow-hidden shadow-[0_15px_35px_rgba(0,0,0,0.6)] border border-white/20 transform ${rotations[i]} group-hover:scale-110 group-hover:rotate-0 group-hover:-translate-y-2 transition-all duration-300`}>
                 <img loading="lazy" src={t.coverUrl} className="w-full h-full object-cover" alt="" />
               </div>
             );
@@ -2608,14 +2481,14 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  </div>
  
  {/* Overlapping Circles */}
- <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[45%] flex items-center justify-center w-[120%] h-[120px] scale-110 group-hover:scale-[1.20] transition-transform duration-500">
- <div className="w-16 h-16 rounded-full overflow-hidden shadow-xl absolute left-2 z-10 opacity-90 group-hover:opacity-100 group-hover:-translate-x-2 transition-all duration-500">
+ <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[45%] flex items-center justify-center w-[120%] h-[120px] scale-110 group-hover:scale-[1.20] transition-transform duration-300">
+ <div className="w-16 h-16 rounded-full overflow-hidden shadow-xl absolute left-2 z-10 opacity-90 group-hover:opacity-100 group-hover:-translate-x-2 transition-all duration-300">
  <img loading="lazy" src={displayTracks[1]?.coverUrl} className="w-full h-full object-cover" alt="" />
  </div>
- <div className="w-24 h-24 rounded-full overflow-hidden shadow-2xl z-30 group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] transition-shadow duration-500">
+ <div className="w-24 h-24 rounded-full overflow-hidden shadow-2xl z-30 group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] transition-shadow duration-300">
  <img loading="lazy" src={displayTracks[0]?.coverUrl} className="w-full h-full object-cover" alt="" />
  </div>
- <div className="w-16 h-16 rounded-full overflow-hidden shadow-xl absolute right-2 z-20 opacity-90 group-hover:opacity-100 group-hover:translate-x-2 transition-all duration-500">
+ <div className="w-16 h-16 rounded-full overflow-hidden shadow-xl absolute right-2 z-20 opacity-90 group-hover:opacity-100 group-hover:translate-x-2 transition-all duration-300">
  <img loading="lazy" src={displayTracks[2]?.coverUrl} className="w-full h-full object-cover" alt="" />
  </div>
  
@@ -2660,7 +2533,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  }}
  >
  <div className="w-full aspect-square rounded-[1.25rem] overflow-hidden relative shadow-lg ring-1 ring-white/5">
- <img loading="lazy" src={albumInfo.coverUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={albumInfo.album} />
+ <img loading="lazy" src={albumInfo.coverUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt={albumInfo.album} />
  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
  <div className="absolute bottom-2.5 left-2.5">
  <span className="text-[9px] font-black uppercase tracking-widest bg-white text-black px-2 py-0.5 rounded-full shadow-md">
@@ -2939,7 +2812,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  return (
  <div key={i} onClick={() => track.album ? setSelectedAlbum(track.album) : handleSelectTrack(track)} className="min-w-[140px] w-[140px] flex flex-col gap-2 cursor-pointer group snap-start">
  <div className="w-full aspect-square rounded-xl overflow-hidden relative shadow-lg">
- <img loading="lazy" src={track.coverUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={album} />
+ <img loading="lazy" src={track.coverUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt={album} />
  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
  <div className="absolute bottom-2 right-2 bg-teal text-black p-2 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-lg translate-y-2 group-hover:translate-y-0">
  <Play className="w-3 h-3 fill-white" />
@@ -3258,7 +3131,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  }}
  className="mb-2 glass-panel rounded-3xl p-6 border border-teal/20 bg-gradient-to-br from-teal/10 to-transparent flex flex-col sm:flex-row gap-6 items-center sm:items-start cursor-pointer hover:border-teal/40 hover:shadow-[0_0_30px_rgba(20,184,166,0.15)] transition-all group"
  >
- <div className={`w-28 h-28 sm:w-32 sm:h-32 ${matchedType === 'album' ? 'rounded-xl' : 'rounded-full'} overflow-hidden shadow-2xl flex-shrink-0 group-hover:scale-105 transition-transform duration-500`}>
+ <div className={`w-28 h-28 sm:w-32 sm:h-32 ${matchedType === 'album' ? 'rounded-xl' : 'rounded-full'} overflow-hidden shadow-2xl flex-shrink-0 group-hover:scale-105 transition-transform duration-300`}>
  <img loading="lazy" src={matchedCover} alt={matchedName} className="w-full h-full object-cover" />
  </div>
  <div className="flex flex-col items-center sm:items-start text-center sm:text-left pt-2">
@@ -3558,7 +3431,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  </div>
 
  {/* Angled Image */}
- <div className="absolute -right-4 -bottom-2 w-20 h-20 sm:w-24 sm:h-24 rotate-[25deg] shadow-[0_8px_30px_rgba(0,0,0,0.5)] rounded-lg overflow-hidden group-hover:rotate-[15deg] group-hover:scale-110 transition-all duration-500 z-10">
+ <div className="absolute -right-4 -bottom-2 w-20 h-20 sm:w-24 sm:h-24 rotate-[25deg] shadow-[0_8px_30px_rgba(0,0,0,0.5)] rounded-lg overflow-hidden group-hover:rotate-[15deg] group-hover:scale-110 transition-all duration-300 z-10">
  <img 
  src={cat.img} 
  className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" 
@@ -3575,7 +3448,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  </div>
 
  {/* Hover shine */}
- <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.06] to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500" />
+ <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.06] to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300" />
  </div>
  ))}
  </div>
@@ -3717,13 +3590,13 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  <div className="flex flex-col md:flex-row gap-8 items-start">
  <div className="w-64 h-64 rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex-shrink-0 relative group">
  {selectedMix.coverUrl ? (
- <img loading="lazy" src={selectedMix.coverUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt={selectedMix.title} />
+ <img loading="lazy" src={selectedMix.coverUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt={selectedMix.title} />
  ) : (
  <div className="w-full h-full bg-gradient-to-br from-purple-500/20 to-teal/20 flex items-center justify-center">
  <Disc className="w-24 h-24 text-white/50" />
  </div>
  )}
- <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500" />
+ <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300" />
  </div>
  <div className="flex flex-col gap-4 justify-end h-full pt-4 md:pt-16">
  <span className="text-xs font-bold text-teal uppercase tracking-widest flex items-center gap-2">
@@ -3819,9 +3692,9 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  onClick={() => handleSelectTrack(track)}
  className={`group relative rounded-[2rem] overflow-hidden cursor-pointer aspect-video md:aspect-[16/10] lg:aspect-[16/9] border ${
  isSelected ? 'border-teal shadow-[0_0_40px_rgba(147, 177, 166,0.2)]' : 'border-white/5 hover:border-white/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)]'
- } transition-all duration-500`}
+ } transition-all duration-300`}
  >
- <img loading="lazy" src={track.coverUrl} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt={track.title} />
+ <img loading="lazy" src={track.coverUrl} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" alt={track.title} />
  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/10" />
  
  {/* Top Badges */}
@@ -3841,7 +3714,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  </div>
 
  {/* Content Bottom */}
- <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col gap-1 transform transition-transform duration-500 group-hover:-translate-y-2">
+ <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col gap-1 transform transition-transform duration-300 group-hover:-translate-y-2">
  <h3 className="text-2xl md:text-3xl font-black font-display text-white leading-tight drop-shadow-lg">
  {track.album || track.title}
  </h3>
@@ -4172,9 +4045,9 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  <div key={playlist.name} onClick={() => setSelectedPlaylist(playlist.name)} className="group relative rounded-3xl glass-panel p-4 transition-all duration-300 border border-silver/8 hover:border-teal/30 hover:bg-teal/5 cursor-pointer flex flex-col gap-4 active:scale-[0.98]">
  <div className="w-full aspect-square rounded-2xl bg-[#121212] overflow-hidden relative shadow-lg border border-white/5">
  {playlist.coverUrl ? (
- <img loading="lazy" src={playlist.coverUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={playlist.name} />
+ <img loading="lazy" src={playlist.coverUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" alt={playlist.name} />
  ) : (
- <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-graphite to-black group-hover:scale-110 transition-transform duration-500">
+ <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-graphite to-black group-hover:scale-110 transition-transform duration-300">
  <FolderHeart className="w-12 h-12 text-teal/30" />
  </div>
  )}
@@ -4335,7 +4208,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  {likedSongTracks.map(track => (
  <div key={`song-${track.id}`} className="min-w-[140px] max-w-[140px] flex flex-col gap-2 snap-start group cursor-pointer active:scale-95 transition-transform" onClick={() => handleSelectTrack(track)}>
  <div className="w-full aspect-square rounded-2xl overflow-hidden relative shadow-lg">
- <img loading="lazy" src={track.coverUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={track.title} />
+ <img loading="lazy" src={track.coverUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" alt={track.title} />
  <div className="absolute inset-0 bg-black/40 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center">
  <Play className="w-8 h-8 text-white fill-white ml-1" />
  </div>
@@ -4359,7 +4232,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  {likedComposers.map(artist => (
  <div key={`liked-composer-${artist.name}`} onClick={() => setSelectedDirector(artist.name)} className="min-w-[120px] max-w-[120px] flex flex-col items-center gap-3 snap-start group cursor-pointer text-center active:scale-95 transition-transform">
  <div className="w-full aspect-square rounded-full overflow-hidden relative shadow-lg border-2 border-transparent group-hover:border-teal transition-all">
- <img loading="lazy" src={artist.cover} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={artist.name} />
+ <img loading="lazy" src={artist.cover} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" alt={artist.name} />
  </div>
  <div className="flex flex-col">
  <p className="text-xs font-bold text-white line-clamp-2 group-hover:text-teal transition-colors">{artist.name}</p>
@@ -4381,7 +4254,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  {favoriteArtists.map(artist => (
  <div key={`fav-artist-${artist.name}`} onClick={() => setSelectedDirector(artist.name)} className="min-w-[120px] max-w-[120px] flex flex-col items-center gap-3 snap-start group cursor-pointer text-center active:scale-95 transition-transform">
  <div className="w-full aspect-square rounded-full overflow-hidden relative shadow-lg border-2 border-transparent group-hover:border-purple-400 transition-all">
- <img loading="lazy" src={artist.cover} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={artist.name} />
+ <img loading="lazy" src={artist.cover} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" alt={artist.name} />
  </div>
  <div className="flex flex-col">
  <p className="text-xs font-bold text-white line-clamp-2 group-hover:text-purple-400 transition-colors">{artist.name}</p>
@@ -4403,7 +4276,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  {shuffledRecommendations.map(track => (
  <div key={`rec-${track.id}`} className="min-w-[140px] max-w-[140px] flex flex-col gap-2 snap-start group cursor-pointer active:scale-95 transition-transform" onClick={() => handleSelectTrack(track, shuffledRecommendations)}>
  <div className="w-full aspect-square rounded-2xl overflow-hidden relative shadow-lg">
- <img loading="lazy" src={track.coverUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={track.title} />
+ <img loading="lazy" src={track.coverUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" alt={track.title} />
  <div className="absolute inset-0 bg-black/40 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center">
  <Play className="w-8 h-8 text-white fill-white ml-1" />
  </div>
@@ -4463,7 +4336,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  className={`min-w-[280px] w-[280px] h-[280px] rounded-[32px] ${station.bg} p-6 flex flex-col justify-between relative cursor-pointer snap-start overflow-hidden premium-card-hover group shadow-xl`}
  >
  <div className="flex-grow flex items-center justify-center">
- <h3 className={`${station.id === '1' ? 'text-[150px] leading-none' : 'text-5xl'} font-black ${station.textColor} text-center tracking-tighter leading-tight group-hover:scale-105 transition-transform duration-500 whitespace-pre-line`}>
+ <h3 className={`${station.id === '1' ? 'text-[150px] leading-none' : 'text-5xl'} font-black ${station.textColor} text-center tracking-tighter leading-tight group-hover:scale-105 transition-transform duration-300 whitespace-pre-line`}>
  {station.label}
  </h3>
  </div>
@@ -4959,6 +4832,9 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  </div>
  );
 };
+
+
+
 
 
 

@@ -512,7 +512,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  {isMobile && (
  <div 
  onClick={() => setIsMobileExpanded(true)}
- className="flex items-center gap-3 px-4 py-3 bg-[#1c1c1e] border border-white/10 shadow-[0_-4px_30px_rgba(0,0,0,0.6)] rounded-2xl w-[calc(100vw-2rem)] max-w-sm mx-auto cursor-pointer active:scale-[0.98] transition-transform"
+ className="flex items-center gap-3 px-4 py-3 glass-panel border border-white/10 shadow-[0_-4px_30px_rgba(0,0,0,0.6)] rounded-2xl w-[calc(100vw-2rem)] max-w-sm mx-auto cursor-pointer active:scale-[0.98] transition-transform"
  >
  {currentTrack ? (
  <>
@@ -521,7 +521,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  <p className="text-white text-[13px] font-bold truncate leading-tight">{currentTrack.title}</p>
  <p className="text-slate-400 text-[11px] truncate">{currentTrack.artist}</p>
  <div className="mt-1.5 h-[2px] bg-[#242424] rounded-full overflow-hidden">
- <div className="h-full bg-white rounded-full transition-all duration-100" style={{ width: `${(currentTime / (duration || 1)) * 100}%` }} />
+ <div className="h-full bg-white rounded-full transition-[width] duration-150 ease-linear" style={{ width: `${(currentTime / (duration || 1)) * 100}%` }} />
  </div>
  </div>
  <div className="flex items-center gap-2 text-white flex-shrink-0" onClick={(e) => e.stopPropagation()}>
@@ -565,7 +565,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  animate={{ y: 0 }}
  exit={{ y: '100%' }}
  transition={{ type: 'spring', damping: 25, stiffness: 200 }}
- className="fixed inset-0 z-[120] bg-[#121212] text-white flex flex-col p-6 overflow-hidden"
+ className="fixed inset-0 z-[120] bg-[#000000]/90 backdrop-blur-3xl text-white flex flex-col p-6 overflow-hidden"
  style={{ paddingBottom: 'env(safe-area-inset-bottom)', paddingTop: 'env(safe-area-inset-top)' }}
  >
  {/* Background with blur */}
@@ -587,7 +587,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  <button className="p-2 -mr-2 text-slate-300 hover:text-white transition-colors active:scale-90 relative" onClick={() => setShowQualityMenu(!showQualityMenu)}>
  <MoreVertical className="w-6 h-6" />
  {showQualityMenu && (
- <div className="absolute top-full right-0 mt-2 bg-[#2c2c2c] border border-white/10 rounded-xl p-2 w-48 shadow-2xl z-50">
+ <div className="absolute top-full right-0 mt-2 glass-panel border border-white/10 rounded-xl p-2 w-48 shadow-2xl z-50">
  <div className="text-[10px] uppercase text-silver/50 font-bold tracking-wider px-3 pb-2 pt-1 border-b border-white/10 mb-2 text-left">Audio Quality</div>
  {(['128k', '320k', 'flac', 'atmos'] as AudioQuality[]).map((q) => (
  <button
@@ -643,10 +643,10 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  {/* Progress */}
  <div className="relative z-10 flex flex-col mb-8 px-2">
  <div className="h-1.5 w-full bg-[#333333] rounded-full overflow-hidden cursor-pointer relative" onClick={handleProgressClick}>
- <div className="h-full bg-white rounded-full transition-all duration-100" style={{ width: `${(currentTime / (duration || 1)) * 100}%` }} />
+ <div className="h-full bg-white rounded-full transition-[width] duration-150 ease-linear" style={{ width: `${(currentTime / (duration || 1)) * 100}%` }} />
  {/* Progress handle thumb */}
  <div 
- className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-md transition-all duration-100" 
+ className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-md transition-[width] duration-150 ease-linear" 
  style={{ left: `max(0%, calc(${(currentTime / (duration || 1)) * 100}% - 6px))` }} 
  />
  </div>
@@ -832,7 +832,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  {/* Integrated ultra-thin progress bar below text */}
  <div className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#242424] rounded-full overflow-hidden pointer-events-none">
  <div 
- className="h-full bg-white rounded-full transition-all duration-100 ease-linear" 
+ className="h-full bg-white rounded-full transition-[width] duration-150 ease-linear ease-linear" 
  style={{ width: `${(currentTime / (duration || 1)) * 100}%` }} 
  />
  </div>
@@ -859,7 +859,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  <div className="relative">
  <button
  onClick={() => setShowQualityMenu(!showQualityMenu)}
- className="px-2 py-0.5 bg-[#242424] hover:bg-[#333333] rounded-full text-[9px] font-bold tracking-wider text-slate-300 transition-colors uppercase cursor-pointer"
+ className="px-2 py-0.5 bg-[#242424] hover:bg-white/20 rounded-full text-[9px] font-bold tracking-wider text-slate-300 transition-colors uppercase cursor-pointer"
  title="Stream Quality"
  >
  {quality === '128k' ? 'PREVIEW' : quality}
@@ -1041,7 +1041,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  >
  <button 
  onClick={() => setIsFullScreen(false)}
- className="absolute top-6 right-6 z-[160] p-3 bg-[#242424] hover:bg-[#333333] rounded-full text-white cursor-pointer transition-all"
+ className="absolute top-6 right-6 z-[160] p-3 bg-[#242424] hover:bg-white/20 rounded-full text-white cursor-pointer transition-all"
  >
  <Minimize2 className="w-6 h-6" />
  </button>

@@ -21,7 +21,7 @@ apiRouter.get('/artist-image', async (req, res) => {
     }
 
     // 1. Search iTunes API for artist
-    const itunesUrl = "https://itunes.apple.com/search?term=${encodeURIComponent(name)}&entity=musicArtist&limit=1";
+    const itunesUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(name)}&entity=musicArtist&limit=1`;
     const itunesRes = await fetch(itunesUrl);
     if (!itunesRes.ok) throw new Error('iTunes API failed');
     const itunesData = await itunesRes.json();
@@ -735,4 +735,5 @@ apiRouter.get('/compatibility', async (req, res) => {
 });
 
 export default apiRouter;
+
 

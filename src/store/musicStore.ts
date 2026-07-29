@@ -71,6 +71,7 @@ interface MusicStore {
   fetchTracks: () => Promise<void>;
   fetchArtistImage: (name: string) => Promise<string | null>;
   searchAndAppendTracks: (query: string) => Promise<void>;
+  fetchAlbumTracks: (albumName: string) => Promise<void>;
   addTracksToLibrary: (newTracks: Track[]) => void;
   toggleLike: (trackId: string) => Promise<{ success: boolean; error?: string }>;
   toggleArtistLike: (artistName: string) => Promise<{ success: boolean; error?: string }>;
@@ -265,7 +266,32 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
       console.error('Failed to bootstrap tracks from database:', e);
     }
   },
-  searchAndAppendTracks: async (query: string) => {
+  fetchAlbumTracks: async (albumName: string) => {
+      if (!albumName.trim()) return;
+      try {
+        const response = await fetch(`/api/album?name=${encodeURIComponent(albumName)}`);
+        if (!response.ok) return;
+        const data = await response.json();
+        if (Array.isArray(data) && data.length > 0) {
+          set(state => {
+            const currentTracks = [...state.tracks];
+            const seen = new Set(currentTracks.map(t => t.id));
+            let added = false;
+            data.forEach((t: any) => {
+              if (t.id && !seen.has(t.id)) {
+                seen.add(t.id);
+                currentTracks.push(t);
+                added = true;
+              }
+            });
+            return added ? { tracks: currentTracks } : state;
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch album tracks:', error);
+      }
+    },
+    searchAndAppendTracks: async (query: string) => {
     if (!query.trim()) return;
     try {
       const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);

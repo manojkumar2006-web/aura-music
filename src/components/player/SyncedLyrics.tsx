@@ -156,7 +156,7 @@ export const SyncedLyrics: React.FC<SyncedLyricsProps> = ({
                 <div
                   key={idx}
                   ref={isActive ? activeLineRef : null}
-                  className={`transition-all duration-500 transform ${
+                  className={`transition-all duration-300 transform ${
                     isActive 
                       ? 'text-3xl md:text-5xl font-bold text-white scale-100 opacity-100' 
                       : isPast

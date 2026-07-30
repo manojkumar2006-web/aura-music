@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { motion, AnimatePresence } from 'motion/react';
 import {
  Music,
@@ -61,14 +62,15 @@ import { useMusicStore } from '../store/musicStore';
 import { CompatibilityView } from '../components/CompatibilityView';
 import { useShallow } from 'zustand/react/shallow';
 import { Section } from '../components/Section';
-import { CoupleCompatibility } from '../components/CoupleCompatibility';
+// Lazy-loaded — excluded from initial JS bundle
+const CoupleCompatibility = lazy(() => import('../components/CoupleCompatibility').then(m => ({ default: m.CoupleCompatibility })));
 import { AudioPlayer } from '../components/player/AudioPlayer';
 import { Track } from '../types';
 import { getThemeConfig } from '../theme';
 import { ARTIST_IMAGES as IMPORTED_ARTIST_IMAGES } from '../data/mockData';
 import { splitAndNormalizeArtists, normalizeName } from '../utils/nameNormalizer';
 import { getUserLocation, getWeather, getRegionIndustry } from '../services/locationService';
-import { OnboardingWizard } from '../components/OnboardingWizard';
+const OnboardingWizard = lazy(() => import('../components/OnboardingWizard').then(m => ({ default: m.OnboardingWizard })));
 
 const INSTANT_ARTIST_PHOTOS: Record<string, string> = {
   'Anirudh Ravichander': 'https://cdn-images.dzcdn.net/images/artist/439c98aa303d76eb58472ac1773ec01c/1000x1000-000000-80-0-0.jpg',
@@ -1105,7 +1107,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  return (
  <div className={`h-screen overflow-hidden ${activeThemeStyle.bg} text-ink-primary flex flex-col relative select-none transition-colors duration-300 star-field`}>
  {currentUser && currentUser.onboardingComplete !== true && (
- <OnboardingWizard />
+ <Suspense fallback={null}><OnboardingWizard /></Suspense>
  )}
  {/* Ambient background blobs (atmosphere) */}
  <div className="ambient-blob free" />
@@ -4542,7 +4544,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  {/* ================= COUPLE COMPATIBILITY MODAL ================= */}
  <AnimatePresence>
  {showCoupleModal && currentUser && (
- <CoupleCompatibility
+ <Suspense fallback={null}><CoupleCompatibility
  currentUser={{
  id: currentUser.id,
  displayName: currentUser.displayName,
@@ -4555,7 +4557,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  }}
  allTracks={tracks.map(t => ({ id: t.id, title: t.title, artist: t.artist }))}
  onClose={() => setShowCoupleModal(false)}
- />
+ /></Suspense>
  )}
  </AnimatePresence>
 

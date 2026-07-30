@@ -7,10 +7,13 @@ import React, { useEffect } from 'react';
 import { Home } from './pages/Home';
 import { useMusicStore } from './store/musicStore';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { useShallow } from 'zustand/react/shallow';
 
 export default function App() {
   const fetchTracks = useMusicStore((state) => state.fetchTracks);
-  const currentTrack = useMusicStore((state) => state.currentTrack);
+  // Subscribe ONLY to coverUrl so we don't re-render the blur background
+  // when unrelated track fields change (liked status, queue, etc.)
+  const coverUrl = useMusicStore(useShallow((state) => state.currentTrack?.coverUrl ?? null));
 
   useEffect(() => {
     fetchTracks();
@@ -19,15 +22,19 @@ export default function App() {
   return (
     <ErrorBoundary>
       <div className="relative min-h-screen overflow-hidden bg-black">
-        {/* Dynamic Ambient Background */}
-        {currentTrack?.coverUrl && (
-          <div 
-            className="absolute inset-0 z-0 transition-all duration-1000 ease-in-out bg-cover bg-center"
-            style={{ 
-              backgroundImage: `url(${currentTrack.coverUrl})`,
+        {/* Dynamic Ambient Background — isolated GPU layer, only re-renders on cover change */}
+        {coverUrl && (
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 z-0 bg-cover bg-center transition-opacity duration-1000"
+            style={{
+              backgroundImage: `url(${coverUrl})`,
               filter: 'blur(100px) brightness(0.6) saturate(1.5)',
               transform: 'scale(1.2)',
-              opacity: 0.7
+              opacity: 0.7,
+              // GPU compositing hints — isolates this element to its own compositor layer
+              willChange: 'opacity',
+              contain: 'paint',
             }}
           />
         )}
@@ -38,4 +45,5 @@ export default function App() {
     </ErrorBoundary>
   );
 }
+
 

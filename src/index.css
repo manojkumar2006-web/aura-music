@@ -290,3 +290,36 @@ body {
 .text-hover-fade {
   transition: color 0.3s ease;
 }
+
+/* ============================================================
+   PERFORMANCE: GPU Acceleration Hints — added for 60 FPS
+   ============================================================ */
+
+/* Ambient background blur — isolate to its own GPU compositor layer */
+.ambient-bg-layer,
+[aria-hidden="true"][style*="blur"] {
+  will-change: opacity;
+  contain: paint;
+}
+
+/* Progress bar fill — width-only animation, promote to GPU layer */
+.player-progress-fill {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Scroll containers — hint browser for smooth layer promotion */
+.custom-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Image loading skeleton pulse */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+.skeleton-pulse {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
+  background-size: 200% 100%;
+}

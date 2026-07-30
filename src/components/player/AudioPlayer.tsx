@@ -186,8 +186,20 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  const ytPlayerRef = useRef<any>(null);
  const ytReadyIdRef = useRef<string | null>(null);
  const [isMobile, setIsMobile] = useState(false);
- const [currentTime, setCurrentTime] = useState(0);
- const [duration, setDuration] = useState(0);
+ // Direct DOM refs for progress — bypasses React reconciler, zero re-renders per tick
+ const currentTimeRef = useRef(0);
+ const durationRef = useRef(0);
+ const progressFillRefA = useRef<HTMLDivElement | null>(null);
+ const progressFillRefB = useRef<HTMLDivElement | null>(null);
+ const progressThumbRefA = useRef<HTMLDivElement | null>(null);
+ const progressThumbRefB = useRef<HTMLDivElement | null>(null);
+ const timeCurrentRefA = useRef<HTMLSpanElement | null>(null);
+ const timeCurrentRefB = useRef<HTMLSpanElement | null>(null);
+ const timeDurationRefA = useRef<HTMLSpanElement | null>(null);
+ const timeDurationRefB = useRef<HTMLSpanElement | null>(null);
+ const miniProgressRef = useRef<HTMLDivElement | null>(null);
+ const scrubberRefA = useRef<HTMLInputElement | null>(null);
+ const scrubberRefB = useRef<HTMLInputElement | null>(null);
  const [isShuffle, setIsShuffle] = useState(false);
  const [isRepeat, setIsRepeat] = useState(false);
 
@@ -209,15 +221,14 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  let interval: any;
  if (playbackState === 'playing' && currentTrack?.youtubeId) {
   interval = setInterval(async () => {
-  if (ytPlayerRef.current) {
-  try {
-  const time = await ytPlayerRef.current.getCurrentTime();
- if (time !== undefined) setCurrentTime(time);
- const dur = await ytPlayerRef.current.getDuration();
- if (dur > 0) setDuration(dur);
- } catch(e) {}
- }
- }, 500);
+   if (ytPlayerRef.current) {
+   try {
+   const time = await ytPlayerRef.current.getCurrentTime();
+   const dur = await ytPlayerRef.current.getDuration();
+   if (time !== undefined) updateProgressDOM(time, dur > 0 ? dur : durationRef.current);
+   } catch(e) {}
+   }
+   }, 500);
  }
  return () => clearInterval(interval);
  }, [playbackState, currentTrack]);
@@ -231,8 +242,8 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
 
  const audio = audioRef.current;
 
- const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
- const handleDurationChange = () => setDuration(audio.duration || 0);
+ const handleTimeUpdate = () => updateProgressDOM(audio.currentTime, audio.duration || durationRef.current);
+ const handleDurationChange = () => { durationRef.current = audio.duration || 0; updateProgressDOM(currentTimeRef.current, audio.duration || 0); };
  const handleEnded = () => handleNext();
 
  audio.addEventListener('timeupdate', handleTimeUpdate);
@@ -269,11 +280,11 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  audio.load();
  
  // Restore playback scrubber timeline position ONLY if we are just switching bitrates on the same track
- if (isBitrateSwitch && savedTime > 0 && savedTime < duration) {
+ if (isBitrateSwitch && savedTime > 0 && savedTime < durationRef.current) {
  audio.currentTime = savedTime;
  } else {
  audio.currentTime = 0;
- setCurrentTime(0);
+  updateProgressDOM(0, durationRef.current);
  }
  }
  
@@ -411,8 +422,9 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  };
 
  const handleScrub = (e: React.ChangeEvent<HTMLInputElement>) => {
- const value = Number(e.target.value);
- setCurrentTime(value);
+ const pct = Number(e.target.value) / 1000;
+ const value = pct * (durationRef.current || 0);
+ updateProgressDOM(value, durationRef.current);
  if (audioRef.current) {
  audioRef.current.currentTime = value;
  }
@@ -429,9 +441,8 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  const rect = e.currentTarget.getBoundingClientRect();
  const x = e.clientX - rect.left;
  const percentage = Math.max(0, Math.min(1, x / rect.width));
- const newTime = percentage * (duration || 0);
- 
- setCurrentTime(newTime);
+ const newTime = percentage * (durationRef.current || 0);
+ updateProgressDOM(newTime, durationRef.current);
  if (audioRef.current) {
  audioRef.current.currentTime = newTime;
  }
@@ -497,6 +508,30 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  return `${m}:${s.toString().padStart(2, '0')}`;
  };
 
+ // Direct DOM progress updater — zero React re-renders for any tick.
+ // Called from setInterval and audio timeupdate at high frequency.
+ const updateProgressDOM = (time: number, dur: number) => {
+ currentTimeRef.current = time;
+ if (dur > 0) durationRef.current = dur;
+ const effectiveDur = durationRef.current;
+ const pct = effectiveDur > 0 ? Math.min(100, (time / effectiveDur) * 100) : 0;
+ const pctStr = `${pct}%`;
+ const thumbLeft = `max(0%, calc(${pct}% - 6px))`;
+ const timeStr = formatTime(time);
+ const durStr = formatTime(effectiveDur);
+ if (progressFillRefA.current) progressFillRefA.current.style.width = pctStr;
+ if (progressFillRefB.current) progressFillRefB.current.style.width = pctStr;
+ if (progressThumbRefA.current) progressThumbRefA.current.style.left = thumbLeft;
+ if (progressThumbRefB.current) progressThumbRefB.current.style.left = thumbLeft;
+ if (miniProgressRef.current) miniProgressRef.current.style.width = pctStr;
+ if (timeCurrentRefA.current) timeCurrentRefA.current.textContent = timeStr;
+ if (timeCurrentRefB.current) timeCurrentRefB.current.textContent = timeStr;
+ if (timeDurationRefA.current) timeDurationRefA.current.textContent = durStr;
+ if (timeDurationRefB.current) timeDurationRefB.current.textContent = durStr;
+ if (scrubberRefA.current) scrubberRefA.current.value = String(effectiveDur > 0 ? (time / effectiveDur) * 1000 : 0);
+ if (scrubberRefB.current) scrubberRefB.current.value = String(effectiveDur > 0 ? (time / effectiveDur) * 1000 : 0);
+ };
+
  const getQualityBadgeColor = () => {
  if (quality === 'atmos') return 'text-teal bg-teal/10 border-teal/20';
  if (quality === 'flac') return 'text-ocean bg-ocean/10 border-ocean/20';
@@ -521,7 +556,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  <p className="text-white text-[13px] font-bold truncate leading-tight">{currentTrack.title}</p>
  <p className="text-slate-400 text-[11px] truncate">{currentTrack.artist}</p>
  <div className="mt-1.5 h-[2px] bg-[#242424] rounded-full overflow-hidden">
- <div className="h-full bg-white rounded-full transition-[width] duration-150 ease-linear" style={{ width: `${(currentTime / (duration || 1)) * 100}%` }} />
+ <div ref={miniProgressRef} className="h-full bg-white rounded-full transition-[width] duration-150 ease-linear" style={{ width: '0%' }} />
  </div>
  </div>
  <div className="flex items-center gap-2 text-white flex-shrink-0" onClick={(e) => e.stopPropagation()}>
@@ -643,16 +678,17 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  {/* Progress */}
  <div className="relative z-10 flex flex-col mb-8 px-2">
  <div className="h-1.5 w-full bg-[#333333] rounded-full overflow-hidden cursor-pointer relative" onClick={handleProgressClick}>
- <div className="h-full bg-white rounded-full transition-[width] duration-150 ease-linear" style={{ width: `${(currentTime / (duration || 1)) * 100}%` }} />
+ <div ref={progressFillRefA} className="h-full bg-white rounded-full transition-[width] duration-150 ease-linear" style={{ width: '0%' }} />
  {/* Progress handle thumb */}
- <div 
- className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-md transition-[width] duration-150 ease-linear" 
- style={{ left: `max(0%, calc(${(currentTime / (duration || 1)) * 100}% - 6px))` }} 
+ <div
+ ref={progressThumbRefA}
+ className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-md transition-[left] duration-150 ease-linear"
+ style={{ left: '0%' }}
  />
  </div>
  <div className="flex justify-between mt-3 text-[11px] text-slate-400 font-mono tracking-wide">
- <span>{formatTime(currentTime)}</span>
- <span>{formatTime(duration)}</span>
+ <span ref={timeCurrentRefA}>0:00</span>
+ <span ref={timeDurationRefA}>0:00</span>
  </div>
  </div>
 
@@ -831,19 +867,21 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  
  {/* Integrated ultra-thin progress bar below text */}
  <div className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#242424] rounded-full overflow-hidden pointer-events-none">
- <div 
- className="h-full bg-white rounded-full transition-[width] duration-150 ease-linear ease-linear" 
- style={{ width: `${(currentTime / (duration || 1)) * 100}%` }} 
+ <div
+ ref={progressFillRefB}
+ className="h-full bg-white rounded-full transition-[width] duration-150 ease-linear"
+ style={{ width: '0%' }}
  />
  </div>
  <input
+ ref={scrubberRefA}
  type="range"
  min={0}
- max={duration || 100}
- value={currentTime}
+ max={1000}
+ defaultValue={0}
  onChange={handleScrub}
  className="absolute -bottom-2 left-0 right-0 w-full h-4 opacity-0 cursor-pointer z-10"
- title={`${formatTime(currentTime)} / ${formatTime(duration)}`}
+ title="Seek"
  />
  </div>
  </>
@@ -1059,22 +1097,22 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  
  {/* Progress */}
  <div className="w-full flex items-center gap-4 mb-8">
- <span className="text-xs text-slate-400 font-mono">{formatTime(currentTime)}</span>
- <div 
+ <span ref={timeCurrentRefB} className="text-xs text-slate-400 font-mono">0:00</span>
+ <div
  className="flex-1 h-1.5 bg-[#333333] rounded-full overflow-hidden cursor-pointer relative group"
  onClick={(e) => {
  const rect = e.currentTarget.getBoundingClientRect();
  const x = e.clientX - rect.left;
- const ratio = x / rect.width;
- const newTime = ratio * duration;
+ const ratio = Math.max(0, Math.min(1, x / rect.width));
+ const newTime = ratio * durationRef.current;
  if (audioRef.current && !currentTrack.youtubeId) audioRef.current.currentTime = newTime;
  if (ytPlayerRef.current && currentTrack.youtubeId) ytPlayerRef.current.seekTo(newTime, true);
- setCurrentTime(newTime);
+ updateProgressDOM(newTime, durationRef.current);
  }}
  >
- <div className="h-full bg-teal transition-all ease-linear" style={{ width: `${(currentTime / duration) * 100}%` }} />
+ <div ref={progressFillRefA} className="h-full bg-teal transition-[width] ease-linear" style={{ width: '0%' }} />
  </div>
- <span className="text-xs text-slate-400 font-mono">{formatTime(duration)}</span>
+ <span ref={timeDurationRefB} className="text-xs text-slate-400 font-mono">0:00</span>
  </div>
 
  {/* Main Controls */}

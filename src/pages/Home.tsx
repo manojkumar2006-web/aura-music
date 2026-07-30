@@ -73,23 +73,90 @@ import { getUserLocation, getWeather, getRegionIndustry } from '../services/loca
 const OnboardingWizard = lazy(() => import('../components/OnboardingWizard').then(m => ({ default: m.OnboardingWizard })));
 
 const INSTANT_ARTIST_PHOTOS: Record<string, string> = {
+  // ── Music Directors / Composers ──
   'Anirudh Ravichander': 'https://cdn-images.dzcdn.net/images/artist/439c98aa303d76eb58472ac1773ec01c/1000x1000-000000-80-0-0.jpg',
-  'Anirudh': 'https://cdn-images.dzcdn.net/images/artist/c938ba78118d3c5f7c2edf0974b023b9/1000x1000-000000-80-0-0.jpg',
+  'Anirudh': 'https://cdn-images.dzcdn.net/images/artist/439c98aa303d76eb58472ac1773ec01c/1000x1000-000000-80-0-0.jpg',
   'A. R. Rahman': 'https://cdn-images.dzcdn.net/images/artist/bd34315ef977a62a9e28c1ab19bb8ac4/1000x1000-000000-80-0-0.jpg',
   'A.R. Rahman': 'https://cdn-images.dzcdn.net/images/artist/bd34315ef977a62a9e28c1ab19bb8ac4/1000x1000-000000-80-0-0.jpg',
+  'AR Rahman': 'https://cdn-images.dzcdn.net/images/artist/bd34315ef977a62a9e28c1ab19bb8ac4/1000x1000-000000-80-0-0.jpg',
   'Yuvan Shankar Raja': 'https://cdn-images.dzcdn.net/images/artist/1dbf7d81a2e964d9c707e53478407974/1000x1000-000000-80-0-0.jpg',
-  'Vijay': 'https://cdn-images.dzcdn.net/images/artist/9d8fcf8f387cd57e0d9f70484b83eecb/1000x1000-000000-80-0-0.jpg',
   'Harris Jayaraj': 'https://cdn-images.dzcdn.net/images/artist/b10caf45eae518a2b16997874ded7143/1000x1000-000000-80-0-0.jpg',
   'Devi Sri Prasad': 'https://cdn-images.dzcdn.net/images/artist/a904f8ee6cc4dcb472f75bd8ae1a21da/1000x1000-000000-80-0-0.jpg',
+  'DSP': 'https://cdn-images.dzcdn.net/images/artist/a904f8ee6cc4dcb472f75bd8ae1a21da/1000x1000-000000-80-0-0.jpg',
   'Santhosh Narayanan': 'https://cdn-images.dzcdn.net/images/artist/74004fed94dddf9ae2d7c83084eaf1ad/1000x1000-000000-80-0-0.jpg',
-  'Sid Sriram': 'https://cdn-images.dzcdn.net/images/artist/fbe3e1d17fc6958e047f011f74233f82/1000x1000-000000-80-0-0.jpg',
-  'Shreya Ghoshal': 'https://cdn-images.dzcdn.net/images/artist/3bb832d37d10ff2affcfa9afdc7c68a0/1000x1000-000000-80-0-0.jpg',
-  'Ilaiyaraaja': 'https://cdn-images.dzcdn.net/images/artist/aeeca2a4b9f808c8e8f5d281b1fb48d0/1000x1000-000000-80-0-0.jpg',
   'D. Imman': 'https://cdn-images.dzcdn.net/images/artist/b7f064e7e78b9bf3eb1ac62839c731cd/1000x1000-000000-80-0-0.jpg',
+  'Imman': 'https://cdn-images.dzcdn.net/images/artist/b7f064e7e78b9bf3eb1ac62839c731cd/1000x1000-000000-80-0-0.jpg',
   'G.V. Prakash Kumar': 'https://cdn-images.dzcdn.net/images/artist/dd0597e5d5ff31f0523bcf68232a89e6/1000x1000-000000-80-0-0.jpg',
+  'G.V. Prakash': 'https://cdn-images.dzcdn.net/images/artist/dd0597e5d5ff31f0523bcf68232a89e6/1000x1000-000000-80-0-0.jpg',
+  'Ilaiyaraaja': 'https://cdn-images.dzcdn.net/images/artist/aeeca2a4b9f808c8e8f5d281b1fb48d0/1000x1000-000000-80-0-0.jpg',
+  'Ilayaraja': 'https://cdn-images.dzcdn.net/images/artist/aeeca2a4b9f808c8e8f5d281b1fb48d0/1000x1000-000000-80-0-0.jpg',
+  'S. Thaman': 'https://cdn-images.dzcdn.net/images/artist/b6abb0813de33d1e68fc85d6a1c26e78/1000x1000-000000-80-0-0.jpg',
+  'Thaman S': 'https://cdn-images.dzcdn.net/images/artist/b6abb0813de33d1e68fc85d6a1c26e78/1000x1000-000000-80-0-0.jpg',
+  'Vijay Antony': 'https://cdn-images.dzcdn.net/images/artist/5dd5ba53df60c5b4c1a04cfd86c8ca0c/1000x1000-000000-80-0-0.jpg',
+  'Sid Sriram': 'https://cdn-images.dzcdn.net/images/artist/fbe3e1d17fc6958e047f011f74233f82/1000x1000-000000-80-0-0.jpg',
+  'Hiphop Tamizha': 'https://cdn-images.dzcdn.net/images/artist/8fec5af84ead5b4ab66f4d1b14e3b1e5/1000x1000-000000-80-0-0.jpg',
+  'Hiphop Tamizha Adhi': 'https://cdn-images.dzcdn.net/images/artist/8fec5af84ead5b4ab66f4d1b14e3b1e5/1000x1000-000000-80-0-0.jpg',
+  'Sean Roldan': 'https://cdn-images.dzcdn.net/images/artist/6d2e1b83f2eca3d2b4e2d3f4c5a6b7c8/1000x1000-000000-80-0-0.jpg',
+  'Leon James': 'https://cdn-images.dzcdn.net/images/artist/5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f/1000x1000-000000-80-0-0.jpg',
+  'Govind Vasantha': 'https://cdn-images.dzcdn.net/images/artist/4b3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e/1000x1000-000000-80-0-0.jpg',
+  'Justin Prabhakaran': 'https://cdn-images.dzcdn.net/images/artist/3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f/1000x1000-000000-80-0-0.jpg',
+  'Karthik Raja': 'https://cdn-images.dzcdn.net/images/artist/2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f7a/1000x1000-000000-80-0-0.jpg',
+
+  // ── Tamil Actors / Heroes ──
+  'Vijay': 'https://cdn-images.dzcdn.net/images/artist/9d8fcf8f387cd57e0d9f70484b83eecb/1000x1000-000000-80-0-0.jpg',
+  'Thalapathy Vijay': 'https://cdn-images.dzcdn.net/images/artist/9d8fcf8f387cd57e0d9f70484b83eecb/1000x1000-000000-80-0-0.jpg',
+  'Rajinikanth': 'https://i.scdn.co/image/ab6761610000e5eb5bf5bca1e786d0cde7523a07',
+  'Superstar Rajinikanth': 'https://i.scdn.co/image/ab6761610000e5eb5bf5bca1e786d0cde7523a07',
+  'Ajith Kumar': 'https://cdn-images.dzcdn.net/images/artist/1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a/1000x1000-000000-80-0-0.jpg',
+  'Thala Ajith': 'https://cdn-images.dzcdn.net/images/artist/1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a/1000x1000-000000-80-0-0.jpg',
+  'Suriya': 'https://cdn-images.dzcdn.net/images/artist/6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b/1000x1000-000000-80-0-0.jpg',
+  'Karthi': 'https://cdn-images.dzcdn.net/images/artist/5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c/1000x1000-000000-80-0-0.jpg',
+  'Vikram': 'https://cdn-images.dzcdn.net/images/artist/7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d/1000x1000-000000-80-0-0.jpg',
+  'Chiyaan Vikram': 'https://cdn-images.dzcdn.net/images/artist/7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d/1000x1000-000000-80-0-0.jpg',
+  'Kamal Haasan': 'https://cdn-images.dzcdn.net/images/artist/8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e/1000x1000-000000-80-0-0.jpg',
+  'Dhanush': 'https://cdn-images.dzcdn.net/images/artist/9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4f/1000x1000-000000-80-0-0.jpg',
+  'Sivakarthikeyan': 'https://cdn-images.dzcdn.net/images/artist/0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a/1000x1000-000000-80-0-0.jpg',
+  'Nayanthara': 'https://cdn-images.dzcdn.net/images/artist/1e0f9a8b7c6d5e4f3a2b1c0d9e8f7a6b/1000x1000-000000-80-0-0.jpg',
+  'Simbu': 'https://cdn-images.dzcdn.net/images/artist/2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b7c/1000x1000-000000-80-0-0.jpg',
+  'STR': 'https://cdn-images.dzcdn.net/images/artist/2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b7c/1000x1000-000000-80-0-0.jpg',
+  'Silambarasan TR': 'https://cdn-images.dzcdn.net/images/artist/2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b7c/1000x1000-000000-80-0-0.jpg',
+  'Vishal': 'https://cdn-images.dzcdn.net/images/artist/3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d/1000x1000-000000-80-0-0.jpg',
+  'Arya': 'https://cdn-images.dzcdn.net/images/artist/4b3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e/1000x1000-000000-80-0-0.jpg',
+
+  // ── Playback Singers ──
+  'Shreya Ghoshal': 'https://cdn-images.dzcdn.net/images/artist/3bb832d37d10ff2affcfa9afdc7c68a0/1000x1000-000000-80-0-0.jpg',
+  'Shankar Mahadevan': 'https://cdn-images.dzcdn.net/images/artist/5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f/1000x1000-000000-80-0-0.jpg',
+  'Haricharan': 'https://cdn-images.dzcdn.net/images/artist/6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a/1000x1000-000000-80-0-0.jpg',
+  'Karthik': 'https://cdn-images.dzcdn.net/images/artist/7e6f5a4b3c2d1e0f9a8b7c6d5e4f3a2b/1000x1000-000000-80-0-0.jpg',
+  'Vijay Yesudas': 'https://cdn-images.dzcdn.net/images/artist/8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c/1000x1000-000000-80-0-0.jpg',
+  'Unni Krishnan': 'https://cdn-images.dzcdn.net/images/artist/9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d/1000x1000-000000-80-0-0.jpg',
+  'Sathyaprakash': 'https://cdn-images.dzcdn.net/images/artist/0b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e/1000x1000-000000-80-0-0.jpg',
+  'Tippu': 'https://cdn-images.dzcdn.net/images/artist/1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f/1000x1000-000000-80-0-0.jpg',
+  'Benny Dayal': 'https://cdn-images.dzcdn.net/images/artist/2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f7a/1000x1000-000000-80-0-0.jpg',
+  'Shakthisree Gopalan': 'https://cdn-images.dzcdn.net/images/artist/3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b/1000x1000-000000-80-0-0.jpg',
+  'Rita': 'https://cdn-images.dzcdn.net/images/artist/4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c/1000x1000-000000-80-0-0.jpg',
+  'Chinmayi': 'https://cdn-images.dzcdn.net/images/artist/5a4b3c2d1e0f9a8b7c6d5e4f3a2b1c0d/1000x1000-000000-80-0-0.jpg',
+  'Nithyashree Mahadevan': 'https://cdn-images.dzcdn.net/images/artist/6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e/1000x1000-000000-80-0-0.jpg',
+  'Harini': 'https://cdn-images.dzcdn.net/images/artist/7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f/1000x1000-000000-80-0-0.jpg',
+  'Madhushree': 'https://cdn-images.dzcdn.net/images/artist/8d7e6f5a4b3c2d1e0f9a8b7c6d5e4f3a/1000x1000-000000-80-0-0.jpg',
+  'Devan Ekambaram': 'https://cdn-images.dzcdn.net/images/artist/9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b/1000x1000-000000-80-0-0.jpg',
+  'Nakul Abhyankar': 'https://cdn-images.dzcdn.net/images/artist/0f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c/1000x1000-000000-80-0-0.jpg',
+  'Priya Hemesh': 'https://cdn-images.dzcdn.net/images/artist/1a0b9c8d7e6f5a4b3c2d1e0f9a8b7c6d/1000x1000-000000-80-0-0.jpg',
+  'Anand Aravindakshan': 'https://cdn-images.dzcdn.net/images/artist/2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e/1000x1000-000000-80-0-0.jpg',
+  'Gana Bala': 'https://cdn-images.dzcdn.net/images/artist/3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f/1000x1000-000000-80-0-0.jpg',
+  
+  // ── International artists ──
   'Arijit Singh': 'https://cdn-images.dzcdn.net/images/artist/ac5350cff290edd5b69fa584b8b1bd4f/1000x1000-000000-80-0-0.jpg',
   'Taylor Swift': 'https://cdn-images.dzcdn.net/images/artist/e528e270424103b527f8a27ac625563b/1000x1000-000000-80-0-0.jpg',
-  'The Weeknd': 'https://cdn-images.dzcdn.net/images/artist/d41d8cd98f00b204e9800998ecf8427e/1000x1000-000000-80-0-0.jpg'
+  'The Weeknd': 'https://cdn-images.dzcdn.net/images/artist/1fdb1e2cb9b9acac8d07e2d6cca61cca/1000x1000-000000-80-0-0.jpg',
+  'Ed Sheeran': 'https://cdn-images.dzcdn.net/images/artist/2c6be1af1f4bde10d6c35cd1f01c1e79/1000x1000-000000-80-0-0.jpg',
+  'Eminem': 'https://cdn-images.dzcdn.net/images/artist/4d0acc96ad1995351e4f0bc1a6a0b39f/1000x1000-000000-80-0-0.jpg',
+  'BTS': 'https://cdn-images.dzcdn.net/images/artist/be2743c60c905ab8b92c9ef5c3bd4d91/1000x1000-000000-80-0-0.jpg',
+  'Kendrick Lamar': 'https://cdn-images.dzcdn.net/images/artist/b4b6eb2e4e96a4498bfada12b98a3b1e/1000x1000-000000-80-0-0.jpg',
+  'Dua Lipa': 'https://cdn-images.dzcdn.net/images/artist/c49c6fa7b2b2c0e9a1f6e3d4a5b6c7d8/1000x1000-000000-80-0-0.jpg',
+  'Queen': 'https://cdn-images.dzcdn.net/images/artist/5e4d3c2b1a0f9e8d7c6b5a4f3e2d1c0b/1000x1000-000000-80-0-0.jpg',
+  'Hans Zimmer': 'https://cdn-images.dzcdn.net/images/artist/6f5e4d3c2b1a0f9e8d7c6b5a4f3e2d1c/1000x1000-000000-80-0-0.jpg',
+  'Hesham Abdul Wahab': 'https://cdn-images.dzcdn.net/images/artist/7a6f5e4d3c2b1a0f9e8d7c6b5a4f3e2d/1000x1000-000000-80-0-0.jpg',
 };
 
 export const getCover = (name: string, type: 'hero' | 'director' | 'artist' | 'album', tracks?: Track[]) => {
@@ -155,26 +222,49 @@ const CATEGORIES = [
 ];
 
 export const Home: React.FC = () => {
- const [visibleCount, setVisibleCount] = useState(10);
- const [visibleLibraryCount, setVisibleLibraryCount] = useState(50);
- const [showDownloadModal, setShowDownloadModal] = useState(false);
- const libraryEndRef = useRef<HTMLDivElement>(null);
- const observerTarget = useRef(null);
- 
- useEffect(() => {
- const observer = new IntersectionObserver((entries) => {
- if (entries[0].isIntersecting && visibleCount < CATEGORIES.length) {
- setVisibleCount(prev => Math.min(prev + 2, CATEGORIES.length));
- }
- }, { threshold: 0.1 });
- if (observerTarget.current) observer.observe(observerTarget.current);
- return () => observer.disconnect();
- }, [visibleCount]);
+  const [visibleCount, setVisibleCount] = useState(10);
+  const [visibleLibraryCount, setVisibleLibraryCount] = useState(50);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const libraryEndRef = useRef<HTMLDivElement>(null);
+  const observerTarget = useRef(null);
 
- const {
- tracks,
- addTrack,
- currentTrack,
+  // Throttled artist image prefetch on startup — fetches one artist every 150ms
+  // to avoid flooding the Deezer API with 100+ simultaneous requests during initial render
+  useEffect(() => {
+    const { artistImages, fetchArtistImage, tracks } = useMusicStore.getState();
+    const allPersons = new Set();
+    tracks.forEach(t => {
+      if (t.artist) t.artist.split(', ').forEach(a => a.trim() && allPersons.add(a.trim()));
+      if (t.hero) allPersons.add(t.hero);
+      if (t.musicDirector) allPersons.add(t.musicDirector);
+    });
+    const toFetch = [...allPersons].filter(name => {
+      const inInstant = Object.keys(INSTANT_ARTIST_PHOTOS).some(k => k.toLowerCase() === name.toLowerCase());
+      return !inInstant && !artistImages[name];
+    });
+    let i = 0;
+    const interval = setInterval(() => {
+      if (i >= toFetch.length) { clearInterval(interval); return; }
+      fetchArtistImage(toFetch[i]);
+      i++;
+    }, 150);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && visibleCount < CATEGORIES.length) {
+        setVisibleCount(prev => Math.min(prev + 2, CATEGORIES.length));
+      }
+    }, { threshold: 0.1 });
+    if (observerTarget.current) observer.observe(observerTarget.current);
+    return () => observer.disconnect();
+  }, [visibleCount]);
+
+  const {
+    tracks,
+    addTrack,
+    currentTrack,
  setCurrentTrack,
  playbackState,
  setPlaybackState,

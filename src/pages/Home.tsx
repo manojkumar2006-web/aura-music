@@ -132,16 +132,10 @@ export const getCover = (name: string, type: 'hero' | 'director' | 'artist' | 'a
     }
 
     // 1. Check dynamic API cache
-    const { artistImages, fetchArtistImage } = useMusicStore.getState();
+    const { artistImages } = useMusicStore.getState();
     if (artistImages[name] && artistImages[name] !== '') return artistImages[name];
     
-    // 2. Trigger dynamic fetch if never fetched before
-    if (artistImages[name] === undefined) {
-      useMusicStore.setState(state => ({ artistImages: { ...state.artistImages, [name]: '' } }));
-      fetchArtistImage(name);
-    }
-    
-    // 3. Strict fallback
+    // 2. Pure fallback (no side-effects during render!)
     return 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name) + '&background=14b8a6&color=fff&size=512';
   }
   
@@ -153,8 +147,8 @@ export const getCover = (name: string, type: 'hero' | 'director' | 'artist' | 'a
 };
 
 const COMMUNITY_PLAYLISTS = [
- { name: 'Synthwave Nights', author: 'NeonRider', coverUrl: 'https://picsum.photos/seed/music1/400/400', trackIds: ['track-1', 'track-2', 'track-3'] },
- { name: 'Focus Flow', author: 'StudyBot', coverUrl: 'https://picsum.photos/seed/music2/400/400', trackIds: ['track-4', 'track-5'] },
+  { name: 'Synthwave Nights', author: 'NeonRider', coverUrl: 'https://picsum.photos/seed/music1/400/400', trackIds: ['track-1', 'track-2', 'track-3'] },
+  { name: 'Focus Flow', author: 'StudyBot', coverUrl: 'https://picsum.photos/seed/music2/400/400', trackIds: ['track-4', 'track-5'] },
  { name: 'Gym Bangerz', author: 'Chad', coverUrl: 'https://picsum.photos/seed/music3/400/400', trackIds: ['track-6', 'track-7'] },
  { name: 'Acoustic Morning', author: 'CoffeeLover', coverUrl: 'https://picsum.photos/seed/music4/400/400', trackIds: ['track-8', 'track-9'] }
 ];

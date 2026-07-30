@@ -2210,60 +2210,108 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
 </motion.div>
 );
  })() : selectedAlbum ? (() => {
- const albumTracks = groupedAlbumsMap.get(selectedAlbum) || [];
- const firstTrack = albumTracks[0];
- if (!firstTrack) return null;
- return (
- <motion.div
- key="album-detail"
- initial={{ opacity: 0, scale: 0.98 }}
- animate={{ opacity: 1, scale: 1 }}
- transition={{ duration: 0.3 }}
- className="flex flex-col gap-8 pb-10"
- >
- {/* Header */}
- <div className="flex flex-col md:flex-row gap-8 md:items-end border-b border-white/5 pb-8 relative pt-10">
- <button 
- onClick={() => setSelectedAlbum(null)}
- className="absolute top-0 left-0 bg-[#181818] hover:bg-[#242424] p-2 rounded-full transition-colors text-slate-300 flex items-center gap-2 text-xs font-bold uppercase tracking-wider z-10"
- >
- <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
- Back
- </button>
- 
- <div className="w-56 h-56 rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex-shrink-0">
- <img loading="lazy" src={firstTrack.coverUrl} alt={selectedAlbum} className="w-full h-full object-cover" />
- </div>
- 
- <div className="flex flex-col gap-3 pb-2">
- <h2 className="text-3xl md:text-4xl font-black text-white font-display tracking-wide">{selectedAlbum} <span className="text-xl text-slate-400 font-sans tracking-normal font-normal">(Original Motion Picture Soundtrack)</span></h2>
- <div className="flex flex-col gap-1">
- <span 
- className="text-lg font-bold text-teal hover:text-white hover:underline cursor-pointer transition-colors w-max"
- onClick={() => {
- setSelectedDirector(firstTrack.musicDirector || firstTrack.artist.split(',')[0]);
- setSelectedAlbum(null);
- }}
- >
- {firstTrack.musicDirector || firstTrack.artist.split(',')[0]}
- </span>
- <span className="text-sm text-slate-400 font-mono uppercase tracking-widest">{firstTrack.region || 'Unknown'} • {firstTrack.releaseDate || '2026'}</span>
- </div>
- <p className="text-xs text-slate-500 max-w-xl mt-2 leading-relaxed">
- {moviePlots[selectedAlbum] || `After establishing himself in the pop music world, composer-musician-singer ${firstTrack.musicDirector || 'this artist'} has quickly made a name for himself as an adept and exciting film soundtrack curator.`}
- </p>
- <div className="mt-4 flex items-center gap-4">
- <button 
- onClick={() => handleSelectTrack(albumTracks[0], albumTracks)}
- className="bg-white hover:bg-white/90 text-black font-bold py-2.5 px-8 rounded-full flex items-center gap-2 transition-all hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.2)]"
- >
- <Play className="w-5 h-5 fill-current" /> Play
- </button>
- </div>
- </div>
- </div>
+  const albumTracks = groupedAlbumsMap.get(selectedAlbum) || [];
+  const firstTrack = albumTracks[0];
+  if (!firstTrack) return null;
 
- {/* Tracklist Table */}
+  // Calculate rich album runtime metadata
+  const totalDurationSec = albumTracks.reduce((acc, t) => {
+    if (typeof t.duration === 'number') return acc + t.duration;
+    if (typeof t.duration === 'string') {
+      const parts = (t.duration as string).split(':');
+      if (parts.length === 2) return acc + (parseInt(parts[0]) * 60 + parseInt(parts[1]));
+    }
+    return acc + 210;
+  }, 0);
+  const totalMin = Math.floor(totalDurationSec / 60);
+
+  return (
+  <motion.div
+  key="album-detail"
+  initial={{ opacity: 0, scale: 0.98 }}
+  animate={{ opacity: 1, scale: 1 }}
+  transition={{ duration: 0.3 }}
+  className="flex flex-col gap-8 pb-10 relative"
+  >
+  {/* Dynamic Soft Ambient Backdrop Glow */}
+  <div className="absolute -top-6 -left-6 -right-6 h-96 opacity-35 pointer-events-none overflow-hidden rounded-3xl z-0">
+    <img loading="lazy" src={firstTrack.coverUrl} className="w-full h-full object-cover filter blur-[90px] scale-125" alt="" />
+    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#121212]/70 to-[#121212]" />
+  </div>
+
+  {/* Header */}
+  <div className="flex flex-col md:flex-row gap-8 md:items-end border-b border-white/10 pb-8 relative pt-10 z-10">
+  <button 
+  onClick={() => setSelectedAlbum(null)}
+  className="absolute top-0 left-0 bg-[#181818]/80 hover:bg-[#242424] backdrop-blur-md px-4 py-2 rounded-full transition-all text-slate-300 hover:text-white flex items-center gap-2 text-xs font-bold uppercase tracking-wider z-10 border border-white/10 cursor-pointer"
+  >
+  <ChevronLeft className="w-4 h-4" />
+  Back to Albums
+  </button>
+  
+  <div className="w-56 h-56 rounded-2xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.7)] flex-shrink-0 border border-white/10 relative group">
+  <img loading="lazy" src={firstTrack.coverUrl} alt={selectedAlbum} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+  </div>
+  
+  <div className="flex flex-col gap-3 pb-2 flex-1">
+  <span className="text-xs font-mono uppercase tracking-[0.2em] text-teal font-bold bg-teal/10 px-3 py-1 rounded-full w-max border border-teal/20">
+    Album • {firstTrack.region || 'Kollywood'}
+  </span>
+  <h2 className="text-3xl md:text-5xl font-black text-white font-display tracking-tight leading-tight">{selectedAlbum}</h2>
+  
+  <div className="flex flex-wrap items-center gap-3 text-sm text-slate-300 font-medium">
+  <span 
+  className="font-bold text-teal hover:text-white hover:underline cursor-pointer transition-colors"
+  onClick={() => {
+  setSelectedDirector(firstTrack.musicDirector || firstTrack.artist.split(',')[0]);
+  setSelectedAlbum(null);
+  }}
+  >
+  {firstTrack.musicDirector || firstTrack.artist.split(',')[0]}
+  </span>
+  <span>•</span>
+  <span>{firstTrack.releaseDate ? firstTrack.releaseDate.substring(0, 4) : '2026'}</span>
+  <span>•</span>
+  <span className="font-mono text-slate-400">{albumTracks.length} songs, {totalMin} min</span>
+  </div>
+
+  <p className="text-xs text-slate-400 max-w-2xl mt-1 leading-relaxed line-clamp-2">
+  {moviePlots[selectedAlbum] || ("Official soundtrack album for " + selectedAlbum + ", composed by " + (firstTrack.musicDirector || 'this music director') + ".")}
+  </p>
+
+  {/* Action Bar */}
+  <div className="mt-4 flex flex-wrap items-center gap-4">
+  <button 
+  onClick={() => handleSelectTrack(albumTracks[0], albumTracks)}
+  className="bg-teal hover:bg-white text-black font-bold py-3 px-8 rounded-full flex items-center gap-2 transition-all hover:scale-105 shadow-[0_0_25px_rgba(20,184,166,0.4)] cursor-pointer"
+  >
+  <Play className="w-5 h-5 fill-current" /> Play All
+  </button>
+
+  <button 
+  onClick={() => {
+    const shuffled = [...albumTracks].sort(() => Math.random() - 0.5);
+    handleSelectTrack(shuffled[0], shuffled);
+  }}
+  className="bg-[#242424]/80 hover:bg-[#333333] border border-white/10 text-white font-bold py-3 px-6 rounded-full flex items-center gap-2 transition-all hover:scale-105 cursor-pointer backdrop-blur-md"
+  >
+  <Shuffle className="w-4 h-4 text-teal" /> Shuffle
+  </button>
+
+  <button 
+  onClick={() => {
+    toggleArtistLike(selectedAlbum);
+  }}
+  className="p-3 bg-[#181818]/80 hover:bg-[#242424] border border-white/10 rounded-full transition-all text-slate-300 hover:text-pink-400 cursor-pointer backdrop-blur-md"
+  title="Save Album to Library"
+  >
+  <Heart className="w-5 h-5" />
+  </button>
+  </div>
+  </div>
+  </div>
+
+  {/* Tracklist Table */}
  <div className="flex flex-col w-full">
  {albumTracks.map((track, idx) => {
  const isPlaying = currentTrack?.id === track.id;

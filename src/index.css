@@ -1,36 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300..900&family=Outfit:wght@300..900&family=Righteous&family=Space+Grotesk:wght@300..700&display=swap');
 @import "tailwindcss";
 
-@theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-display: "Outfit", "Space Grotesk", sans-serif;
-  --font-hero: "Righteous", display;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+@layer base {
+  :root {
+    --color-obsidian: #08080a;
+    --color-void: #0d0d0f;
+    --color-carbon: #121214;
+    --color-surface: #18181b;
+    --color-slate-default: #27272a;
+    --color-slate-hover: #3f3f46;
+    
+    --color-platinum: #ffffff;
+    --color-silver: #e2e8f0;
+    --color-muted-silver: #94a3b8;
+    --color-charcoal: #1c1c1e;
 
-  /* Premium Pure Black Color System */
-  --color-onyx: #000000; /* Pitch black */
-  --color-onyx-2: #050505;
-  --color-carbon-black: #121212; /* Spotify card color */
-  --color-shadow-grey: #000000; 
-  --color-shadow-grey-2: #181818; 
-  --color-graphite: #242424; /* Lighter gray for hovers */
-  --color-silver: #a1a1aa; 
-  --color-crushed-berry: #14b8a6;
-
-  /* Semantic Aliases mapped to pure black palette */
-  --color-shadow: var(--color-onyx);
-  --color-slate-default: var(--color-carbon-black);
-  --color-slate-soft: var(--color-shadow-grey-2);
-  
-  /* Restoring Accent Colors with Monochrome Palette */
-  --color-teal: #14b8a6; /* Vibrant Teal */
-  --color-ocean: #0891b2; /* Deep Cyan */
-  --color-deepblue: #282828; /* Zinc gray */
-
-  /* Neutrals for Text */
-  --color-ink-primary: #ffffff;
-  --color-ink-secondary: #a1a1aa;
-  --color-ink-tertiary: #71717a;
+    --color-ink-primary: #ffffff;
+    --color-ink-secondary: #cbd5e1;
+    --color-ink-tertiary: #64748b;
+  }
 }
 
 html {
@@ -45,7 +32,7 @@ html {
 }
 
 body {
-  background-color: var(--color-shadow);
+  background-color: var(--color-obsidian);
   color: var(--color-ink-primary);
   font-family: var(--font-sans);
   overflow-x: hidden;
@@ -53,25 +40,22 @@ body {
   margin: 0;
 }
 
-/* Custom background animation for the weightless starfield */
 @keyframes slow-twinkle {
   0%, 100% { opacity: 0.12; }
-  50% { opacity: 0.45; }
+  50% { opacity: 0.35; }
 }
 
-.star-field::before {
-  display: none;
+.glass-panel, .glass-panel-dark {
+  background: rgba(18, 18, 20, 0.7);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Smooth custom glassmorphism panels matched exactly to the Immersive UI design specifications */
-.glass-panel {
-  background: rgba(27, 27, 29, 0.65);   /* carbon-black at 65% */
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(171, 170, 165, 0.08);  /* silver at 8% */
+.hairline-border {
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Global premium hover animations */
 .premium-card-hover {
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
@@ -83,7 +67,8 @@ body {
 
 .premium-card-hover:hover {
   transform: translateY(-4px) scale(1.01) !important;
-  box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.7), 0 0 20px rgba(20, 184, 166, 0.08) !important;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.8) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
 .premium-image-hover img {
@@ -92,109 +77,58 @@ body {
 }
 
 .premium-image-hover:hover img {
-  transform: scale(1.06) !important;
+  transform: scale(1.05) !important;
 }
 
-/* Gated lock overlay */
 .lock-overlay {
-  background: rgba(21, 21, 23, 0.75);   /* onyx-2 at 75% */
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(12, 12, 14, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* 2 large fixed ambient blobs behind main content */
-.ambient-blob {
-  display: none;
+.btn-primary-white {
+  background: #ffffff;
+  color: #000000;
+  font-weight: 700;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15);
 }
 
-.ambient-blob.free {
-  background: var(--color-slate-default);
-  opacity: 0.18;
-  top: -10%;
-  left: -10%;
+.btn-primary-white:hover {
+  background: rgba(255, 255, 255, 0.92);
+  transform: scale(1.03);
+  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25);
 }
 
-.ambient-blob.premium {
-  background: var(--color-teal);
-  opacity: 0.10;
-  bottom: -15%;
-  right: -10%;
+.btn-secondary-dark {
+  background: rgba(28, 28, 30, 0.8);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Free button hover glow */
-.btn-free {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.35),
-              0 4px 8px -2px rgba(0, 0, 0, 0.5);
-  transition: box-shadow 0.3s ease, transform 0.3s ease, background 0.3s ease;
+.btn-secondary-dark:hover {
+  background: rgba(45, 45, 48, 0.9);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: scale(1.03);
 }
 
-.btn-free:hover {
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 16px 40px -4px rgba(0, 0, 0, 0.55),
-              0 8px 16px -4px rgba(0, 0, 0, 0.6);
-  transform: translateY(-5px);
-}
-
-/* Premium button hover glow */
-.btn-premium {
-  background: linear-gradient(90deg, #171717, #262626);
-  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.35),
-              0 4px 8px -2px rgba(0, 0, 0, 0.5);
-  transition: box-shadow 0.3s ease, transform 0.3s ease, background 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.btn-premium:hover {
-  background: linear-gradient(90deg, #262626, #404040);
-  box-shadow: 0 16px 44px -4px rgba(0, 0, 0, 0.5),
-              0 8px 16px -4px rgba(0, 0, 0, 0.6);
-  transform: translateY(-2px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.btn-premium:active {
-  background: linear-gradient(90deg, #171717, #262626);
-  transform: translateY(1px);
-}
-
-/* Beautiful dynamic sweeping shine used on premium elements */
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-.shimmer-sweep {
-  background: linear-gradient(
-    90deg,
-    #171717 0%,
-    #262626 35%,
-    #52525b 50%,
-    #262626 65%,
-    #171717 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 6s ease-in-out infinite;
-}
-
-/* Custom scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(40, 35, 39, 0.3); /* shadow-grey at 30% */
+  background: rgba(12, 12, 14, 0.5);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(171, 170, 165, 0.15); /* silver at 15% */
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(171, 170, 165, 0.25); /* silver at 25% */
+  background: rgba(255, 255, 255, 0.25);
 }
 
-/* ====== Scroll Reveal Animations ====== */
 [data-scroll-reveal] {
   transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
               transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -203,25 +137,6 @@ body {
   transform: translate3d(0, 0, 0);
 }
 
-[data-scroll-reveal].scroll-hidden {
-  opacity: 0;
-  transform: translate3d(0, 15px, 0) scale3d(0.98, 0.98, 1);
-}
-
-[data-scroll-reveal].scroll-revealed {
-  opacity: 1;
-  transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
-}
-
-/* Stagger delay for grid children */
-[data-scroll-reveal][data-delay="1"] { transition-delay: 0.06s; }
-[data-scroll-reveal][data-delay="2"] { transition-delay: 0.12s; }
-[data-scroll-reveal][data-delay="3"] { transition-delay: 0.18s; }
-[data-scroll-reveal][data-delay="4"] { transition-delay: 0.24s; }
-[data-scroll-reveal][data-delay="5"] { transition-delay: 0.30s; }
-[data-scroll-reveal][data-delay="6"] { transition-delay: 0.36s; }
-
-/* Custom scroll container hide scrollbar until hover */
 .custom-scroll {
   scrollbar-gutter: stable;
 }
@@ -230,20 +145,9 @@ body {
   transition: background 0.3s;
 }
 .custom-scroll:hover::-webkit-scrollbar-thumb {
-  background: rgba(171, 170, 165, 0.15);
+  background: rgba(255, 255, 255, 0.15);
 }
 
-/* =========================================
-   PREMIUM 3D & HOLOGRAPHIC GLOW UTILITIES
-   ========================================= */
-
-/* The Perspective Wrapper establishes the 3D space for children to tilt in */
-.perspective-wrapper {
-  perspective: 1200px;
-  transform-style: preserve-3d;
-}
-
-/* 3D Tilt Effect on Hover */
 .hover-3d-tilt {
   transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.6s cubic-bezier(0.23, 1, 0.32, 1);
   transform-style: preserve-3d;
@@ -251,75 +155,27 @@ body {
 }
 
 .hover-3d-tilt:hover {
-  /* Dynamic 3D tilt: Rotates up and left slightly while scaling */
-  transform: rotateX(8deg) rotateY(-8deg) scale3d(1.05, 1.05, 1.05) translateZ(10px);
-  z-index: 20;
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 25px 50px -10px rgba(0, 0, 0, 0.9);
 }
 
-/* Holographic Teal Glow Effect */
-.hover-glow-teal {
-  position: relative;
-}
-
-.hover-glow-teal::after {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: inherit;
-  background: linear-gradient(45deg, rgba(20, 184, 166, 0), rgba(20, 184, 166, 0.6), rgba(20, 184, 166, 0));
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.6s ease;
-  filter: blur(15px);
-}
-
-.hover-glow-teal:hover::after {
-  opacity: 1;
-}
-
-/* Combine Both */
-.hover-3d-glow {
-  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-}
-.hover-3d-glow:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 25px 50px -12px rgba(20, 184, 166, 0.35);
-}
-
-/* Smooth text fade */
-.text-hover-fade {
-  transition: color 0.3s ease;
-}
-
-/* ============================================================
-   PERFORMANCE: GPU Acceleration Hints — added for 60 FPS
-   ============================================================ */
-
-/* Ambient background blur — isolate to its own GPU compositor layer */
 .ambient-bg-layer,
 [aria-hidden="true"][style*="blur"] {
   will-change: opacity;
   contain: paint;
 }
 
-/* Progress bar fill — width-only animation, promote to GPU layer */
 .player-progress-fill {
   transform: translateZ(0);
   backface-visibility: hidden;
 }
 
-/* Scroll containers — hint browser for smooth layer promotion */
-.custom-scroll {
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Image loading skeleton pulse */
 @keyframes skeleton-pulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.8; }
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.7; }
 }
 .skeleton-pulse {
   animation: skeleton-pulse 1.5s ease-in-out infinite;
-  background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
   background-size: 200% 100%;
 }

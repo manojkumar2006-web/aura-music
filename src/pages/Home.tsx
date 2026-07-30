@@ -2283,7 +2283,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
   <div className="mt-4 flex flex-wrap items-center gap-4">
   <button 
   onClick={() => handleSelectTrack(albumTracks[0], albumTracks)}
-  className="bg-teal hover:bg-white text-black font-bold py-3 px-8 rounded-full flex items-center gap-2 transition-all hover:scale-105 shadow-[0_0_25px_rgba(20,184,166,0.4)] cursor-pointer"
+  className="bg-white hover:bg-white/90 text-black font-bold py-3 px-8 rounded-full flex items-center gap-2 transition-all hover:scale-105 shadow-[0_4px_20px_rgba(255,255,255,0.2)] cursor-pointer"
   >
   <Play className="w-5 h-5 fill-current" /> Play All
   </button>
@@ -3622,14 +3622,14 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  {/* Header */}
  <div className="flex items-center justify-between border-b border-white/5 pb-6">
  <h2 className="text-xl font-extrabold text-white tracking-widest uppercase font-display flex items-center gap-2">
- <Disc className="w-6 h-6 text-teal" /> Explore Albums
+ <Disc className="w-5 h-5 text-slate-300" /> Explore Albums
  </h2>
  </div>
 
  {/* Movies / Albums */}
  <div className="flex flex-col gap-6">
  <h3 className="font-display font-bold text-lg text-white tracking-wider flex items-center gap-2">
- <Play className="w-5 h-5 text-[#00d4ff]" /> Blockbuster Albums
+ <Play className="w-4 h-4 text-slate-300" /> Blockbuster Albums
  </h3>
  <div className="flex gap-5 overflow-x-auto custom-scroll pb-6 pt-2 px-2 -mx-2 snap-x">
  {globalAlbums.map((albumName: string) => {
@@ -3643,7 +3643,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  <div className="w-full aspect-square rounded-[20px] overflow-hidden relative shadow-lg bg-[#121212] premium-image-hover">
  <img loading="lazy" src={albumName.toLowerCase().includes('leo') ? '/covers/Leo.jpg' : albumTrack?.coverUrl} className="w-full h-full object-cover" alt={albumName} />
  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
- <div className="absolute bottom-3 right-3 bg-teal text-black p-3 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 shadow-[0_4px_15px_rgba(24,61,61,0.5)] translate-y-2 group-hover:translate-y-0">
+ <div className="absolute bottom-3 right-3 bg-white text-black p-3 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.6)] translate-y-2 group-hover:translate-y-0">
  <Play className="w-4 h-4 fill-white" />
  </div>
  </div>
@@ -3661,7 +3661,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  {globalArtists.length > 0 && (
  <div className="flex flex-col gap-6">
  <h3 className="font-display font-bold text-lg text-white tracking-wider flex items-center gap-2">
- <Mic2 className="w-5 h-5 text-purple-400" /> Featured Icons
+ <Mic2 className="w-4 h-4 text-slate-300" /> Featured Icons
  </h3>
  <div className="flex gap-5 overflow-x-auto custom-scroll pb-6 pt-2 px-2 -mx-2 snap-x">
  {globalArtists.slice(0, 20).map((artist) => {
@@ -3672,12 +3672,12 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  onClick={() => setSelectedDirector(artist)} 
  className="min-w-[160px] max-w-[160px] flex flex-col items-center gap-4 snap-start group cursor-pointer text-center premium-card-hover"
  >
- <div className="w-full aspect-square rounded-full overflow-hidden relative shadow-lg border-4 border-transparent group-hover:border-purple-500/50 transition-all premium-image-hover">
+ <div className="w-full aspect-square rounded-full overflow-hidden relative shadow-lg border-4 border-transparent group-hover:border-white/30 transition-all premium-image-hover">
  <ArtistAvatar name={artist} tracks={tracks} />
  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
  </div>
  <div className="flex flex-col w-full">
- <span className="text-sm font-bold text-white truncate w-full group-hover:text-purple-400 transition-colors">{artist}</span>
+ <span className="text-sm font-bold text-white truncate w-full group-hover:text-white transition-colors">{artist}</span>
  <span className="text-[10px] text-teal/80 uppercase tracking-widest mt-1 font-semibold">Director / Actor</span>
  </div>
  </div>
@@ -3691,7 +3691,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  {newReleases.length > 0 && (
  <div className="flex flex-col gap-6">
  <h3 className="font-display font-bold text-lg text-white tracking-wider flex items-center gap-2">
- <Sparkles className="w-5 h-5 text-pink-400" /> Fresh Arrivals
+ <Sparkles className="w-4 h-4 text-slate-300" /> Fresh Arrivals
  </h3>
  <div className="flex gap-5 overflow-x-auto custom-scroll pb-6 pt-2 px-2 -mx-2 snap-x">
  {newReleases.map((track) => (

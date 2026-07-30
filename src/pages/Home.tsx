@@ -177,6 +177,14 @@ const CATEGORIES = [
   { title: "Pop Anthems", query: "Dua Lipa" }
 ];
 
+// Isolated component for artist avatars — updates ONLY itself when its image loads
+// preventing full-page re-renders of Home.tsx
+const ArtistAvatar: React.FC<{ name: string; tracks?: Track[] }> = ({ name, tracks }) => {
+  const dynamicImage = useMusicStore(state => state.artistImages[name]);
+  const src = dynamicImage || getCover(name, 'artist', tracks);
+  return <img loading="lazy" src={src} className="w-full h-full object-cover" alt={name} />;
+};
+
 export const Home: React.FC = () => {
   const [visibleCount, setVisibleCount] = useState(10);
   const [visibleLibraryCount, setVisibleLibraryCount] = useState(50);
@@ -258,8 +266,7 @@ export const Home: React.FC = () => {
  fetchTracks,
  searchAndAppendTracks,
  fetchAlbumTracks,
-  artistImages,
-  toggleLike,
+    toggleLike,
  toggleArtistLike
  } = useMusicStore(useShallow(state => ({
  tracks: state.tracks,
@@ -302,8 +309,7 @@ export const Home: React.FC = () => {
  fetchTracks: state.fetchTracks,
  searchAndAppendTracks: state.searchAndAppendTracks,
   fetchAlbumTracks: state.fetchAlbumTracks,
-      artistImages: state.artistImages,
- toggleLike: state.toggleLike,
+       toggleLike: state.toggleLike,
  toggleArtistLike: state.toggleArtistLike
  })));
 
@@ -710,6 +716,30 @@ export const Home: React.FC = () => {
  }
  return map;
  }, [tracks]);
+
+  // Memoized catalog computations — computed ONCE when tracks change
+  const globalAlbums = useMemo(() => Array.from(groupedAlbumsMap.keys()), [groupedAlbumsMap]);
+
+  const globalArtists = useMemo(() => {
+    const set = new Set<string>();
+    tracks.forEach(t => {
+      if (t.musicDirector) {
+        t.musicDirector.split(', ').forEach(md => {
+          const trimmed = md.trim();
+          if (trimmed && trimmed !== 'Unknown Artist' && trimmed !== 'Various Artists') set.add(trimmed);
+        });
+      }
+      if (t.hero) {
+        t.hero.split(', ').forEach(h => {
+          const trimmed = h.trim();
+          if (trimmed && trimmed !== 'Unknown Artist' && trimmed !== 'Various Artists') set.add(trimmed);
+        });
+      }
+    });
+    return Array.from(set);
+  }, [tracks]);
+
+  const newReleases = useMemo(() => tracks.slice(Math.max(0, tracks.length - 15)), [tracks]);
 
  const filteredTracks = useMemo(() => {
  const query = searchQuery.toLowerCase().trim();
@@ -3532,27 +3562,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  </motion.div>
  ) : sidebarNav === 'albums' ? (
  (() => {
- const globalAlbums = Array.from(groupedAlbumsMap.keys());
- // Collect ONLY Music Directors and Actors (EXCLUDE singers and lyricists)
-        const globalArtistsSet = new Set<string>();
-        tracks.forEach(t => {
-          if (t.musicDirector) {
-            t.musicDirector.split(', ').forEach(md => {
-              const trimmed = md.trim();
-              if (trimmed && trimmed !== 'Unknown Artist' && trimmed !== 'Various Artists') globalArtistsSet.add(trimmed);
-            });
-          }
-          if (t.hero) {
-            t.hero.split(', ').forEach(h => {
-              const trimmed = h.trim();
-              if (trimmed && trimmed !== 'Unknown Artist' && trimmed !== 'Various Artists') globalArtistsSet.add(trimmed);
-            });
-          }
-        });
-        const globalArtists = Array.from(globalArtistsSet);
- const newReleases = tracks.slice(Math.max(0, tracks.length - 15));
-
- return (
+  return (
  /* ===== Dedicated Albums Page ===== */
  <motion.div
  key="albums-page"
@@ -3615,7 +3625,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  className="min-w-[160px] max-w-[160px] flex flex-col items-center gap-4 snap-start group cursor-pointer text-center premium-card-hover"
  >
  <div className="w-full aspect-square rounded-full overflow-hidden relative shadow-lg border-4 border-transparent group-hover:border-purple-500/50 transition-all premium-image-hover">
- <img loading="lazy" src={getCover(artist, 'artist', tracks)} className="w-full h-full object-cover" alt={artist} />
+ <ArtistAvatar name={artist} tracks={tracks} />
  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
  </div>
  <div className="flex flex-col w-full">

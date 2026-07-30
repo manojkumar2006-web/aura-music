@@ -20,7 +20,24 @@ apiRouter.get('/artist-image', async (req, res) => {
       return res.status(400).json({ error: 'Artist name required' });
     }
 
-    // 1. Primary: Fast Deezer Artist JSON API (returns 1000x1000 HD image in <50ms)
+    // 1. Primary: JioSaavn Official Artist API (returns verified 500x500 HD portrait photos for Indian Actors & Music Directors)
+    try {
+      const saavnRes = await fetch(`https://www.jiosaavn.com/api.php?_format=json&_marker=0&api_version=4&ctx=web6dot0&__call=search.getArtistResults&q=${encodeURIComponent(name)}`);
+      if (saavnRes.ok) {
+        const saavnData = await saavnRes.json();
+        const artist = saavnData.results?.[0];
+        if (artist && artist.image) {
+          const photo = artist.image.replace(/50x50|150x150/, '500x500');
+          if (photo && !photo.includes('default') && !photo.includes('artist_150x150')) {
+            return res.json({ imageUrl: photo });
+          }
+        }
+      }
+    } catch (saavnErr) {
+      console.warn('JioSaavn artist lookup error:', saavnErr);
+    }
+
+    // 2. Secondary: Fast Deezer Artist JSON API
     try {
       const deezerRes = await fetch(`https://api.deezer.com/search/artist?q=${encodeURIComponent(name)}`);
       if (deezerRes.ok) {
@@ -146,10 +163,18 @@ function mapSaavnSong(song: any) {
   const albumName = song.more_info?.album || song.album || 'Single';
   const releaseYear = song.year || new Date().getFullYear().toString();
 
+  const artistsList: any[] = song.more_info?.artistMap?.artists || [];
+  const musicDirectors = artistsList.filter((a: any) => a.role === 'music').map((a: any) => a.name);
+  const heroes = artistsList.filter((a: any) => a.role === 'starring').map((a: any) => a.name);
+  const musicDirectorStr = musicDirectors.length > 0 ? musicDirectors.join(', ') : (song.more_info?.music || '');
+  const heroStr = heroes.length > 0 ? heroes.join(', ') : '';
+
   return {
     id: `saavn_${song.id}`,
     title: song.title ? song.title.replace(/&quot;/g, '"') : 'Unknown',
     artist: artistNames,
+    musicDirector: musicDirectorStr,
+    hero: heroStr,
     album: albumName,
     coverUrl,
     audioUrl128k: audioUrl.replace('_320.mp4', '_160.mp4'),

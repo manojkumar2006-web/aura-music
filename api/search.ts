@@ -33,10 +33,18 @@ function mapSaavnSong(song: any) {
     ? String(song.year)
     : (song.releaseDate ? song.releaseDate.substring(0, 4) : new Date().getFullYear().toString());
 
+  const allArtists: any[] = Array.isArray(song.artists?.all) ? song.artists.all : [];
+  const musicDirectors = allArtists.filter((a: any) => a.role === 'music').map((a: any) => a.name);
+  const heroes = allArtists.filter((a: any) => a.role === 'starring').map((a: any) => a.name);
+  const musicDirectorStr = musicDirectors.length > 0 ? musicDirectors.join(', ') : (song.music || '');
+  const heroStr = heroes.length > 0 ? heroes.join(', ') : '';
+
   return {
     id: `saavn_${song.id}`,
     title: song.name || song.title || 'Unknown',
     artist: artistNames,
+    musicDirector: musicDirectorStr,
+    hero: heroStr,
     album: albumName,
     coverUrl,
     audioUrl128k,

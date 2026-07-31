@@ -3,12 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, lazy, Suspense } from 'react';
 import { Home } from './pages/Home';
 import { useMusicStore } from './store/musicStore';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { KaraokeLyricsDrawer } from './components/KaraokeLyricsDrawer';
 import { useShallow } from 'zustand/react/shallow';
+
+const KaraokeLyricsDrawer = lazy(() =>
+  import('./components/KaraokeLyricsDrawer').then(m => ({ default: m.KaraokeLyricsDrawer }))
+);
 
 export default function App() {
   const fetchTracks = useMusicStore((state) => state.fetchTracks);
@@ -41,7 +44,9 @@ export default function App() {
         )}
         <div className="relative z-10 w-full h-full">
           <Home />
-          <KaraokeLyricsDrawer />
+          <Suspense fallback={null}>
+            <KaraokeLyricsDrawer />
+          </Suspense>
         </div>
       </div>
     </ErrorBoundary>

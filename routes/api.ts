@@ -12,6 +12,26 @@ import { sendVerificationEmail } from '../lib/email';
 
 const apiRouter = Router();
 
+// Server-Side In-Memory Cache for 0ms Responses
+const apiCache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_TTL = 1000 * 60 * 60 * 6; // 6 Hours
+
+function getCached(key: string) {
+  const item = apiCache.get(key);
+  if (!item) return null;
+  if (Date.now() - item.timestamp > CACHE_TTL) {
+    apiCache.delete(key);
+    return null;
+  }
+  return item.data;
+}
+
+function setCached(key: string, data: any) {
+  if (apiCache.size > 1000) apiCache.clear();
+  apiCache.set(key, { data, timestamp: Date.now() });
+}
+
+
 // GET /api/artist-image - Fetches 1000x1000 HD artist photo from Deezer API with Apple Music fallback
 apiRouter.get('/artist-image', async (req, res) => {
   try {
@@ -19,6 +39,10 @@ apiRouter.get('/artist-image', async (req, res) => {
     if (!name || typeof name !== 'string') {
       return res.status(400).json({ error: 'Artist name required' });
     }
+
+    res.setHeader('Cache-Control', 'public, max-age=604800, s-maxage=604800, stale-while-revalidate=86400');
+    const cachedPhoto = getCached('artist_' + name.toLowerCase());
+    if (cachedPhoto) return res.json({ imageUrl: cachedPhoto });
 
     // 1. Primary: JioSaavn Official Artist API (returns verified 500x500 HD portrait photos for Indian Actors & Music Directors)
     try {
@@ -29,7 +53,7 @@ apiRouter.get('/artist-image', async (req, res) => {
         if (artist && artist.image) {
           const photo = artist.image.replace(/50x50|150x150/, '500x500');
           if (photo && !photo.includes('default') && !photo.includes('artist_150x150')) {
-            return res.json({ imageUrl: photo });
+            setCached('artist_' + name.toLowerCase(), photo); return res.json({ imageUrl: photo });
           }
         }
       }
@@ -783,12 +807,15 @@ apiRouter.get('/album', async (req, res) => {
     if (!name || typeof name !== 'string') {
       return res.status(400).json({ error: 'Album name required' });
     }
+    res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400');
+    const cachedAlbum = getCached('album_' + name.toLowerCase());
+    if (cachedAlbum) return res.json(cachedAlbum);
     const saavnRes = await fetch(`https://www.jiosaavn.com/api.php?_format=json&_marker=0&api_version=4&ctx=web6dot0&__call=search.getResults&q=${encodeURIComponent(name)}&p=1&n=25`);
     if (saavnRes.ok) {
       const saavnData = await saavnRes.json();
       const songs = saavnData.results || [];
       const tracks = songs.map(mapSaavnSong).filter(Boolean);
-      res.setHeader('Cache-Control', 's-maxage=1800, stale-while-revalidate=3600');
+      setCached('album_' + name.toLowerCase(), tracks);
       return res.json(tracks);
     }
     res.json([]);

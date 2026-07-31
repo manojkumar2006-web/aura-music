@@ -272,31 +272,33 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
     }
   },
   fetchAlbumTracks: async (albumName: string) => {
-      if (!albumName.trim()) return;
-      try {
-        const response = await fetch(`/api/album?name=${encodeURIComponent(albumName)}`);
-        if (!response.ok) return;
-        const data = await response.json();
-        if (Array.isArray(data) && data.length > 0) {
-          set(state => {
-            const currentTracks = [...state.tracks];
-            const seen = new Set(currentTracks.map(t => t.id));
-            let added = false;
-            data.forEach((t: any) => {
-              if (t.id && !seen.has(t.id)) {
-                seen.add(t.id);
-                currentTracks.push(t);
-                added = true;
-              }
-            });
-            return added ? { tracks: currentTracks } : state;
+    if (!albumName || !albumName.trim()) return;
+    try {
+      const response = await fetch(`/api/album?name=${encodeURIComponent(albumName)}`);
+      if (!response.ok) return;
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) return;
+      const data = await response.json();
+      if (Array.isArray(data) && data.length > 0) {
+        set(state => {
+          const currentTracks = [...state.tracks];
+          const seen = new Set(currentTracks.map(t => t.id));
+          let added = false;
+          data.forEach((t: any) => {
+            if (t && t.id && !seen.has(t.id)) {
+              seen.add(t.id);
+              currentTracks.push(t);
+              added = true;
+            }
           });
-        }
-      } catch (error) {
-        console.error('Failed to fetch album tracks:', error);
+          return added ? { tracks: currentTracks } : state;
+        });
       }
-    },
-    searchAndAppendTracks: async (query: string) => {
+    } catch (error) {
+      console.error('Failed to fetch album tracks:', error);
+    }
+  },
+  searchAndAppendTracks: async (query: string) => {
     if (!query.trim()) return;
     try {
       const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);

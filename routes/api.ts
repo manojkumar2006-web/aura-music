@@ -775,6 +775,30 @@ apiRouter.get('/compatibility', async (req, res) => {
   }
 });
 
+
+// GET /api/album — Fetch tracks for a specific album from JioSaavn
+apiRouter.get('/album', async (req, res) => {
+  try {
+    const { name } = req.query;
+    if (!name || typeof name !== 'string') {
+      return res.status(400).json({ error: 'Album name required' });
+    }
+    const saavnRes = await fetch(`https://www.jiosaavn.com/api.php?_format=json&_marker=0&api_version=4&ctx=web6dot0&__call=search.getResults&q=${encodeURIComponent(name)}&p=1&n=25`);
+    if (saavnRes.ok) {
+      const saavnData = await saavnRes.json();
+      const songs = saavnData.results || [];
+      const tracks = songs.map(mapSaavnSong).filter(Boolean);
+      res.setHeader('Cache-Control', 's-maxage=1800, stale-while-revalidate=3600');
+      return res.json(tracks);
+    }
+    res.json([]);
+  } catch (error) {
+    console.error('Album API error:', error);
+    res.status(500).json({ error: 'Failed to fetch album tracks' });
+  }
+});
+
+
 export default apiRouter;
 
 

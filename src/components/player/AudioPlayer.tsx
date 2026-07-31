@@ -20,7 +20,7 @@ import {
  Settings,
  Download,
  Check,
- ListMusic,
+ ListMusic, GripVertical,
  Maximize2,
  Minimize2,
  ChevronDown,
@@ -1144,8 +1144,28 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  <ListMusic className="w-5 h-5 text-teal" /> Up Next
  </h3>
  <div className="flex flex-col gap-2">
- {queue.slice(0, 8).map((track, i) => (
- <div key={i} onClick={() => handlePlayFromQueue(i)} className="flex items-center gap-3 p-3 bg-[#181818] hover:bg-[#242424] rounded-xl cursor-pointer transition-colors group">
+ {queue.slice(0, 15).map((track, i) => (
+  <div 
+    key={track.id || i}
+    draggable={true}
+    onDragStart={(e) => {
+      e.dataTransfer.setData('text/plain', i.toString());
+    }}
+    onDragOver={(e) => e.preventDefault()}
+    onDrop={(e) => {
+      e.preventDefault();
+      const dragIdxStr = e.dataTransfer.getData('text/plain');
+      const dragIdx = parseInt(dragIdxStr, 10);
+      if (!isNaN(dragIdx) && dragIdx !== i) {
+        useMusicStore.getState().reorderQueue(dragIdx, i);
+      }
+    }}
+    onClick={() => handlePlayFromQueue(i)} 
+    className="flex items-center gap-3 p-3 bg-[#181818] hover:bg-[#242424] border border-white/5 hover:border-white/20 rounded-xl cursor-grab active:cursor-grabbing transition-all group relative"
+  >
+    <div className="text-slate-500 hover:text-white p-1 cursor-grab" title="Drag to reorder">
+      <GripVertical className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" />
+    </div>
  <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 relative">
  <img loading="lazy" src={track.coverUrl} className="w-full h-full object-cover" alt="" />
  <div className="absolute inset-0 bg-[#121212] opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
@@ -1195,7 +1215,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  <SyncedLyrics
  trackTitle={currentTrack.title}
  trackArtist={currentTrack.artist}
- currentTime={currentTime}
+ currentTime={currentTimeRef.current}
  albumCover={currentTrack.coverUrl}
  fallbackPlainLyrics={currentTrack.lyrics}
  onClose={() => setShowSyncedLyrics(false)}
@@ -1205,4 +1225,3 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  </>
  );
 };
-

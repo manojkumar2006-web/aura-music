@@ -1242,6 +1242,14 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  <button
  key={p.name}
  onClick={() => handleAddToPlaylist(p.name)}
+   onDragOver={(e) => e.preventDefault()}
+   onDrop={(e) => {
+     e.preventDefault();
+     const trackId = e.dataTransfer.getData('text/plain');
+     if (trackId) {
+       addTrackToPlaylist(p.name, trackId);
+     }
+   }}
  className="flex items-center gap-3 p-3 rounded-xl hover:bg-[#242424] transition-colors text-left group"
  >
  <div className="w-10 h-10 rounded-lg bg-[#121212] overflow-hidden shrink-0 flex items-center justify-center border border-white/5 group-hover:border-teal/30 transition-colors">

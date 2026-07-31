@@ -1,0 +1,39 @@
+name: CI — TypeScript Check & Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    name: Type Check + Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript type check (no emit)
+        run: npx tsc --noEmit
+        continue-on-error: false
+
+      - name: Run Vitest unit tests
+        run: npx vitest run
+        env:
+          CI: true
+
+      - name: Build production bundle
+        run: npm run build
+        env:
+          NODE_ENV: production

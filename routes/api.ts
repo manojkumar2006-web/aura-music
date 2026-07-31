@@ -9,6 +9,7 @@ import { GridFSBucket, ObjectId } from 'mongodb';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { sendVerificationEmail } from '../lib/email';
+import { issueSessionCookie, requireAuth, clearSessionCookie, AuthRequest } from '../lib/auth';
 
 const apiRouter = Router();
 
@@ -450,11 +451,19 @@ apiRouter.post('/users/login', async (req, res) => {
     
     // Return user without sensitive fields
     const { password: _, verificationToken: __, usernameLower: ___, ...safeUser } = user;
+    // Issue a signed HttpOnly session cookie so subsequent requests don't need to re-send credentials
+    issueSessionCookie(res, safeUser.id);
     res.json(safeUser);
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Failed to log in. Please try again.' });
   }
+});
+
+// POST /api/users/logout
+apiRouter.post('/users/logout', (_req, res) => {
+  clearSessionCookie(res);
+  res.json({ success: true });
 });
 
 // POST /api/users/likes - Toggle a liked track

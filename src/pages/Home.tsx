@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useRef, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -185,7 +186,14 @@ const ArtistAvatar: React.FC<{ name: string; tracks?: Track[] }> = ({ name, trac
   return <img loading="lazy" src={src} className="w-full h-full object-cover" alt={name} />;
 };
 
-export const Home: React.FC = () => {
+interface HomeProps {
+  initialView?: string;
+}
+
+export const Home: React.FC<HomeProps> = ({ initialView }) => {
+  const params = useParams<{ albumName?: string; artistName?: string; playlistId?: string }>();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [visibleCount, setVisibleCount] = useState(10);
   const [visibleLibraryCount, setVisibleLibraryCount] = useState(50);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
@@ -332,7 +340,7 @@ export const Home: React.FC = () => {
  // Local UI States
   const [activeView, setActiveView] = useState<'library' | 'profile' | 'compatibility'>('library');
   const [matchId, setMatchId] = useState<string | null>(null);
- const [sidebarNav, setSidebarNav] = useState<string>('home');
+  const [sidebarNav, setSidebarNav] = useState<string>(initialView || 'home');
  const [activeTrackMenu, setActiveTrackMenu] = useState<string | null>(null);
  const [showTipsModal, setShowTipsModal] = useState(false);
  const [showSleepTimerModal, setShowSleepTimerModal] = useState(false);
@@ -456,6 +464,38 @@ export const Home: React.FC = () => {
  setSelectedDirector(null);
  setSelectedPlaylist(null);
  }, [sidebarNav]);
+
+ // Sync URL params → view state (enables deep linking & browser back/forward)
+  useEffect(() => {
+    if (params.albumName) {
+      const decoded = decodeURIComponent(params.albumName);
+      setSelectedAlbum(decoded);
+      setSidebarNav('albums');
+    } else if (params.artistName) {
+      const decoded = decodeURIComponent(params.artistName);
+      setSelectedDirector(decoded);
+      setSidebarNav('home');
+    } else if (params.playlistId) {
+      const decoded = decodeURIComponent(params.playlistId);
+      setSelectedPlaylist(decoded);
+      setSidebarNav('playlists');
+    }
+  }, [params.albumName, params.artistName, params.playlistId]);
+
+  // Sync view state → URL (enables shareable links)
+  const handleNavigateToAlbum = useCallback((albumName: string) => {
+    setSelectedAlbum(albumName);
+    navigate(`/album/${encodeURIComponent(albumName)}`);
+  }, [navigate]);
+
+  const handleNavigateToArtist = useCallback((artistName: string) => {
+    setSelectedDirector(artistName);
+    navigate(`/artist/${encodeURIComponent(artistName)}`);
+  }, [navigate]);
+
+  const handleNavigateBack = useCallback(() => {
+    navigate(-1);
+  }, [navigate]);
 
   // Dynamic Album API Fetcher (placed safely after selectedAlbum state declaration)
   useEffect(() => {
@@ -2279,7 +2319,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
            return (
              <div 
                key={albumName} 
-               onClick={() => { setSelectedAlbum(albumName); setSelectedDirector(null); }}
+               onClick={() => { handleNavigateToAlbum(albumName); setSelectedDirector(null); }}
                className="min-w-[150px] w-[150px] md:min-w-[180px] md:w-[180px] flex flex-col gap-4 cursor-pointer group snap-start bg-[#181818] p-4 rounded-xl premium-card-hover"
              >
                <div className="w-full aspect-square rounded-md overflow-hidden relative shadow-lg">
@@ -2333,7 +2373,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
   {/* Header */}
   <div className="flex flex-col md:flex-row gap-8 md:items-end border-b border-white/10 pb-8 relative pt-10 z-10">
   <button 
-  onClick={() => setSelectedAlbum(null)}
+  onClick={() => handleNavigateBack()}
   className="absolute top-0 left-0 bg-[#181818]/80 hover:bg-[#242424] backdrop-blur-md px-4 py-2 rounded-full transition-all text-slate-300 hover:text-white flex items-center gap-2 text-xs font-bold uppercase tracking-wider z-10 border border-white/10 cursor-pointer"
   >
   <ChevronLeft className="w-4 h-4" />
@@ -2354,8 +2394,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
   <span 
   className="font-bold text-teal hover:text-white hover:underline cursor-pointer transition-colors"
   onClick={() => {
-  setSelectedDirector(firstTrack.musicDirector || firstTrack.artist.split(',')[0]);
-  setSelectedAlbum(null);
+  handleNavigateToArtist(firstTrack.musicDirector || firstTrack.artist.split(',')[0]); setSelectedAlbum(null);
   }}
   >
   {firstTrack.musicDirector || firstTrack.artist.split(',')[0]}
@@ -2947,7 +2986,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  if (currentUser?.likedTracks?.includes(t.id)) return false;
  const fromExplicitArtist = explicitArtists.some(a => (t.artist || "").split(', ').includes(a) || t.hero === a || t.musicDirector === a);
  const fromLikedTrackArtist = likedTracksList.some(lt => {
- const likedTrackArtists = l(t.artist || "").split(', ');
+ const likedTrackArtists = (lt.artist || "").split(', ');
  const currentTrackArtists = (t.artist || "").split(', ');
  return likedTrackArtists.some(lta => currentTrackArtists.includes(lta)) || (lt.musicDirector && lt.musicDirector === t.musicDirector);
  });
@@ -3728,7 +3767,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  return (
  <div 
  key={albumName} 
- onClick={() => setSelectedAlbum(albumName)}
+ onClick={() => handleNavigateToAlbum(albumName)}
  className="min-w-[160px] w-[160px] flex flex-col gap-3 cursor-pointer group snap-start premium-card-hover"
  >
  <div className="w-full aspect-square rounded-[20px] overflow-hidden relative shadow-lg bg-[#121212] premium-image-hover">
@@ -3823,7 +3862,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  transition={{ duration: 0.25 }}
  className="flex flex-col gap-8 pb-10"
  >
- <button onClick={() => setSidebarNav('home')} className="self-start flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-xs font-bold uppercase tracking-wider mb-2">
+ <button onClick={() => { setSidebarNav('home'); navigate('/'); }} className="self-start flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-xs font-bold uppercase tracking-wider mb-2">
  <ChevronLeft className="w-4 h-4" /> Back to Home
  </button>
 
@@ -4114,7 +4153,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  return (
  <div 
  key={`new-album-${albumName}`} 
- onClick={() => setSelectedAlbum(albumName)}
+ onClick={() => handleNavigateToAlbum(albumName)}
  className="min-w-[160px] w-[160px] flex flex-col gap-3 cursor-pointer group snap-start premium-card-hover"
  >
  <div className="w-full aspect-square rounded-[20px] overflow-hidden relative shadow-lg bg-[#121212] premium-image-hover">
@@ -4546,7 +4585,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  >
  {/* Page Header */}
  <div className="flex items-center justify-between border-b border-white/5 pb-4">
- <button onClick={() => setSidebarNav('home')} className="flex items-center gap-1.5 text-xs text-ink-secondary hover:text-teal transition-colors cursor-pointer"><ChevronLeft className="w-4 h-4" /> Back to Home</button><h2 className="text-sm font-bold text-white tracking-widest uppercase font-display flex items-center gap-2">
+ <button onClick={() => { setSidebarNav('home'); navigate('/'); }} className="flex items-center gap-1.5 text-xs text-ink-secondary hover:text-teal transition-colors cursor-pointer"><ChevronLeft className="w-4 h-4" /> Back to Home</button><h2 className="text-sm font-bold text-white tracking-widest uppercase font-display flex items-center gap-2">
  {sidebarNav === 'radio' && <><Radio className="w-4 h-4 text-teal" /> Radio</>}
  </h2>
  </div>
@@ -4736,7 +4775,7 @@ const handlePlayNext = (e: React.MouseEvent, track: Track) => {
  </div>
 
  <button
- onClick={() => setSidebarNav('home')}
+ onClick={() => { setSidebarNav('home'); navigate('/'); }}
  className="relative z-10 mt-2 px-6 py-2.5 rounded-full bg-[#181818] hover:bg-[#242424] border border-white/10 text-white text-xs font-bold uppercase tracking-widest transition-all"
  >
  Explore Music

@@ -20,6 +20,11 @@ interface MusicStore {
   setCurrentTrack: (track: Track | null) => void;
   queue: Track[];
   setQueue: (tracks: Track[]) => void;
+  reorderQueue: (startIndex: number, endIndex: number) => void;
+  playNext: (track: Track) => void;
+  addToQueueEnd: (track: Track) => void;
+  showLyricsDrawer: boolean;
+  setShowLyricsDrawer: (show: boolean) => void;
   playbackState: PlaybackState;
   setPlaybackState: (state: PlaybackState) => void;
   userTier: SubscriptionTier;
@@ -394,6 +399,32 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
   currentTrack: PRESET_TRACKS[0],
   queue: [],
   setQueue: (tracks: Track[]) => set({ queue: tracks }),
+  showLyricsDrawer: false,
+  setShowLyricsDrawer: (show: boolean) => set({ showLyricsDrawer: show }),
+  reorderQueue: (startIndex: number, endIndex: number) => {
+    const currentQueue = [...get().queue];
+    const [removed] = currentQueue.splice(startIndex, 1);
+    currentQueue.splice(endIndex, 0, removed);
+    set({ queue: currentQueue });
+  },
+  playNext: (track: Track) => {
+    const currentQueue = [...get().queue];
+    const currentTrack = get().currentTrack;
+    let insertIdx = 0;
+    if (currentTrack) {
+      const idx = currentQueue.findIndex(t => t.id === currentTrack.id);
+      if (idx !== -1) insertIdx = idx + 1;
+    }
+    const filtered = currentQueue.filter(t => t.id !== track.id);
+    filtered.splice(insertIdx, 0, track);
+    set({ queue: filtered });
+  },
+  addToQueueEnd: (track: Track) => {
+    const currentQueue = [...get().queue];
+    if (!currentQueue.some(t => t.id === track.id)) {
+      set({ queue: [...currentQueue, track] });
+    }
+  },
   setCurrentTrack: (track: Track | null) => {
     set({ currentTrack: track });
     if (track) {

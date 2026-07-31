@@ -578,7 +578,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
  <SkipForward className="w-4 h-4 fill-current" />
  </button>
  <button 
- onClick={() => setShowSyncedLyrics(true)} 
+ onClick={() => useMusicStore.getState().setShowLyricsDrawer(true)} 
  className="text-slate-300 hover:text-teal transition-colors active:scale-90 ml-1" 
  title="Lyrics"
  >

@@ -7,6 +7,7 @@ import React, { useEffect } from 'react';
 import { Home } from './pages/Home';
 import { useMusicStore } from './store/musicStore';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { KaraokeLyricsDrawer } from './components/KaraokeLyricsDrawer';
 import { useShallow } from 'zustand/react/shallow';
 
 export default function App() {
@@ -40,6 +41,7 @@ export default function App() {
         )}
         <div className="relative z-10 w-full h-full">
           <Home />
+          <KaraokeLyricsDrawer />
         </div>
       </div>
     </ErrorBoundary>

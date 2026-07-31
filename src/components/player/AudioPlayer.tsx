@@ -301,7 +301,16 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   } else {
   if (ytPlayerRef.current) try { ytPlayerRef.current.pauseVideo(); } catch(e) {}
  if (playbackState === 'playing') {
- audio.play().catch((err) => {
+ audio.volume = 0;
+ audio.play().then(() => {
+   let curVol = 0;
+   const targetVol = isMuted ? 0 : volume;
+   const fadeTimer = setInterval(() => {
+     curVol = Math.min(targetVol, curVol + (targetVol / 10 || 0.1));
+     audio.volume = curVol;
+     if (curVol >= targetVol) clearInterval(fadeTimer);
+   }, 25);
+ }).catch((err) => {
  console.warn('Playback failed, user interaction required:', err);
  setPlaybackState('paused');
  });

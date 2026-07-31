@@ -720,6 +720,89 @@ export const Home: React.FC = () => {
   // Memoized catalog computations — computed ONCE when tracks change
   const globalAlbums = useMemo(() => Array.from(groupedAlbumsMap.keys()), [groupedAlbumsMap]);
 
+  // Memoized mixes list — fixes l() typo & prevents unmemoized IIFE re-evaluations
+  const mixesList = useMemo(() => {
+    const likedTracksList = tracks.filter(t => currentUser?.likedTracks?.includes(t.id));
+    const explicitArtists = currentUser?.likedArtists || [];
+    
+    const mixes = [];
+    
+    if (likedTracksList.length > 0) {
+      mixes.push({
+        title: 'On Repeat',
+        desc: 'Songs you love',
+        tracks: [...likedTracksList]
+      });
+    }
+    
+    if (explicitArtists.length > 0) {
+      const artistTracks = tracks.filter(t => explicitArtists.some(a => (t.artist || "").split(', ').includes(a) || t.hero === a || t.musicDirector === a));
+      if (artistTracks.length > 0) {
+        mixes.push({
+          title: 'Favorite Artists Mix',
+          desc: 'Based on your likes',
+          tracks: artistTracks
+        });
+      }
+      
+      explicitArtists.slice(0, 5).forEach(artist => {
+        const singleArtistTracks = tracks.filter(t => (t.artist || "").split(', ').includes(artist) || t.hero === artist || t.musicDirector === artist);
+        if (singleArtistTracks.length >= 3) {
+          mixes.push({
+            title: `${artist} Mix`,
+            desc: 'Made for you',
+            tracks: singleArtistTracks
+          });
+        }
+      });
+    }
+
+    if (likedTracksList.length > 0 || explicitArtists.length > 0) {
+      const discoveryTracks = tracks.filter(t => {
+        if (currentUser?.likedTracks?.includes(t.id)) return false;
+        const fromExplicitArtist = explicitArtists.some(a => (t.artist || "").split(', ').includes(a) || t.hero === a || t.musicDirector === a);
+        const fromLikedTrackArtist = likedTracksList.some(lt => {
+          const likedTrackArtists = (lt.artist || "").split(', ');
+          const currentTrackArtists = (t.artist || "").split(', ');
+          return likedTrackArtists.some(lta => currentTrackArtists.includes(lta)) || (lt.musicDirector && lt.musicDirector === t.musicDirector);
+        });
+        return fromExplicitArtist || fromLikedTrackArtist;
+      });
+      if (discoveryTracks.length > 0) {
+        mixes.push({
+          title: 'Discover Weekly',
+          desc: 'New recommendations',
+          tracks: discoveryTracks.slice(0, 20)
+        });
+      }
+    }
+
+    const getCoverByArtist = (artistName: string) => tracks.find(t => (t.artist || "").split(', ').includes(artistName) || t.musicDirector === artistName)?.coverUrl || '/covers/hero-images.jpg';
+    const getCoverByRegion = (region: string) => tracks.find(t => t.region === region)?.coverUrl || '/covers/hero-images.jpg';
+
+    const generics = [
+      { title: 'Morning Mix', desc: 'Start your day fresh', coverUrl: getCoverByArtist('A.R. Rahman'), tracks: tracks.filter(t => t.musicDirector === 'A.R. Rahman' || (t.artist || "").split(', ').includes('A.R. Rahman') || t.title.toLowerCase().includes('sun')).slice(0, 15) },
+      { title: 'Late Night Mix', desc: 'Chill night vibes', coverUrl: getCoverByArtist('Harris Jayaraj'), tracks: tracks.filter(t => t.musicDirector === 'Harris Jayaraj' || (t.artist || "").split(', ').includes('Harris Jayaraj') || t.title.toLowerCase().includes('night')).slice(0, 15) },
+      { title: 'Workout Mix', desc: 'High energy beats', coverUrl: getCoverByArtist('Anirudh'), tracks: tracks.filter(t => t.musicDirector === 'Anirudh Ravichander' || (t.artist || "").split(', ').includes('Anirudh')).slice(0, 15) },
+      { title: 'Top Hits', desc: 'Global chart toppers', coverUrl: tracks[0]?.coverUrl || '/covers/hero-images.jpg', tracks: tracks.slice(0, 15) },
+      { title: 'Daily Mix 1', desc: 'Made for you', coverUrl: tracks[5]?.coverUrl || '/covers/hero-images.jpg', tracks: tracks.slice(15, 30) },
+      { title: 'Upbeats', desc: 'Feel good songs', coverUrl: getCoverByArtist('Devi Sri Prasad'), tracks: tracks.filter(t => t.musicDirector === 'Devi Sri Prasad' || (t.artist || "").split(', ').includes('Devi Sri Prasad')).slice(0, 15) },
+      { title: 'Lo-Fi Chill', desc: 'Study beats', coverUrl: getCoverByArtist('Santhosh Narayanan'), tracks: tracks.filter(t => t.musicDirector === 'Santhosh Narayanan' || (t.artist || "").split(', ').includes('Santhosh Narayanan')).slice(0, 15) },
+      { title: 'Tollywood Top 10', desc: 'Regional hits', coverUrl: getCoverByRegion('Tollywood'), tracks: tracks.filter(t => t.region === 'Tollywood').slice(0, 10) },
+      { title: 'Kollywood Top 10', desc: 'Regional hits', coverUrl: getCoverByRegion('Kollywood'), tracks: tracks.filter(t => t.region === 'Kollywood').slice(0, 10) },
+      { title: 'Bollywood Chartbusters', desc: 'Regional hits', coverUrl: getCoverByRegion('Bollywood'), tracks: tracks.filter(t => t.region === 'Bollywood').slice(0, 10) }
+    ].filter(m => m.tracks.length > 0);
+
+    for (const g of generics) {
+      if (mixes.length >= 10 && mixes.length > generics.length) break; 
+      if (!mixes.some(m => m.title === g.title)) {
+        mixes.push(g);
+      }
+    }
+
+    return mixes;
+  }, [tracks, currentUser?.likedTracks, currentUser?.likedArtists]);
+
   const globalArtists = useMemo(() => {
     const set = new Set<string>();
     tracks.forEach(t => {

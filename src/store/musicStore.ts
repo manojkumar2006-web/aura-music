@@ -77,6 +77,8 @@ interface MusicStore {
   fetchArtistImage: (name: string) => Promise<string | null>;
   searchAndAppendTracks: (query: string) => Promise<void>;
   fetchAlbumTracks: (albumName: string) => Promise<void>;
+  albumLoading: boolean;
+  albumError: string | null;
   addTracksToLibrary: (newTracks: Track[]) => void;
   toggleLike: (trackId: string) => Promise<{ success: boolean; error?: string }>;
   toggleArtistLike: (artistName: string) => Promise<{ success: boolean; error?: string }>;
@@ -100,6 +102,8 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
   tracks: [], // Initially empty, populated by fetchTopTracks
   artistImages: {},
   isSearching: false,
+  albumLoading: false,
+  albumError: null,
   
   fetchArtistImage: async (name: string) => {
     const { artistImages } = get();
